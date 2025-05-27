@@ -1,0 +1,33 @@
+import { Metadata } from 'next';
+import AuthPage from '../../components/authorization/authPage/AuthPage';
+import styles from './auth.module.scss';
+
+export async function generateMetadata() {
+  const metadata: Metadata = {
+    title: 'Sign in',
+    description: 'Login into your account',
+    keywords: 'sign in, account, email,password',
+    alternates: {
+      canonical: '/auth',
+    },
+    openGraph: {
+      title: 'Sign in',
+      description: '',
+      url: '/auth',
+      locale: 'en_US',
+      type: 'website',
+      
+    },
+  };
+  return metadata;
+}
+
+const Auth = () => {
+  return (
+    <div className={styles.root}>
+      <AuthPage />
+    </div>
+  );
+};
+
+export default Auth;
