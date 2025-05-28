@@ -3,7 +3,6 @@ import styles from '../authorization/authorization.module.scss';
 
 interface InputProps {
   name: string;
-  key: string;
   placeholder: string;
   type: string;
   value: string;
@@ -13,13 +12,12 @@ interface InputProps {
   error: string | undefined;
 }
 
-const Input: FC<InputProps> = ({name, key, placeholder, type, value, onChangeFn, onBlurFn, isTouched, error}) => {
+const Input: FC<InputProps> = ({name, placeholder, type, value, onChangeFn, onBlurFn, isTouched, error}) => {
   return (
     <div className={styles.form__row}>
       <input
         className={styles.form__field}
         name={name}
-        key={key}
         placeholder={placeholder}
         type={type}
         value={value}

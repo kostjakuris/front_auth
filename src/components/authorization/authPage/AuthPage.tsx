@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { validationSchema } from '../../validation/validation';
 import { FormFields } from '../../../folder/form.interface';
 import Input from '../../input/Input';
+import { login } from '../../../api/AuthProvider';
 
 const AuthPage = () => {
   const formik = useFormik<FormFields>({
@@ -14,8 +15,8 @@ const AuthPage = () => {
       password: '',
     },
     validationSchema: validationSchema,
-    onSubmit: async() => {
-    
+    onSubmit: async(values: FormFields) => {
+      await login({...values});
     },
   });
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +36,6 @@ const AuthPage = () => {
       <form onSubmit={formik.handleSubmit} className={styles.form}>
         <Input
           name='email'
-          key='email'
           placeholder='Email'
           type={'email'}
           value={formik.values.email}
@@ -46,7 +46,6 @@ const AuthPage = () => {
         />
         <Input
           name='password'
-          key='password'
           placeholder='Password'
           type={'password'}
           value={formik.values.password}
