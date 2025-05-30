@@ -1,19 +1,19 @@
 import { Metadata } from 'next';
 import styles from '../root.module.scss';
-import RegisterPage from '../../components/authorization/registerPage/RegisterPage';
+import AuthorizedPage from '../../components/authorizedPage/AuthorizedPage';
 
 export async function generateMetadata() {
   const metadata: Metadata = {
-    title: 'Sign up',
-    description: 'Create your account',
-    keywords: 'sign up, account, email,password',
+    title: 'Authorized page',
+    description: 'User authorized page',
+    keywords: 'authorized, account, email,password',
     alternates: {
-      canonical: '/register',
+      canonical: '/authorized',
     },
     openGraph: {
-      title: 'Sign up',
+      title: 'Authorized',
       description: '',
-      url: '/register',
+      url: '/authorized',
       locale: 'en_US',
       type: 'website',
       
@@ -22,12 +22,12 @@ export async function generateMetadata() {
   return metadata;
 }
 
-const Register = () => {
+const Authorized = () => {
   return (
     <div className={styles.root}>
-      <RegisterPage />
+      <AuthorizedPage />
     </div>
   );
 };
 
-export default Register;
+export default Authorized;

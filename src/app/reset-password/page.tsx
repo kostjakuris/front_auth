@@ -1,19 +1,19 @@
 import { Metadata } from 'next';
 import styles from '../root.module.scss';
-import RegisterPage from '../../components/authorization/registerPage/RegisterPage';
+import ResetPage from '../../components/resetPage/ResetPage';
 
 export async function generateMetadata() {
   const metadata: Metadata = {
-    title: 'Sign up',
-    description: 'Create your account',
-    keywords: 'sign up, account, email,password',
+    title: 'Reset password',
+    description: 'Reset your password',
+    keywords: 'account, email,password',
     alternates: {
-      canonical: '/register',
+      canonical: '/reset-password',
     },
     openGraph: {
-      title: 'Sign up',
+      title: 'Reset password',
       description: '',
-      url: '/register',
+      url: '/reset-password',
       locale: 'en_US',
       type: 'website',
       
@@ -22,12 +22,12 @@ export async function generateMetadata() {
   return metadata;
 }
 
-const Register = () => {
+const Reset = () => {
   return (
     <div className={styles.root}>
-      <RegisterPage />
+      <ResetPage />
     </div>
   );
 };
 
-export default Register;
+export default Reset;
