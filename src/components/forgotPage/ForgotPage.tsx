@@ -37,6 +37,9 @@ const ForgotPage = () => {
     return (
       <div className={styles.authorization}>
         <p className={styles.authorization__text}>{resetMessage}</p>
+        <Link className={styles.authorization__agreement_secondLink} href={'/auth/'}>
+          Comeback to auth page
+        </Link>
       </div>
     );
   }
