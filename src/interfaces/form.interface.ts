@@ -1,3 +1,7 @@
+export interface ListFormFields {
+  listName: string;
+}
+
 export interface LoginFormFields {
   email: string;
   password: string;
@@ -20,4 +24,30 @@ export interface RegisterFormFields {
 export interface ResetPasswordParams {
   token: string;
   password: string;
+}
+
+export interface CreateTaskFields {
+  name: string;
+  description: string;
+  todoName: string;
+  todoId: number;
+  parentId?: number;
+}
+
+export interface EditTodoFields {
+  name: string;
+  id: number;
+}
+
+export interface EditTaskFields {
+  name?: string;
+  todoName: string;
+  description?: string;
+  status?: string;
+  id: number;
+}
+
+export interface DeleteTaskFields {
+  id: number;
+  todoName: string;
 }

@@ -148,6 +148,10 @@
 
   &__submit {
     background: linear-gradient(90deg, #9890e3 0%, #b1f4cf 100%);
+
+  }
+
+  &__submit, &__cancel {
     color: black;
     cursor: pointer;
     margin-top: 32px;
@@ -158,6 +162,13 @@
     @media screen and (max-width: 460px) {
       height: 40px;
     }
+  }
+
+  &__cancel {
+    background: black;
+    border: 1px solid white;
+    color: white;
+    margin-right: 20px;
   }
 
   &__open {

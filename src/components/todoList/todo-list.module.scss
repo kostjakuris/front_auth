@@ -1,0 +1,15 @@
+.todos {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &__header {
+    margin-top: 40px;
+    font-family: sans-serif;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 39.01px;
+    color: white;
+  }
+}

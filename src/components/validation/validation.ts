@@ -5,6 +5,10 @@ export const authSchema = Yup.object().shape({
   password: Yup.string().trim().required('Password is required.'),
 });
 
+export const todoSchema = Yup.object().shape({
+  listName: Yup.string().trim().required('Todo name is required.'),
+});
+
 export const forgotSchema = Yup.object().shape({
   email: Yup.string().trim().required('Email is required.').email('Please, enter valid email'),
 });

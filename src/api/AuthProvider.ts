@@ -1,20 +1,14 @@
 import { LoginFormFields, RegisterFormFields, ResetPasswordParams } from '../interfaces/form.interface';
 import axios from 'axios';
-import { deleteCookie, getToken } from './cookiesOperation';
+import { deleteCookie } from './cookiesOperation';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-const setAuthHeader = async() => {
-  const accessToken = await getToken();
-  axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-};
+import { backendUrl, setAuthHeader } from './AxiosConfig';
 
 export const getUserInfo = createAsyncThunk('getUserInfo', async(_, thunkAPI) => {
   try {
     await setAuthHeader();
-    const response = await axios.get(`${backendUrl}/user`, {withCredentials: true});
+    const response = await axios.get(`${backendUrl}/auth/user`, {withCredentials: true});
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(error.response.data.message);
@@ -23,7 +17,7 @@ export const getUserInfo = createAsyncThunk('getUserInfo', async(_, thunkAPI) =>
 
 export const sendResetLink = createAsyncThunk('setResetLink', async(email: string, thunkAPI) => {
   try {
-    const response = await axios.post(`${backendUrl}/forgot-password`, {email}, {withCredentials: true});
+    const response = await axios.post(`${backendUrl}/auth/forgot-password`, {email}, {withCredentials: true});
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -33,7 +27,7 @@ export const sendResetLink = createAsyncThunk('setResetLink', async(email: strin
 export const resetPassword = createAsyncThunk('resetPassword',
   async({token, password}: ResetPasswordParams, thunkAPI) => {
     try {
-      const response = await axios.patch(`${backendUrl}/reset-password`, {
+      const response = await axios.patch(`${backendUrl}/auth/reset-password`, {
         password, token
       }, {withCredentials: true});
       return response.data;
@@ -44,7 +38,7 @@ export const resetPassword = createAsyncThunk('resetPassword',
 );
 export const regenerateToken = async(refreshToken: string) => {
   try {
-    const response = await axios.post(`${backendUrl}/regenerate-token`, {
+    const response = await axios.post(`${backendUrl}/auth/regenerate-token`, {
       refreshToken,
     }, {withCredentials: true});
     return response.data;
@@ -59,7 +53,7 @@ export const login = createAsyncThunk('login', async({
   }: LoginFormFields, thunkAPI,
 ) => {
   try {
-    const response = await axios.post(`${backendUrl}/login`, {
+    const response = await axios.post(`${backendUrl}/auth/login`, {
       email,
       password,
     }, {withCredentials: true});
@@ -82,7 +76,7 @@ export const register = createAsyncThunk('register', async({
   password
 }: RegisterFormFields, thunkAPI) => {
   try {
-    const response = await axios.post(`${backendUrl}/register`, {
+    const response = await axios.post(`${backendUrl}/auth/register`, {
       username,
       email,
       password,
