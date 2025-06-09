@@ -1,6 +1,5 @@
 import { LoginFormFields, RegisterFormFields, ResetPasswordParams } from '../interfaces/form.interface';
 import axios from 'axios';
-import { deleteCookie } from './cookiesOperation';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { backendUrl, setAuthHeader } from './AxiosConfig';
@@ -65,9 +64,14 @@ export const login = createAsyncThunk('login', async({
   
 });
 
-export const logout = createAsyncThunk('logout', async(router: AppRouterInstance) => {
-  await deleteCookie();
-  router.push('/auth');
+export const logout = createAsyncThunk('logout', async(router: AppRouterInstance, thunkAPI) => {
+  try {
+    const response = await axios.get(`${backendUrl}/auth/logout`, {withCredentials: true});
+    router.push('/auth');
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
 });
 
 export const register = createAsyncThunk('register', async({

@@ -8,8 +8,3 @@ export async function getToken() {
 export async function getRefreshToken() {
   return (await cookies()).get('refresh_token')?.value;
 }
-
-export async function deleteCookie() {
-  (await cookies()).delete('access_token');
-  (await cookies()).delete('refresh_token');
-}
