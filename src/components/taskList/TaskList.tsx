@@ -61,7 +61,6 @@ const TaskList: FC<TaskListProps> = ({id}) => {
     useGetInfo();
     
     useEffect(() => {
-      // dispatch(setCurrentTodoName(correctName));
       getAllTasksByName();
     }, []);
     

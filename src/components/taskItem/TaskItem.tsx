@@ -4,7 +4,9 @@ import styles from '../taskList/task-list.module.scss';
 import { setPrevCreateSubTask, setPrevEditTask } from '../../lib/slice';
 import { deleteTask } from '../../api/TodoProvider';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import Image from 'next/image';
+import { Create } from '../../../public/images/Create';
+import { Edit } from '../../../public/images/Edit';
+import { Delete } from '../../../public/images/Delete';
 
 interface TaskItemProps {
   id: number;
@@ -42,20 +44,15 @@ const TaskItem: FC<TaskItemProps> = ({id, name, status, description, subTasks}) 
           <p className={styles.task__text}>Status: {status}</p>
           <div className={styles.task__buttons}>
             <button className={'cursor-pointer h-10'} onClick={() => dispatch(setPrevCreateSubTask(id))}>
-              <Image src={'/images/create.svg'} alt={'create'} width={30} height={30} />
+              <Create />
             </button>
-            <button className={'cursor-pointer h-10 pt-1.5'}
+            <button className={'cursor-pointer h-10'}
               onClick={() => dispatch(setPrevEditTask(id))}>
-              <Image src={'/images/edit.svg'} alt={'edit'} width={28} height={28} />
+              <Edit />
             </button>
-            <button className={'cursor-pointer h-10'}>
-              <Image
-                src={'/images/delete.svg'}
-                alt={'delete'}
-                width={30}
-                height={30}
-                onClick={async() => await dispatch(deleteTask({id, todoName: String(currentTodoName)}))}
-              />
+            <button className={'cursor-pointer h-10'}
+              onClick={async() => await dispatch(deleteTask({id, todoName: String(currentTodoName)}))}>
+              <Delete />
             </button>
             <button className={styles.task__button} onClick={openQuestion}>
               All tasks

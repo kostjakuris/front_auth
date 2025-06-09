@@ -1,10 +1,11 @@
 import React, { FC } from 'react';
 import styles from './todo-item.module.scss';
-import Image from 'next/image';
 import { setPrevEditTodo } from '../../lib/slice';
 import { useAppDispatch } from '../../lib/hooks';
 import { deleteTodo } from '../../api/TodoProvider';
 import Link from 'next/link';
+import { Edit } from '../../../public/images/Edit';
+import { Delete } from '../../../public/images/Delete';
 
 interface TodoItemProps {
   todoId: number;
@@ -20,11 +21,11 @@ const TodoItem: FC<TodoItemProps> = ({todoId, todoName}) => {
         <div className={styles.todo__content}>
           <p className={styles.todo__title}>{todoName}</p>
           <div className={styles.todo__buttons}>
-            <button className={'cursor-pointer h-10 pt-1.5'} onClick={() => dispatch(setPrevEditTodo(todoId))}>
-              <Image src={'/images/edit.svg'} alt={'edit'} width={28} height={28} />
+            <button className={'cursor-pointer h-10'} onClick={() => dispatch(setPrevEditTodo(todoId))}>
+              <Edit />
             </button>
             <button className={'cursor-pointer h-10'} onClick={async() => await dispatch(deleteTodo(todoId))}>
-              <Image src={'/images/delete.svg'} alt={'delete'} width={30} height={30} />
+              <Delete />
             </button>
             <Link href={`/authorized/todo/${todoId}`} className={`${styles.todo__button} text-center pt-1`}>
               All tasks

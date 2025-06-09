@@ -59,9 +59,6 @@ const appSlice = createSlice({
       state.isEditTask = false;
       state.isEditTodo = false;
     },
-    setCurrentTodoName: (state, action) => {
-      state.currentTodoName = action.payload;
-    },
     setPrevCreateTask: (state) => {
       if (!state.isCreateTask) {
         state.isCreateTask = !state.isCreateTask;
@@ -266,6 +263,5 @@ export const {
   setPrevCreateTask,
   setPrevCreateSubTask,
   closeTodoForm,
-  setCurrentTodoName
 } = appSlice.actions;
 export default appSlice.reducer;
