@@ -7,7 +7,7 @@ type TodoList = {
   name: string;
 }
 
-interface AppState {
+export interface AppState {
   isAuth: boolean;
   isLoading: boolean;
   isTask: boolean;

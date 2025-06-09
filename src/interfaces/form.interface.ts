@@ -29,7 +29,6 @@ export interface ResetPasswordParams {
 export interface CreateTaskFields {
   name: string;
   description: string;
-  todoName: string;
   todoId: number;
   parentId?: number;
 }
@@ -41,7 +40,7 @@ export interface EditTodoFields {
 
 export interface EditTaskFields {
   name?: string;
-  todoName: string;
+  todoId: string;
   description?: string;
   status?: string;
   id: number;

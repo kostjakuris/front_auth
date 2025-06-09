@@ -13,7 +13,6 @@ interface TodoItemProps {
 
 const TodoItem: FC<TodoItemProps> = ({todoId, todoName}) => {
   const dispatch = useAppDispatch();
-  const todoParameter = todoName.replaceAll(' ', '-').trim();
   
   return (
     <div className={styles.todo}>
@@ -27,7 +26,7 @@ const TodoItem: FC<TodoItemProps> = ({todoId, todoName}) => {
             <button className={'cursor-pointer h-10'} onClick={async() => await dispatch(deleteTodo(todoId))}>
               <Image src={'/images/delete.svg'} alt={'delete'} width={30} height={30} />
             </button>
-            <Link href={`/authorized/todo/${todoParameter}`} className={`${styles.todo__button} text-center pt-1`}>
+            <Link href={`/authorized/todo/${todoId}`} className={`${styles.todo__button} text-center pt-1`}>
               All tasks
             </Link>
           </div>

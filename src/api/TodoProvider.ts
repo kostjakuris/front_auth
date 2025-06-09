@@ -13,10 +13,12 @@ export const getAllTodos = createAsyncThunk('getAllTodos', async(_, thunkAPI) =>
   }
 });
 
-export const getAllTasks = createAsyncThunk('getAllTasks', async(name: string, thunkAPI) => {
+export const getAllTasks = createAsyncThunk('getAllTasks', async(id: string, thunkAPI) => {
   try {
     await setAuthHeader();
-    const response = await axios.post(`${backendUrl}/task/all`, {name}, {withCredentials: true});
+    const response = await axios.get(`${backendUrl}/task/all?id=${id}`,
+      {withCredentials: true}
+    );
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(error.response.data.message);
@@ -37,13 +39,13 @@ export const createNewTodo = createAsyncThunk('createNewTodo', async(name: strin
 });
 
 export const createNewTask = createAsyncThunk('createNewTask',
-  async({name, todoName, description, todoId, parentId}: CreateTaskFields, thunkAPI) => {
+  async({name, description, parentId, todoId}: CreateTaskFields, thunkAPI) => {
     try {
       await setAuthHeader();
       const response = await axios.post(`${backendUrl}/task/create`, {
-        todoId, name, description, parentId, todoName
+        id: todoId, name, description, parentId
       }, {withCredentials: true});
-      await thunkAPI.dispatch(getAllTasks(todoName));
+      await thunkAPI.dispatch(getAllTasks(String(todoId)));
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data.message);
@@ -82,13 +84,13 @@ export const editTodo = createAsyncThunk('editTodo',
 );
 
 export const editTask = createAsyncThunk('editTask',
-  async({id, name, description, status, todoName}: EditTaskFields, thunkAPI) => {
+  async({id, name, description, status, todoId}: EditTaskFields, thunkAPI) => {
     try {
       await setAuthHeader();
       const response = await axios.patch(`${backendUrl}/task/edit`, {
         id, name, description, status
       });
-      await thunkAPI.dispatch(getAllTasks(todoName));
+      await thunkAPI.dispatch(getAllTasks(todoId));
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data.message);

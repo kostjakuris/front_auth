@@ -1,9 +1,9 @@
 import React from 'react';
 import TaskList from '../../../../components/taskList/TaskList';
 
-const TodoPage = async({params}: {params: {todoName: string}}) => {
+const TodoPage = async({params}: {params: {todoId: string}}) => {
   return (
-    <TaskList name={params.todoName} />
+    <TaskList id={params.todoId} />
   );
 };
 
