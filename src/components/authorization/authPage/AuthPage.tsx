@@ -1,21 +1,20 @@
 'use client';
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from '../authorization.module.scss';
 import { useFormik } from 'formik';
 import Link from 'next/link';
 import { authSchema } from '../../validation/validation';
 import { LoginFormFields } from '../../../interfaces/form.interface';
 import Input from '../../input/Input';
-import { login } from '../../../api/AuthProvider';
-import { useRouter } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
-import { getIsAuth } from '../../../lib/slice';
 import { FadeLoader } from 'react-spinners';
+import { useLoginMutation } from '../../../lib/userApi';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { useRouterChange } from '../../../hooks/useRouterChange';
+
 
 const AuthPage = () => {
-  const router = useRouter();
-  const {error, isLoading, isAuth} = useAppSelector((state) => state);
-  const dispatch = useAppDispatch();
+  const [loginFn, {isLoading, error, isSuccess}] = useLoginMutation();
+  const authError = error as FetchBaseQueryError & {data: {message: string; code: string}};
   const formik = useFormik<LoginFormFields>({
     initialValues: {
       email: '',
@@ -23,19 +22,11 @@ const AuthPage = () => {
     },
     validationSchema: authSchema,
     onSubmit: async(values: LoginFormFields) => {
-      const response = await dispatch(login({...values}));
-      if (response.payload.access_token) {
-        router.push('/authorized');
-      }
+      await loginFn({...values});
     },
   });
   
-  useEffect(() => {
-    dispatch(getIsAuth());
-    if (isAuth) {
-      router.push('/authorized');
-    }
-  }, []);
+  useRouterChange(isSuccess);
   
   if (isLoading) {
     return (
@@ -48,7 +39,7 @@ const AuthPage = () => {
     <div className={styles.authorization}>
       <h2 className={styles.authorization__title}>Sign In</h2>
       <p className={styles.authorization__text}>Please,enter your email and password!</p>
-      <p className={styles.authorization__error}>{error}</p>
+      <p className={styles.authorization__error}>{authError?.data.message}</p>
       <form onSubmit={formik.handleSubmit} className={styles.form}>
         <Input
           name='email'

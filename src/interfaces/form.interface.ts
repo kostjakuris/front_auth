@@ -40,7 +40,6 @@ export interface EditTodoFields {
 
 export interface EditTaskFields {
   name?: string;
-  todoId: string;
   description?: string;
   status?: string;
   id: number;

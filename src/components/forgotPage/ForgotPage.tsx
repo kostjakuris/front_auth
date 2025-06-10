@@ -10,11 +10,15 @@ import { getIsAuth } from '../../lib/slice';
 import { FadeLoader } from 'react-spinners';
 import { forgotSchema } from '../validation/validation';
 import { ForgotFormFields } from '../../interfaces/form.interface';
-import { sendResetLink } from '../../api/AuthProvider';
+import { useSendResetLinkMutation } from '../../lib/authApi';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const ForgotPage = () => {
   const router = useRouter();
-  const {error, isLoading, resetMessage, isAuth} = useAppSelector((state) => state);
+  const {isAuth} = useAppSelector((state) => state.auth);
+  const [sendResetLink, {data, isLoading, error}] = useSendResetLinkMutation();
+  const forgotError = error as FetchBaseQueryError & {data: {message: string; code: string}};
+  
   const dispatch = useAppDispatch();
   const formik = useFormik<ForgotFormFields>({
     initialValues: {
@@ -22,7 +26,7 @@ const ForgotPage = () => {
     },
     validationSchema: forgotSchema,
     onSubmit: async(values) => {
-      await dispatch(sendResetLink(values.email));
+      await sendResetLink(values.email);
     },
   });
   
@@ -33,10 +37,10 @@ const ForgotPage = () => {
     }
   }, []);
   
-  if (resetMessage) {
+  if (data) {
     return (
       <div className={styles.authorization}>
-        <p className={styles.authorization__text}>{resetMessage}</p>
+        <p className={styles.authorization__text}>{data}</p>
         <Link className={styles.authorization__agreement_secondLink} href={'/auth/'}>
           Comeback to auth page
         </Link>
@@ -55,7 +59,7 @@ const ForgotPage = () => {
     <div className={styles.authorization}>
       <h2 className={styles.authorization__title}>Reset your password</h2>
       <p className={styles.authorization__text}>Please,enter your email to reset your password!</p>
-        <p className={styles.authorization__error}>{error}</p>
+      <p className={styles.authorization__error}>{forgotError?.data.message}</p>
       <form onSubmit={formik.handleSubmit} className={styles.form}>
         <Input
           name='email'

@@ -1,11 +1,9 @@
 'use client';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import { createNewTask, editTask, getAllTasks } from '../../api/TodoProvider';
 import styles from './task-list.module.scss';
 import authStyles from '../../components/authorizedPage/authorized.module.scss';
 import { setPrevCreateTask } from '../../lib/slice';
-import { FadeLoader } from 'react-spinners';
 import TodoInputComponent from '../todoInputComponent/TodoInputComponent';
 import { createTaskSchema } from '../validation/todoValidation';
 import { createTaskFields, editTaskFields } from '../todoFormFunctions/todoFormFields';
@@ -13,6 +11,8 @@ import { CreateTaskFields } from '../../interfaces/form.interface';
 import TaskItem from '../taskItem/TaskItem';
 import { useGetInfo } from '../../hooks/useGetInfo';
 import { useRouter } from 'next/navigation';
+import { useCreateNewTaskMutation, useEditTaskMutation, useGetAllTasksQuery } from '../../lib/userApi';
+import { FadeLoader } from 'react-spinners';
 
 interface TaskListProps {
   id: string;
@@ -20,27 +20,31 @@ interface TaskListProps {
 
 const TaskList: FC<TaskListProps> = ({id}) => {
     const dispatch = useAppDispatch();
+    const [taskList, setTaskList] = useState<any[]>([]);
+    const {data, isLoading: isGetTaskLoading} = useGetAllTasksQuery(id);
+    const [createNewTask, {isLoading: isTaskLoading}] = useCreateNewTaskMutation();
+    const [editTask, {isLoading: isEditTaskLoading}] = useEditTaskMutation();
+    
     const router = useRouter();
     const {
-      taskList,
-      isLoading,
       isCreateTask,
       currentTaskId,
       isTask,
       isEditTask,
       isAuth
     } = useAppSelector(
-      state => state);
+      state => state.auth);
     
-    console.log(id);
     const onSubmitCreateTask = async(values: CreateTaskFields) => {
       if (isTask) {
-        await dispatch(createNewTask(
-          {...values, parentId: Number(currentTaskId)}));
+        await createNewTask(
+          {...values, todoId: Number(id), parentId: Number(currentTaskId)});
       } else {
-        await dispatch(createNewTask({...values}));
+        await createNewTask({...values, todoId: Number(id)});
       }
     };
+    
+    const isLoading = isGetTaskLoading || isTaskLoading || isEditTaskLoading;
     
     const onSubmitEditTask = async(values: any) => {
       const currentTask = taskList.find(task => task.id === currentTaskId)
@@ -51,18 +55,16 @@ const TaskList: FC<TaskListProps> = ({id}) => {
         status: values.status !== '' ? values.status : currentTask.status,
         id: Number(currentTaskId),
       };
-      await dispatch(editTask({...cleanedValues, todoId: id}));
-    };
-    
-    const getAllTasksByName = async() => {
-      await dispatch(getAllTasks(id));
+      await editTask({...cleanedValues});
     };
     
     useGetInfo();
     
     useEffect(() => {
-      getAllTasksByName();
-    }, []);
+      if (data) {
+        setTaskList(data);
+      }
+    }, [data]);
     
     if (isLoading) {
       return (

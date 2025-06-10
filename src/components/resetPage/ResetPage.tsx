@@ -9,14 +9,18 @@ import { getIsAuth } from '../../lib/slice';
 import { FadeLoader } from 'react-spinners';
 import { resetSchema } from '../validation/validation';
 import { ResetFormFields } from '../../interfaces/form.interface';
-import { resetPassword } from '../../api/AuthProvider';
 import Link from 'next/link';
+import { useResetPasswordMutation } from '../../lib/authApi';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const ResetPage = () => {
   const router = useRouter();
   const params = useSearchParams();
   const [resetToken, setResetToken] = useState('');
-  const {error, isLoading, resetMessage, isAuth} = useAppSelector((state) => state);
+  const {isAuth} = useAppSelector((state) => state.auth);
+  const [resetPassword, {data, isLoading, error}] = useResetPasswordMutation();
+  const resetError = error as FetchBaseQueryError & {data: {message: string; code: string}};
+  
   const dispatch = useAppDispatch();
   const formik = useFormik<ResetFormFields>({
     initialValues: {
@@ -24,7 +28,7 @@ const ResetPage = () => {
     },
     validationSchema: resetSchema,
     onSubmit: async(values) => {
-      await dispatch(resetPassword({token: resetToken, password: values.password}));
+      await resetPassword({token: resetToken, password: values.password});
     },
   });
   
@@ -40,10 +44,10 @@ const ResetPage = () => {
     }
   }, []);
   
-  if (resetMessage) {
+  if (data) {
     return (
       <div className={styles.authorization}>
-        <p className={styles.authorization__text}>{resetMessage}</p>
+        <p className={styles.authorization__text}>{data}</p>
         <Link className={styles.authorization__agreement_secondLink} href={'/auth/'}>
           Comeback to auth page
         </Link>
@@ -62,7 +66,7 @@ const ResetPage = () => {
     <div className={styles.authorization}>
       <h2 className={styles.authorization__title}>Reset your password</h2>
       <p className={styles.authorization__text}>Please,enter your new password</p>
-        <p className={styles.authorization__error}>{error}</p>
+      <p className={styles.authorization__error}>{resetError?.data.message}</p>
       <form onSubmit={formik.handleSubmit} className={styles.form}>
         <Input
           name='password'

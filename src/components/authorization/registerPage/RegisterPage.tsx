@@ -1,22 +1,21 @@
 'use client';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useFormik } from 'formik';
 import styles from '../authorization.module.scss';
 import Link from 'next/link';
 import { registrationSchema } from '../../validation/validation';
 import { RegisterFormFields } from '../../../interfaces/form.interface';
 import Input from '../../input/Input';
-import { register } from '../../../api/AuthProvider';
-import { useRouter } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
-import { getIsAuth } from '../../../lib/slice';
 import { FadeLoader } from 'react-spinners';
+import { useRegisterMutation } from '../../../lib/userApi';
+import { useRouterChange } from '../../../hooks/useRouterChange';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 
 const RegisterPage = () => {
-  const router = useRouter();
-  const {error, isLoading, isAuth} = useAppSelector(state => state);
-  const dispatch = useAppDispatch();
+  const [register, {isSuccess, isLoading, error}] = useRegisterMutation();
+  const registerError = error as FetchBaseQueryError & {data: {message: string; code: string}};
+  
   const formik = useFormik<RegisterFormFields>({
     initialValues: {
       username: '',
@@ -25,19 +24,11 @@ const RegisterPage = () => {
     },
     validationSchema: registrationSchema,
     onSubmit: async(values: RegisterFormFields) => {
-      const response = await dispatch(register({...values}));
-      if (response.payload.access_token) {
-        router.push('/authorized');
-      }
+      await register({...values});
     },
   });
   
-  useEffect(() => {
-    dispatch(getIsAuth());
-    if (isAuth) {
-      router.push('/authorized');
-    }
-  }, []);
+  useRouterChange(isSuccess);
   
   if (isLoading) {
     return (
@@ -51,7 +42,7 @@ const RegisterPage = () => {
     <div className={styles.authorization}>
       <h2 className={styles.authorization__title}>Sign Up</h2>
       <p className={styles.authorization__text}>Please,enter your future profile data</p>
-      <p className={styles.authorization__error}>{error}</p>
+      <p className={styles.authorization__error}>{registerError?.data.message}</p>
       <form onSubmit={formik.handleSubmit} className={styles.form}>
         <Input
           name='username'

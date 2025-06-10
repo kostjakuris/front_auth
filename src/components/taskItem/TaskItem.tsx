@@ -2,11 +2,11 @@
 import React, { FC, useState } from 'react';
 import styles from '../taskList/task-list.module.scss';
 import { setPrevCreateSubTask, setPrevEditTask } from '../../lib/slice';
-import { deleteTask } from '../../api/TodoProvider';
-import { useAppDispatch, useAppSelector } from '../../lib/hooks';
+import { useAppDispatch } from '../../lib/hooks';
 import { Create } from '../../../public/images/Create';
 import { Edit } from '../../../public/images/Edit';
 import { Delete } from '../../../public/images/Delete';
+import { useDeleteTaskMutation } from '../../lib/userApi';
 
 interface TaskItemProps {
   id: number;
@@ -18,8 +18,8 @@ interface TaskItemProps {
 
 const TaskItem: FC<TaskItemProps> = ({id, name, status, description, subTasks}) => {
   const dispatch = useAppDispatch();
-  const {currentTodoName} = useAppSelector(state => state);
-  const correctSubTasks = subTasks.map(element => element);
+  const [deleteTask] = useDeleteTaskMutation();
+  const correctSubTasks = subTasks?.map(element => element);
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
   
@@ -51,7 +51,7 @@ const TaskItem: FC<TaskItemProps> = ({id, name, status, description, subTasks}) 
               <Edit />
             </button>
             <button className={'cursor-pointer h-10'}
-              onClick={async() => await dispatch(deleteTask({id, todoName: String(currentTodoName)}))}>
+              onClick={async() => await deleteTask(id)}>
               <Delete />
             </button>
             <button className={styles.task__button} onClick={openQuestion}>
@@ -62,7 +62,7 @@ const TaskItem: FC<TaskItemProps> = ({id, name, status, description, subTasks}) 
         <p className={`${styles.task__text} text-left w-full px-5 mb-8`}>Description: {description}</p>
       </div>
       {
-        correctSubTasks.length > 0 ?
+        correctSubTasks?.length > 0 ?
           correctSubTasks.map((element: any) =>
             <div key={element.id} className={`${styles.task} ${isActive ? styles.task__active : ''}
             ${!isOpen ? styles.task__disabled : ''}`}>
