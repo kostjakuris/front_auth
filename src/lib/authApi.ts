@@ -13,7 +13,7 @@ export const authApi = createApi({
       }
       return headers;
     },
-    credentials: 'include'
+    credentials: 'include',
   }),
   endpoints: (build) => ({
     logout: build.query({
@@ -37,13 +37,7 @@ export const authApi = createApi({
         responseHandler: 'text'
       }),
     }),
-    regenerateToken: build.mutation({
-      query: (refreshToken: string) => ({
-        url: '/auth/regenerate-token',
-        method: 'POST',
-        body: {refreshToken}
-      }),
-    }),
+    
   }),
 });
 
@@ -51,5 +45,4 @@ export const {
   useLazyLogoutQuery,
   useResetPasswordMutation,
   useSendResetLinkMutation,
-  useRegenerateTokenMutation
 } = authApi;

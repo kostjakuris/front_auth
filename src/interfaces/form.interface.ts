@@ -30,6 +30,7 @@ export interface CreateTaskFields {
   name: string;
   description: string;
   todoId: number;
+  position: number;
   parentId?: number;
 }
 
@@ -42,6 +43,7 @@ export interface EditTaskFields {
   name?: string;
   description?: string;
   status?: string;
+  position: number;
   id: number;
 }
 

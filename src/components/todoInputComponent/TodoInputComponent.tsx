@@ -65,7 +65,7 @@ const TodoInputComponent: FC<TodoInputProps> = ({fields, validation, isVisible, 
           </div>
         ))}
         <div className={'flex items-center justify-space-between'}>
-          <button className={styles.form__cancel} onClick={() => dispatch(closeTodoForm())}>
+          <button className={styles.form__cancel} type='reset' onClick={() => dispatch(closeTodoForm())}>
             Cancel
           </button>
           <button className={styles.form__submit} type='submit'>Submit</button>

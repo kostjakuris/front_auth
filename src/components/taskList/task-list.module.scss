@@ -1,13 +1,16 @@
 .task {
   transition: transform 0.3s ease-out;
   transform: translateY(-100%);
-  margin-left: 50px;
+  margin: 0 0 30px 50px;
   display: flex;
   width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
+  &:last-child {
+    margin-bottom: 0;
+  }
 
   &__active {
     transform: translateY(0);
@@ -16,6 +19,7 @@
   &__disabled {
     display: none;
   }
+
   &__borders {
     max-width: 800px;
     width: 100%;
@@ -66,9 +70,16 @@
   }
 
   &__container {
+    border: 1px solid white;
+    border-radius: 15px;
     max-width: 800px;
     width: 100%;
     height: 100%;
+    margin-bottom: 30px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   &__content {
@@ -95,6 +106,11 @@
     background: #9890e3;
     color: white;
     border-radius: 25px;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
   }
 }
 

@@ -60,7 +60,7 @@ const appSlice = createSlice({
     },
     setPrevEditTask: (state, action) => {
       if (!state.isEditTask) {
-        state.isEditTask = !state.isCreateTask;
+        state.isEditTask = !state.isEditTask;
       }
       state.isEditTodo = false;
       state.isCreateTask = false;

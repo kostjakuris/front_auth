@@ -1,5 +1,5 @@
 'use client';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import styles from './task-list.module.scss';
 import authStyles from '../../components/authorizedPage/authorized.module.scss';
@@ -11,8 +11,16 @@ import { CreateTaskFields } from '../../interfaces/form.interface';
 import TaskItem from '../taskItem/TaskItem';
 import { useGetInfo } from '../../hooks/useGetInfo';
 import { useRouter } from 'next/navigation';
-import { useCreateNewTaskMutation, useEditTaskMutation, useGetAllTasksQuery } from '../../lib/userApi';
+import {
+  useCreateNewTaskMutation,
+  useDeleteTaskMutation,
+  useEditTaskMutation,
+  useGetAllTasksQuery
+} from '../../lib/userApi';
 import { FadeLoader } from 'react-spinners';
+import update from 'immutability-helper';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 
 interface TaskListProps {
   id: string;
@@ -21,7 +29,8 @@ interface TaskListProps {
 const TaskList: FC<TaskListProps> = ({id}) => {
     const dispatch = useAppDispatch();
     const [taskList, setTaskList] = useState<any[]>([]);
-    const {data, isLoading: isGetTaskLoading} = useGetAllTasksQuery(id);
+    const {data: allTasksData, isLoading: isGetTaskLoading} = useGetAllTasksQuery(id);
+    const [_, {isLoading: isDeleteLoading}] = useDeleteTaskMutation();
     const [createNewTask, {isLoading: isTaskLoading}] = useCreateNewTaskMutation();
     const [editTask, {isLoading: isEditTaskLoading}] = useEditTaskMutation();
     
@@ -35,36 +44,59 @@ const TaskList: FC<TaskListProps> = ({id}) => {
     } = useAppSelector(
       state => state.auth);
     
+    const currentTask = taskList.find(task => task.id === currentTaskId)
+      || taskList.flatMap(task => task.subTasks || []).find(sub => sub.id === currentTaskId);
+    
     const onSubmitCreateTask = async(values: CreateTaskFields) => {
       if (isTask) {
         await createNewTask(
-          {...values, todoId: Number(id), parentId: Number(currentTaskId)});
+          {
+            ...values,
+            todoId: Number(id),
+            position: currentTask.subTasks.length === 0 ? 1 : currentTask.subTasks.length + 1,
+            parentId: Number(currentTaskId)
+          });
       } else {
-        await createNewTask({...values, todoId: Number(id)});
+        await createNewTask({
+          ...values,
+          todoId: Number(id),
+          position: taskList.length === 0 ? 1 : taskList.length + 1
+        });
       }
     };
     
-    const isLoading = isGetTaskLoading || isTaskLoading || isEditTaskLoading;
     
+    const isLoading = isGetTaskLoading || isTaskLoading || isEditTaskLoading || isDeleteLoading;
     const onSubmitEditTask = async(values: any) => {
-      const currentTask = taskList.find(task => task.id === currentTaskId)
-        || taskList.flatMap(task => task.subTasks || []).find(sub => sub.id === currentTaskId);
       const cleanedValues = {
         name: values.name !== '' ? values.name : currentTask.name,
         description: values.description !== '' ? values.description : currentTask.description,
         status: values.status !== '' ? values.status : currentTask.status,
+        position: currentTask.position,
         id: Number(currentTaskId),
       };
       await editTask({...cleanedValues});
     };
     
+    const moveTask = useCallback((dragIndex: number, hoverIndex: number) => {
+      setTaskList((prevTasks: any[]) =>
+        update(prevTasks, {
+          $splice: [
+            [dragIndex, 1],
+            [hoverIndex, 0, prevTasks[dragIndex]],
+          ],
+        }),
+      );
+    }, []);
+    
     useGetInfo();
     
     useEffect(() => {
-      if (data) {
-        setTaskList(data);
+      if (allTasksData) {
+        setTaskList(allTasksData);
       }
-    }, [data]);
+    }, [allTasksData]);
+    
     
     if (isLoading) {
       return (
@@ -105,21 +137,28 @@ const TaskList: FC<TaskListProps> = ({id}) => {
           fields={editTaskFields}
           onFormSubmit={onSubmitEditTask}
         />
-        {
-          taskList ?
-            taskList.map((element) =>
-              <div key={element.id} className={styles.task__borders}>
-                <TaskItem
-                  id={element.id}
-                  name={element.name}
-                  status={element.status}
-                  description={element.description}
-                  subTasks={element.subTasks}
-                />
-              </div>
-            )
-            : null
-        }
+        <DndProvider backend={HTML5Backend}>
+          {
+            taskList ?
+              taskList.map((element, index) =>
+                <div key={element.id}
+                  className={styles.task__borders}>
+                  <TaskItem
+                    parentId={null}
+                    taskList={taskList}
+                    id={element.id}
+                    index={index}
+                    name={element.name}
+                    status={element.status}
+                    description={element.description}
+                    subTasks={element.subTasks}
+                    moveTask={moveTask}
+                  />
+                </div>
+              )
+              : null
+          }
+        </DndProvider>
       </div>
     );
   }

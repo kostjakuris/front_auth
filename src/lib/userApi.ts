@@ -39,6 +39,14 @@ export const userApi = createApi({
       }),
       invalidatesTags: ['Todo']
     }),
+    regenerateToken: build.mutation({
+      query: (refreshToken: string) => ({
+        url: '/auth/regenerate-token',
+        method: 'POST',
+        body: {refreshToken}
+      }),
+      invalidatesTags: ['User']
+    }),
     getUserInfo: build.query({
       query: () => ({
         url: '/auth/user',
@@ -55,7 +63,7 @@ export const userApi = createApi({
       query: (id: string) => ({
         url: `/task/all?id=${id}`,
       }),
-      providesTags: ['Task']
+      providesTags: ['User', 'Task']
     }),
     createNewTodo: build.mutation({
       query: (name: string) => ({
@@ -66,10 +74,10 @@ export const userApi = createApi({
       invalidatesTags: ['Todo']
     }),
     createNewTask: build.mutation({
-      query: ({name, description, parentId, todoId}: CreateTaskFields) => ({
+      query: ({name, description, parentId, position, todoId}: CreateTaskFields) => ({
         url: `/task/create`,
         method: 'POST',
-        body: {name, description, parentId, id: todoId}
+        body: {name, description, parentId, position, id: todoId}
       }),
       invalidatesTags: ['Task']
     }),
@@ -90,10 +98,18 @@ export const userApi = createApi({
       invalidatesTags: ['Todo']
     }),
     editTask: build.mutation({
-      query: ({id, name, description, status}: EditTaskFields) => ({
+      query: ({id, name, description, position, status}: EditTaskFields) => ({
         url: `/task/edit`,
         method: 'PATCH',
-        body: {id, name, description, status}
+        body: {id, name, description, position, status}
+      }),
+      invalidatesTags: ['Task']
+    }),
+    editTaskPosition: build.mutation({
+      query: (list: any) => ({
+        url: `/task/edit-position`,
+        method: 'PATCH',
+        body: list
       }),
       invalidatesTags: ['Task']
     }),
@@ -119,4 +135,6 @@ export const {
   useDeleteTaskMutation,
   useEditTodoMutation,
   useEditTaskMutation,
+  useRegenerateTokenMutation,
+  useEditTaskPositionMutation
 } = userApi;
