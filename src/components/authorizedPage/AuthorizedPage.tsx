@@ -14,19 +14,20 @@ import { editTodoSchema } from '../validation/todoValidation';
 import { editTodoFields } from '../todoFormFunctions/todoFormFields';
 import { useGetInfo } from '../../hooks/useGetInfo';
 import { useLazyLogoutQuery } from '../../lib/authApi';
-import { getIsAuth } from '../../lib/slice';
 import { useCreateNewTodoMutation, useEditTodoMutation, useGetUserInfoQuery } from '../../lib/userApi';
+import Chat from '../components/chat/Chat';
+import { setUserName } from '../../lib/slice';
 
 const AuthorizedPage = () => {
     const router = useRouter();
-    const dispatch = useAppDispatch();
     const [createNewTodo, {
       isLoading: isCreateTodoLoading,
     }] = useCreateNewTodoMutation();
     
     const [editTodo, {isLoading: isEditTodoLoading}] = useEditTodoMutation();
     const [email, setEmail] = useState<string>('');
-    const [userName, setUserName] = useState<string>('');
+    const dispatch = useAppDispatch();
+    const {userName} = useAppSelector((state) => state.auth);
     
     const [isCreateList, setIsCreateList] = useState(false);
     const {
@@ -36,7 +37,7 @@ const AuthorizedPage = () => {
     } = useAppSelector(
       (state) => state.auth);
     
-    const [logout, {isLoading: isLogoutLoading}] = useLazyLogoutQuery();
+    const [_, {isLoading: isLogoutLoading}] = useLazyLogoutQuery();
     const {data: userData, isLoading: isUserInfoLoading} = useGetUserInfoQuery('');
     const isLoading = isLogoutLoading || isUserInfoLoading || isCreateTodoLoading ||
       isEditTodoLoading;
@@ -61,7 +62,7 @@ const AuthorizedPage = () => {
     useEffect(() => {
       if (userData) {
         setEmail(userData.email);
-        setUserName(userData.username);
+        dispatch(setUserName(userData.username));
       }
     }, [userData]);
     
@@ -88,16 +89,10 @@ const AuthorizedPage = () => {
       );
     }
     
-    const logoutFn = async() => {
-      await logout('');
-      localStorage.setItem('isAuth', 'false');
-      dispatch(getIsAuth());
-      router.push('/auth');
-    };
     
     return (
       <div className={styles.authorized__wrapper}>
-        <button className={styles.authorized__button} onClick={logoutFn}>Log out</button>
+        <Chat />
         <div className={styles.authorized}>
           <p className={styles.authorized__text}>userName: {userName}</p>
           <p className={styles.authorized__text}>email: {email}</p>

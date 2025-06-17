@@ -7,16 +7,27 @@ interface InputProps {
   type: string;
   value: string;
   onChangeFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlurFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  isTouched: boolean | undefined;
-  error: string | undefined;
+  onBlurFn?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  class_name?: string;
+  isTouched?: boolean | undefined;
+  error?: string | undefined;
 }
 
-const Input: FC<InputProps> = ({name, placeholder, type, value, onChangeFn, onBlurFn, isTouched, error}) => {
+const Input: FC<InputProps> = ({
+  name,
+  placeholder,
+  type,
+  value,
+  onChangeFn,
+  onBlurFn,
+  isTouched,
+  class_name,
+  error
+}) => {
   return (
-    <div className={styles.form__row}>
+    <div>
       <input
-        className={styles.form__field}
+        className={class_name ? class_name : styles.form__field}
         name={name}
         placeholder={placeholder}
         type={type}

@@ -12,6 +12,8 @@ export const useRouterChange = (isSuccess: boolean) => {
   const checkIsAuth = useCallback(() => {
     if (isAuth) {
       router.push('/authorized');
+    } else {
+      router.push('/auth');
     }
   }, [isAuth]);
   
