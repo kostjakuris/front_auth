@@ -36,9 +36,21 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
     setChatMessage('');
   };
   
+  
   useEffect(() => {
     if (messageData) {
-      setMessages(messageData);
+      const modifiedData = messageData.map((element: any) => ({
+        ...element,
+        updatedAt: new Date(element.updatedAt).toLocaleString('en-US', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: false,
+        }).replace('at', ''),
+      }));
+      setMessages(modifiedData);
     }
   }, [messageData, currentRoomId]);
   
@@ -78,6 +90,7 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
                     ' pl-5 pb-5' +
                     ' w-[400px] mx-auto'}>
                   <p className={`${styles.authorized__chats_nickname}`}>{element.username}</p>
+                  <p className={`${styles.authorized__chats_nickname}`}>{element.updatedAt}</p>
                   <p className={styles.authorized__text}>{element.message}</p>
                 </div>
               ))

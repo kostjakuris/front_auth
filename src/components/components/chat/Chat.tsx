@@ -50,7 +50,6 @@ const Chat = () => {
     setCurrentRoomId(String(id));
     setCurrentRoom(name);
     socket.current?.emit('joinRoom', name);
-    setIsRooms(false);
     setIsChat(true);
   };
   
@@ -103,23 +102,34 @@ const Chat = () => {
             Create
           </button>
         </form>
-        <p className={`${styles.authorized__chats_title} mt-5`}>All chats</p>
-        {
-          rooms.map((element: any) => (
-            <div key={element.id} className={!isRooms ? 'hidden' : styles.authorized__chats_rooms}
-              onClick={() => openRoom(element.id, element.name)}>
-              <p className={`${styles.authorized__chats_title} ml-5 mt-5`}>{element.name}</p>
-            </div>
-          ))
-        }
       </div>
-      <ChatRoom
-        currentRoom={currentRoom}
-        currentRoomId={currentRoomId}
-        isChat={isChat}
-        closeRoomFn={closeRoom}
-        socket={socket}
-      />
+      <div className={!isRooms ? 'hidden' : styles.authorized__chat_container}>
+        <div className={styles.authorized__chat_wrapper}>
+          <div>
+            <p className={`${styles.authorized__chats_title} text-center my-5 w-[30%]`}>All chats</p>
+            <div></div>
+          </div>
+          <div className={'flex justify-between'}>
+            <div className={'flex flex-col items-center'}>
+              {
+                rooms.map((element: any) => (
+                  <div key={element.id} className={styles.authorized__chats_rooms}
+                    onClick={() => openRoom(element.id, element.name)}>
+                    <p className={`${styles.authorized__chats_title} ml-5 mt-5`}>{element.name}</p>
+                  </div>
+                ))
+              }
+            </div>
+            <ChatRoom
+              currentRoom={currentRoom}
+              currentRoomId={currentRoomId}
+              isChat={isChat}
+              closeRoomFn={closeRoom}
+              socket={socket}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
