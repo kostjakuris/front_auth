@@ -14,7 +14,7 @@ export const roomApi = createApi({
     },
     credentials: 'include',
   }),
-  tagTypes: ['Room'],
+  tagTypes: ['Room', 'JoinRoom'],
   endpoints: (build) => ({
     getAllRooms: build.query({
       query: () => ({
@@ -37,12 +37,19 @@ export const roomApi = createApi({
       invalidatesTags: ['Room']
     }),
     joinRoom: build.mutation({
-      query: (name: string) => ({
+      query: (id: number) => ({
         url: '/room/join',
         method: 'POST',
-        body: {name},
+        body: {id},
       }),
-      invalidatesTags: ['Room']
+      invalidatesTags: ['Room', 'JoinRoom']
+    }),
+    isUserJoined: build.query({
+      query: (id: string) => ({
+        url: `/room/check?id=${id}`,
+        responseHandler: 'text'
+      }),
+      providesTags: ['Room', 'JoinRoom']
     }),
   }),
 });
@@ -51,5 +58,6 @@ export const {
   useLazyGetAllRoomsQuery,
   useCreateNewRoomMutation,
   useGetAllMessagesQuery,
-  useJoinRoomMutation
+  useJoinRoomMutation,
+  useIsUserJoinedQuery
 } = roomApi;

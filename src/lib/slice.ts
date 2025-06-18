@@ -92,6 +92,6 @@ export const {
   setPrevCreateTask,
   setPrevCreateSubTask,
   closeTodoForm,
-  setUserName
+  setUserName,
 } = appSlice.actions;
 export default appSlice.reducer;
