@@ -109,7 +109,10 @@ const Chat = () => {
             <div className={'flex flex-col items-center'}>
               {
                 rooms.map((element: any) => (
-                  <div key={element.id} className={styles.authorized__chats_rooms}
+                  <div key={element.id}
+                    className={currentRoomId === String(element.id) ?
+                      `${styles.authorized__chats_rooms} bg-gray-400` :
+                      styles.authorized__chats_rooms}
                     onClick={() => openRoom(element.id, element.name)}>
                     <p className={`${styles.authorized__chats_title} ml-5 mt-5`}>{element.name}</p>
                   </div>

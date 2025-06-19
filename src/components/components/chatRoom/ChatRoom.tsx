@@ -4,10 +4,18 @@ import Back from '../../../../public/images/Back';
 import Input from '../../input/Input';
 import { io, Socket } from 'socket.io-client';
 import { useAppSelector } from '../../../lib/hooks';
-import { useGetAllMessagesQuery, useIsUserJoinedQuery, useJoinRoomMutation } from '../../../lib/roomApi';
+import {
+  useDeleteMessageMutation,
+  useGetAllMessagesQuery,
+  useIsUserJoinedQuery,
+  useJoinRoomMutation
+} from '../../../lib/roomApi';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { FadeLoader } from 'react-spinners';
 import Send from '../../../../public/images/Send';
+import { Edit } from '../../../../public/images/Edit';
+import { Delete } from '../../../../public/images/Delete';
+import Copy from '../../../../public/images/Copy';
 
 interface ChatRoomProps {
   currentRoom: string;
@@ -22,10 +30,17 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
   const [messages, setMessages] = useState<any[]>([]);
   const {userName} = useAppSelector((state) => state.auth);
   const [isJoinRoom, setIsJoinRoom] = useState(false);
-  const [isContextMenu, setIsContextMenu] = useState(false);
+  const [contextMenu, setContextMenu] = useState({
+    visible: false,
+    x: 0,
+    y: 0,
+    messageText: '',
+    messageId: ''
+  });
   const {data: messageData, isLoading} = useGetAllMessagesQuery(currentRoomId);
   const {data: isUserJoin} = useIsUserJoinedQuery(currentRoomId);
   const [joinRoom, {data: joinData}] = useJoinRoomMutation();
+  const [deleteMessage] = useDeleteMessageMutation();
   const {userId} = useAppSelector(state => state.auth);
   
   const submitMessage = (event: any) => {
@@ -48,9 +63,20 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
     setChatMessage('');
   };
   
-  const handleContextMenu = (event: any) => {
+  const editMessage = () => {
+    setChatMessage(contextMenu.messageText);
+  };
+  
+  const handleContextMenu = (event: any, message: string, messageId: string) => {
     event.preventDefault();
-    setIsContextMenu((prev) => prev);
+    event.stopPropagation();
+    setContextMenu({
+      visible: true,
+      x: event.pageX,
+      y: event.pageY,
+      messageText: message,
+      messageId
+    });
   };
   
   useEffect(() => {
@@ -87,7 +113,12 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
   }, []);
   
   return (
-    <div onClick={() => setIsContextMenu(false)} className={!isChat ? 'hidden' : styles.authorized__chat}>
+    <div
+      onClick={() => contextMenu.visible &&
+        setContextMenu({visible: false, x: 0, y: 0, messageText: '', messageId: ''})}
+      onContextMenu={() => contextMenu.visible &&
+        setContextMenu({visible: false, x: 0, y: 0, messageText: '', messageId: ''})}
+      className={!isChat ? 'hidden' : styles.authorized__chat}>
       {
         isLoading ?
           <div className={'h-50 flex items-center justify-center'}>
@@ -101,12 +132,12 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
             </div>
             {
               messages.map((element) => (
-                <div key={element.keyName || element._id}
+                <div key={element._id}
                   className={userId === Number(element.userId) ? styles.authorized__myMessage_wrapper :
                     styles.authorized__message_wrapper}>
                   <p className={`${styles.authorized__chats_date}`}>{element.updatedAt}</p>
                   <div
-                    onContextMenu={(event) => handleContextMenu(event)}
+                    onContextMenu={(event) => handleContextMenu(event, element.message, element._id)}
                     className={userId === Number(element.userId) ?
                       styles.authorized__chat_myMessage : styles.authorized__chat_message}>
                     <p className={`${styles.authorized__chats_nickname}
@@ -118,8 +149,28 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
                 </div>
               ))
             }
-            <div className={styles.authorized__chat_menu}>
-            
+            <div
+              className={!contextMenu.visible ? 'hidden' : styles.authorized__chat_menu}
+              style={{
+                position: 'absolute',
+                top: contextMenu.y,
+                left: contextMenu.x,
+              }}>
+              <button onClick={editMessage} className={styles.authorized__chat_btn}>
+                <Edit class_name={'w-[20px] h-[20px] mr-2 mb-0.5'} />
+                Edit
+              </button>
+              <button
+                onClick={async() => await deleteMessage(contextMenu.messageId)}
+                className={styles.authorized__chat_btn}>
+                <Delete class_name={'w-[20px] h-[20px] mr-2 mb-0.5'} />
+                Delete
+              </button>
+              <button onClick={() => navigator.clipboard.writeText(contextMenu.messageText)}
+                className={styles.authorized__chat_btn}>
+                <Copy class_name={'mr-2 mb-0.5'} />
+                Copy text
+              </button>
             </div>
             {
               isJoinRoom ?
@@ -133,7 +184,10 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
                     onChangeFn={(event) => setChatMessage(event.target.value)}
                     class_name={styles.authorized__chat_input}
                   />
-                  <button className={styles.authorized__send} type='submit'>
+                  <button
+                    disabled={chatMessage.length === 0}
+                    className={styles.authorized__send}
+                    type='submit'>
                     <Send />
                   </button>
                 </form>

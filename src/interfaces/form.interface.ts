@@ -51,3 +51,8 @@ export interface DeleteTaskFields {
   id: number;
   todoName: string;
 }
+
+export interface EditMessageFields {
+  message: string;
+  id: string;
+}
