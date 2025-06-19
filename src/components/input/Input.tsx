@@ -25,7 +25,7 @@ const Input: FC<InputProps> = ({
   error
 }) => {
   return (
-    <div>
+    <>
       <input
         className={class_name ? class_name : styles.form__field}
         name={name}
@@ -43,7 +43,7 @@ const Input: FC<InputProps> = ({
       >
         {error}
       </div>
-    </div>
+    </>
   );
 };
 

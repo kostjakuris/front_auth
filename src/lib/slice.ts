@@ -9,6 +9,7 @@ export interface AppState {
   isEditTodo: boolean;
   userName: string | null;
   currentTodoId: number | null;
+  userId: number | null;
   currentTaskId: number | null;
   currentTodoName: string | null;
 }
@@ -21,6 +22,7 @@ const initialState: AppState = {
   isEditTodo: false,
   currentTodoId: null,
   currentTaskId: null,
+  userId: null,
   currentTodoName: null,
   userName: null,
 };
@@ -39,8 +41,9 @@ const appSlice = createSlice({
       state.isEditTask = false;
       state.isEditTodo = false;
     },
-    setUserName: (state, action) => {
-      state.userName = action.payload;
+    setUserInfo: (state, action) => {
+      state.userName = action.payload.userName;
+      state.userId = action.payload.userId;
     },
     setPrevCreateTask: (state) => {
       if (!state.isCreateTask) {
@@ -92,6 +95,6 @@ export const {
   setPrevCreateTask,
   setPrevCreateSubTask,
   closeTodoForm,
-  setUserName,
+  setUserInfo,
 } = appSlice.actions;
 export default appSlice.reducer;

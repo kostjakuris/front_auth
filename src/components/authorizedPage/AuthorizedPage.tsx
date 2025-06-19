@@ -16,7 +16,7 @@ import { useGetInfo } from '../../hooks/useGetInfo';
 import { useLazyLogoutQuery } from '../../lib/authApi';
 import { useCreateNewTodoMutation, useEditTodoMutation, useGetUserInfoQuery } from '../../lib/userApi';
 import Chat from '../components/chat/Chat';
-import { setUserName } from '../../lib/slice';
+import { setUserInfo } from '../../lib/slice';
 
 const AuthorizedPage = () => {
     const router = useRouter();
@@ -62,7 +62,7 @@ const AuthorizedPage = () => {
     useEffect(() => {
       if (userData) {
         setEmail(userData.email);
-        dispatch(setUserName(userData.username));
+        dispatch(setUserInfo({userName: userData.username, userId: userData.userId}));
       }
     }, [userData]);
     
@@ -88,7 +88,6 @@ const AuthorizedPage = () => {
         </div>
       );
     }
-    
     
     return (
       <div className={styles.authorized__wrapper}>

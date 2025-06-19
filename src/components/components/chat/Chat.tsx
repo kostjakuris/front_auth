@@ -105,10 +105,6 @@ const Chat = () => {
       </div>
       <div className={!isRooms ? 'hidden' : styles.authorized__chat_container}>
         <div className={styles.authorized__chat_wrapper}>
-          <div>
-            <p className={`${styles.authorized__chats_title} text-center my-5 w-[30%]`}>All chats</p>
-            <div></div>
-          </div>
           <div className={'flex justify-between'}>
             <div className={'flex flex-col items-center'}>
               {

@@ -7,6 +7,7 @@ import { useAppSelector } from '../../../lib/hooks';
 import { useGetAllMessagesQuery, useIsUserJoinedQuery, useJoinRoomMutation } from '../../../lib/roomApi';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { FadeLoader } from 'react-spinners';
+import Send from '../../../../public/images/Send';
 
 interface ChatRoomProps {
   currentRoom: string;
@@ -21,21 +22,36 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
   const [messages, setMessages] = useState<any[]>([]);
   const {userName} = useAppSelector((state) => state.auth);
   const [isJoinRoom, setIsJoinRoom] = useState(false);
+  const [isContextMenu, setIsContextMenu] = useState(false);
   const {data: messageData, isLoading} = useGetAllMessagesQuery(currentRoomId);
   const {data: isUserJoin} = useIsUserJoinedQuery(currentRoomId);
   const [joinRoom, {data: joinData}] = useJoinRoomMutation();
+  const {userId} = useAppSelector(state => state.auth);
   
   const submitMessage = (event: any) => {
     event.preventDefault();
     socket.current?.emit('message', {
+      userId,
       roomName: currentRoom,
       roomId: Number(currentRoomId),
       content: chatMessage,
-      username: userName
+      username: userName,
+      updatedAt: new Date().toLocaleString('en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: false,
+      }).replace('at', '')
     });
     setChatMessage('');
   };
   
+  const handleContextMenu = (event: any) => {
+    event.preventDefault();
+    setIsContextMenu((prev) => prev);
+  };
   
   useEffect(() => {
     if (messageData) {
@@ -71,7 +87,7 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
   }, []);
   
   return (
-    <div className={!isChat ? 'hidden' : styles.authorized__chat}>
+    <div onClick={() => setIsContextMenu(false)} className={!isChat ? 'hidden' : styles.authorized__chat}>
       {
         isLoading ?
           <div className={'h-50 flex items-center justify-center'}>
@@ -86,18 +102,29 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
             {
               messages.map((element) => (
                 <div key={element.keyName || element._id}
-                  className={'my-5 border-1 border-white rounded-[10px]' +
-                    ' pl-5 pb-5' +
-                    ' w-[400px] mx-auto'}>
-                  <p className={`${styles.authorized__chats_nickname}`}>{element.username}</p>
-                  <p className={`${styles.authorized__chats_nickname}`}>{element.updatedAt}</p>
-                  <p className={styles.authorized__text}>{element.message}</p>
+                  className={userId === Number(element.userId) ? styles.authorized__myMessage_wrapper :
+                    styles.authorized__message_wrapper}>
+                  <p className={`${styles.authorized__chats_date}`}>{element.updatedAt}</p>
+                  <div
+                    onContextMenu={(event) => handleContextMenu(event)}
+                    className={userId === Number(element.userId) ?
+                      styles.authorized__chat_myMessage : styles.authorized__chat_message}>
+                    <p className={`${styles.authorized__chats_nickname}
+                    ${userId === Number(element.userId) ? 'text-yellow-300' : 'text-green-400'}`}>
+                      {element.username}
+                    </p>
+                    <p className={styles.authorized__text}>{element.message}</p>
+                  </div>
                 </div>
               ))
             }
+            <div className={styles.authorized__chat_menu}>
+            
+            </div>
             {
               isJoinRoom ?
-                <form onSubmit={submitMessage} className={styles.authorized__chat_form}>
+                <form onSubmit={submitMessage}
+                  className={`${styles.authorized__chat_form} ${messages.length === 0 ? 'mt-auto' : 'mt-5'}`}>
                   <Input
                     name='message'
                     placeholder='Send message'
@@ -107,7 +134,7 @@ const ChatRoom: FC<ChatRoomProps> = ({currentRoom, currentRoomId, isChat, closeR
                     class_name={styles.authorized__chat_input}
                   />
                   <button className={styles.authorized__send} type='submit'>
-                    Send
+                    <Send />
                   </button>
                 </form>
                 :
