@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getToken } from '../api/cookiesOperation';
-import { EditMessageFields } from '../interfaces/form.interface';
 
 export const roomApi = createApi({
   reducerPath: 'roomApi',
@@ -15,7 +14,7 @@ export const roomApi = createApi({
     },
     credentials: 'include',
   }),
-  tagTypes: ['Room', 'JoinRoom', 'Message'],
+  tagTypes: ['Room', 'JoinRoom'],
   endpoints: (build) => ({
     getAllRooms: build.query({
       query: () => ({
@@ -28,23 +27,6 @@ export const roomApi = createApi({
       query: (id: string) => ({
         url: `/message/all?id=${id}`,
       }),
-      providesTags: ['Message']
-    }),
-    updateMessage: build.mutation({
-      query: ({id, message}: EditMessageFields) => ({
-        url: '/message/edit-message',
-        method: 'PATCH',
-        body: {id, message},
-      }),
-      invalidatesTags: ['Message']
-    }),
-    deleteMessage: build.mutation({
-      query: (id: string) => ({
-        url: `/message/delete-message`,
-        method: 'DELETE',
-        body: {id}
-      }),
-      invalidatesTags: ['Message']
     }),
     createNewRoom: build.mutation({
       query: (name: string) => ({
@@ -78,6 +60,4 @@ export const {
   useGetAllMessagesQuery,
   useJoinRoomMutation,
   useIsUserJoinedQuery,
-  useUpdateMessageMutation,
-  useDeleteMessageMutation
 } = roomApi;

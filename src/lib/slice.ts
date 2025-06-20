@@ -5,11 +5,15 @@ export interface AppState {
   isAuth: boolean;
   isTask: boolean;
   isCreateTask: boolean;
+  isEditMessage: boolean;
   isEditTask: boolean;
   isEditTodo: boolean;
   userName: string | null;
+  currentRoom: string | null;
+  currentRoomId: string | null;
   currentTodoId: number | null;
   userId: number | null;
+  chatMessage: string | null;
   currentTaskId: number | null;
   currentTodoName: string | null;
 }
@@ -18,10 +22,14 @@ const initialState: AppState = {
   isAuth: false,
   isTask: false,
   isCreateTask: false,
+  isEditMessage: false,
   isEditTask: false,
   isEditTodo: false,
   currentTodoId: null,
   currentTaskId: null,
+  currentRoom: null,
+  chatMessage: null,
+  currentRoomId: null,
   userId: null,
   currentTodoName: null,
   userName: null,
@@ -34,6 +42,18 @@ const appSlice = createSlice({
     getIsAuth: (state) => {
       const isUserAuthorized = localStorage.getItem('isAuth');
       state.isAuth = isUserAuthorized === 'true';
+    },
+    setChatMessage: (state, action) => {
+      state.chatMessage = action.payload;
+    },
+    setIsEditMessage: (state, action) => {
+      state.isEditMessage = action.payload;
+    },
+    setCurrentRoom: (state, action) => {
+      state.currentRoom = action.payload;
+    },
+    setCurrentRoomId: (state, action) => {
+      state.currentRoomId = action.payload;
     },
     closeTodoForm: (state) => {
       state.isCreateTask = false;
@@ -96,5 +116,9 @@ export const {
   setPrevCreateSubTask,
   closeTodoForm,
   setUserInfo,
+  setIsEditMessage,
+  setCurrentRoomId,
+  setCurrentRoom,
+  setChatMessage
 } = appSlice.actions;
 export default appSlice.reducer;

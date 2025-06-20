@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Socket } from 'socket.io-client';
+import React, { useEffect, useState } from 'react';
 import styles from '../../authorizedPage/authorized.module.scss';
 import Input from '../../input/Input';
-import { getIsAuth } from '../../../lib/slice';
-import { useAppDispatch } from '../../../lib/hooks';
+import { getIsAuth, setChatMessage, setCurrentRoom, setCurrentRoomId, setIsEditMessage } from '../../../lib/slice';
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import { useRouter } from 'next/navigation';
 import { useLazyLogoutQuery } from '../../../lib/authApi';
 import { useCreateNewRoomMutation, useLazyGetAllRoomsQuery } from '../../../lib/roomApi';
 import { FadeLoader } from 'react-spinners';
 import ChatRoom from '../chatRoom/ChatRoom';
+import { getSocket } from '../../../api/socket';
 
 
 const Chat = () => {
@@ -17,14 +17,12 @@ const Chat = () => {
   const [isChat, setIsChat] = useState(false);
   const [isRooms, setIsRooms] = useState(false);
   const [isCreateRoom, setIsCreateRoom] = useState(false);
-  const [currentRoom, setCurrentRoom] = useState('');
-  const [currentRoomId, setCurrentRoomId] = useState('');
   const dispatch = useAppDispatch();
+  const {currentRoomId} = useAppSelector(state => state.auth);
   const router = useRouter();
   const [logout] = useLazyLogoutQuery();
   const [getAllRooms, {data, isLoading}] = useLazyGetAllRoomsQuery();
   const [createNewRoom, {isLoading: isCreateRoomLoading}] = useCreateNewRoomMutation();
-  const socket = useRef<Socket>(null);
   
   
   const connectToChat = async() => {
@@ -47,9 +45,12 @@ const Chat = () => {
   };
   
   const openRoom = async(id: number, name: string) => {
-    setCurrentRoomId(String(id));
-    setCurrentRoom(name);
-    socket.current?.emit('joinRoom', name);
+    dispatch(setCurrentRoomId(String(id)));
+    dispatch(setCurrentRoom(name));
+    dispatch(setIsEditMessage(false));
+    dispatch(setChatMessage(''));
+    const socket = getSocket();
+    socket.emit('joinRoom', name);
     setIsChat(true);
   };
   
@@ -120,11 +121,8 @@ const Chat = () => {
               }
             </div>
             <ChatRoom
-              currentRoom={currentRoom}
-              currentRoomId={currentRoomId}
               isChat={isChat}
               closeRoomFn={closeRoom}
-              socket={socket}
             />
           </div>
         </div>
