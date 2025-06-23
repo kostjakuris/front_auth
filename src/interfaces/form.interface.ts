@@ -47,12 +47,19 @@ export interface EditTaskFields {
   id: number;
 }
 
-export interface DeleteTaskFields {
-  id: number;
-  todoName: string;
+export interface CreateRoomFields {
+  name: string;
+  ownerId: number;
 }
 
-export interface EditMessageFields {
-  message: string;
-  id: string;
+export interface EditRoomFields {
+  id: number;
+  name: string;
+  ownerId: number;
 }
+
+export interface DeleteRoomFields {
+  id: number;
+  ownerId: number;
+}
+

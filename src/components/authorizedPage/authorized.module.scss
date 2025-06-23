@@ -54,6 +54,7 @@
   }
 
   &__chats_rooms {
+    position: relative;
     cursor: pointer;
     display: block;
     margin-right: 40px;
@@ -71,12 +72,17 @@
     }
   }
 
-  &__chat_messageContainer {
+  &__chat_userList {
+
+  }
+
+  &__chat_messageContainer, &__chat_userList {
     padding: 0 20px;
     min-height: 100px;
     max-height: 400px;
     overflow-y: auto;
     overflow-x: hidden;
+
     &::-webkit-scrollbar-track {
       margin: 0 0 40px;
     }
@@ -188,7 +194,17 @@
     display: block;
     background: black;
     width: 200px;
-    height: 150px;
+    border-radius: 15px;
+  }
+
+  &__chat_ownerMenu {
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    z-index: 2;
+    display: block;
+    background: black;
+    width: 200px;
     border-radius: 15px;
   }
 

@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getToken } from '../api/cookiesOperation';
+import { CreateRoomFields, DeleteRoomFields, EditRoomFields } from '../interfaces/form.interface';
 
 export const roomApi = createApi({
   reducerPath: 'roomApi',
@@ -28,11 +29,32 @@ export const roomApi = createApi({
         url: `/message/all?id=${id}`,
       }),
     }),
+    getCurrentRoomInfo: build.query({
+      query: (id: string) => ({
+        url: `/room/current-room?id=${id}`,
+      }),
+    }),
     createNewRoom: build.mutation({
-      query: (name: string) => ({
+      query: ({name, ownerId}: CreateRoomFields) => ({
         url: '/room/create',
         method: 'POST',
-        body: {name},
+        body: {name, ownerId},
+      }),
+      invalidatesTags: ['Room']
+    }),
+    editRoom: build.mutation({
+      query: ({id, name, ownerId}: EditRoomFields) => ({
+        url: '/room/edit',
+        method: 'PATCH',
+        body: {id, name, ownerId},
+      }),
+      invalidatesTags: ['Room']
+    }),
+    deleteRoom: build.mutation({
+      query: ({id, ownerId}: DeleteRoomFields) => ({
+        url: '/room/delete',
+        method: 'DELETE',
+        body: {id, ownerId},
       }),
       invalidatesTags: ['Room']
     }),
@@ -60,4 +82,7 @@ export const {
   useGetAllMessagesQuery,
   useJoinRoomMutation,
   useIsUserJoinedQuery,
+  useDeleteRoomMutation,
+  useEditRoomMutation,
+  useGetCurrentRoomInfoQuery
 } = roomApi;

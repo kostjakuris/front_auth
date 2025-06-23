@@ -10,12 +10,13 @@ import { getSocket } from '../../api/socket';
 interface SendProps {
   messages: any[];
   messageId: string;
+  messageUserId: string;
 }
 
-const SendComponent: FC<SendProps> = ({messages, messageId}) => {
+const SendComponent: FC<SendProps> = ({messages, messageId, messageUserId}) => {
   const dispatch = useAppDispatch();
   const {isEditMessage} = useAppSelector(state => state.auth);
-  const {userName, userId, currentRoomId, currentRoom, chatMessage} = useAppSelector((state) => state.auth);
+  const {userName, userId, currentRoomId, currentRoom, chatMessage, ownerId} = useAppSelector((state) => state.auth);
   const socket = getSocket();
   
   const closeEditBlock = () => {
@@ -36,6 +37,8 @@ const SendComponent: FC<SendProps> = ({messages, messageId}) => {
         });
       } else {
         socket.emit('editMessage', {
+          messageUserId,
+          ownerId,
           messageId,
           userId,
           roomName: currentRoom,
