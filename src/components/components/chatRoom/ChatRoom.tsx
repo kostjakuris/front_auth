@@ -22,7 +22,7 @@ interface ChatRoomProps {
 
 const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
   // const [messages, setMessages] = useState<any[]>([]);
-  const [isJoinRoom, setIsJoinRoom] = useState(false);
+  
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
@@ -55,8 +55,9 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
     }).replace('at', ''),
   })) || [];
   const {data: isUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
+  const isJoinRoom = isUserJoin === 'true';
   const {data: roomData} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '');
-  const [joinRoom, {data: joinData}] = useJoinRoomMutation();
+  const [joinRoom] = useJoinRoomMutation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const handleContextMenu = (event: any, message: string, messageId: string, userId: string) => {
@@ -95,13 +96,6 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
     setIsUsersList(true);
     setIsChatMenu(false);
   };
-  
-  
-  useEffect(() => {
-    if (isUserJoin === 'true') {
-      setIsJoinRoom(true);
-    }
-  }, [isUserJoin, currentRoomId, joinData]);
   
   // useSocketEvents(setMessages);
   
