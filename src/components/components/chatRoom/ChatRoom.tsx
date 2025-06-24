@@ -15,6 +15,7 @@ import Menu from '../../../../public/images/Menu';
 import { Delete } from '../../../../public/images/Delete';
 import { useSocketEvents } from '../../../hooks/useSocketEvents';
 import dayjs from 'dayjs';
+import { getSocket } from '../../../api/socket';
 
 interface ChatRoomProps {
   isChat: boolean;
@@ -42,6 +43,7 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
   const {data: roomData} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '');
   const [joinRoom] = useJoinRoomMutation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const socket = getSocket();
   
   const handleContextMenu = (event: any, message: string, messageId: string, userId: string) => {
     event.preventDefault();
@@ -137,10 +139,12 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
                   {
                     roomData?.users?.map((user: any) => (
                       <div key={user.id} className={'flex items-center justify-between h-[60px]'}>
-                        <p className={`${styles.authorized__chats_title} ml-5`}>{user.username}</p>
+                        <p className={`${styles.authorized__chats_title} ml-5`}>{userId !== user.id ? user.username :
+                          `Me(${user.username})`}</p>
                         {
-                          userId === ownerId ?
-                            <button className={'cursor-pointer h-10'}>
+                          userId === ownerId && userId !== user.id ?
+                            <button className={'cursor-pointer h-10'}
+                              onClick={() => socket.emit('leftRoom', {roomName: currentRoom, userId: user.id})}>
                               <Delete />
                             </button>
                             : null
@@ -189,15 +193,17 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
               location={'message'}
             />
             {
-              isJoinRoom ?
-                <SendComponent messages={messages} messageId={currentMessageId} messageUserId={messageUserId} />
-                :
-                <div className={'flex items-center justify-center mb-5'}>
-                  <button className={styles.authorized__button}
-                    onClick={async() => await joinRoom(Number(currentRoomId))}>
-                    Join a room
-                  </button>
-                </div>
+              !isUsersList ?
+                isJoinRoom ?
+                  <SendComponent messages={messages} messageId={currentMessageId} messageUserId={messageUserId} />
+                  :
+                  <div className={'flex items-center justify-center mb-5'}>
+                    <button className={styles.authorized__button}
+                      onClick={async() => await joinRoom(Number(currentRoomId))}>
+                      Join a room
+                    </button>
+                  </div>
+                : null
             }
           </>
       }

@@ -33,6 +33,7 @@ export const roomApi = createApi({
       query: (id: string) => ({
         url: `/room/current-room?id=${id}`,
       }),
+      providesTags: ['JoinRoom']
     }),
     createNewRoom: build.mutation({
       query: ({name, ownerId}: CreateRoomFields) => ({
