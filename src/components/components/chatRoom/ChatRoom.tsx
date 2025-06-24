@@ -13,6 +13,8 @@ import ContextMenu from '../../contextMenu/ContextMenu';
 import SendComponent from '../../sendComponent/SendComponent';
 import Menu from '../../../../public/images/Menu';
 import { Delete } from '../../../../public/images/Delete';
+import { useSocketEvents } from '../../../hooks/useSocketEvents';
+import dayjs from 'dayjs';
 
 interface ChatRoomProps {
   isChat: boolean;
@@ -21,7 +23,7 @@ interface ChatRoomProps {
 }
 
 const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
-  // const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
   
   const [contextMenu, setContextMenu] = useState({
     visible: false,
@@ -35,25 +37,6 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
   const [messageUserId, setMessageUserId] = useState('');
   const {userId, currentRoom, currentRoomId, ownerId} = useAppSelector(state => state.auth);
   const {data: messageData, isLoading} = useGetAllMessagesQuery(currentRoomId ? currentRoomId : '');
-  const messages = messageData?.map((element: any) => ({
-    ...element,
-    createdAt: new Date(element.createdAt).toLocaleString('en-US', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: false,
-    }).replace('at', ''),
-    updatedAt: new Date(element.updatedAt).toLocaleString('en-US', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: false,
-    }).replace('at', ''),
-  })) || [];
   const {data: isUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
   const isJoinRoom = isUserJoin === 'true';
   const {data: roomData} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '');
@@ -97,7 +80,18 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
     setIsChatMenu(false);
   };
   
-  // useSocketEvents(setMessages);
+  useEffect(() => {
+    if (messageData) {
+      const modifiedData = messageData.map((element: any) => ({
+        ...element,
+        createdAt: dayjs(element.createdAt).format('MMM D, YYYY HH:mm'),
+        updatedAt: dayjs(element.updatedAt).format('MMM D, YYYY HH:mm'),
+      }));
+      setMessages(modifiedData);
+    }
+  }, [messageData]);
+  
+  useSocketEvents(setMessages);
   
   useEffect(() => {
     if (messagesEndRef.current) {

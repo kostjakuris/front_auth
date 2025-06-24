@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from '../../authorizedPage/authorized.module.scss';
 import Input from '../../input/Input';
 import {
@@ -23,7 +23,6 @@ import ContextMenu from '../../contextMenu/ContextMenu';
 
 const Chat = () => {
   const [roomName, setRoomName] = useState('');
-  const [rooms, setRooms] = useState<any[]>([]);
   const [isChat, setIsChat] = useState(false);
   const [isRooms, setIsRooms] = useState(false);
   const dispatch = useAppDispatch();
@@ -91,13 +90,6 @@ const Chat = () => {
   };
   
   
-  useEffect(() => {
-    if (data) {
-      setRooms(data);
-    }
-  }, [data]);
-  
-  
   if (isLoading || isCreateRoomLoading) {
     return (
       <div className={styles.authorized__wrapper}>
@@ -145,7 +137,7 @@ const Chat = () => {
           <div className={'flex justify-between'}>
             <div className={'flex flex-col items-center'}>
               {
-                rooms.map((element: any) => (
+                data?.map((element: any) => (
                   <div key={element.id}
                     onContextMenu={(event) => handleContextMenu(event, element.id, element.name, element.ownerId)}
                     className={currentRoomId === String(element.id) ?
