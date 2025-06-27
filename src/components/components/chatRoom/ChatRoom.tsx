@@ -2,12 +2,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import styles from '../../authorizedPage/authorized.module.scss';
 import Back from '../../../../public/images/Back';
 import { useAppSelector } from '../../../lib/hooks';
-import {
-  useGetAllMessagesQuery,
-  useGetCurrentRoomInfoQuery,
-  useIsUserJoinedQuery,
-  useJoinRoomMutation
-} from '../../../lib/roomApi';
+import { useGetAllMessagesQuery, useGetCurrentRoomInfoQuery, useIsUserJoinedQuery, } from '../../../lib/roomApi';
 import { FadeLoader } from 'react-spinners';
 import ContextMenu from '../../contextMenu/ContextMenu';
 import SendComponent from '../../sendComponent/SendComponent';
@@ -39,9 +34,7 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
   const {userId, currentRoom, currentRoomId, ownerId} = useAppSelector(state => state.auth);
   const {data: messageData, isLoading} = useGetAllMessagesQuery(currentRoomId ? currentRoomId : '');
   const {data: isUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
-  const isJoinRoom = isUserJoin === 'true';
   const {data: roomData} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '');
-  const [joinRoom] = useJoinRoomMutation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socket = getSocket();
   
@@ -75,7 +68,6 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
       setIsChat(false);
     }
   };
-  
   const openUsersList = (event: any) => {
     event.stopPropagation();
     setIsUsersList(true);
@@ -99,7 +91,7 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTo({top: messagesEndRef.current.scrollHeight});
     }
-  }, [currentRoomId, messages, isUsersList]);
+  }, [messages]);
   
   
   return (
@@ -144,7 +136,9 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
                         {
                           userId === ownerId && userId !== user.id ?
                             <button className={'cursor-pointer h-10'}
-                              onClick={() => socket.emit('leftRoom', {roomName: currentRoom, userId: user.id})}>
+                              onClick={() => socket.emit('kickUserFromRoom',
+                                {roomName: currentRoom, roomId: currentRoomId, userId: user.id}
+                              )}>
                               <Delete />
                             </button>
                             : null
@@ -194,12 +188,16 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
             />
             {
               !isUsersList ?
-                isJoinRoom ?
+                isUserJoin === 'true' ?
                   <SendComponent messages={messages} messageId={currentMessageId} messageUserId={messageUserId} />
                   :
                   <div className={'flex items-center justify-center mb-5'}>
                     <button className={styles.authorized__button}
-                      onClick={async() => await joinRoom(Number(currentRoomId))}>
+                      onClick={() => socket.emit('joinRoom', {
+                        roomName: currentRoom,
+                        roomId: currentRoomId,
+                        userId
+                      })}>
                       Join a room
                     </button>
                   </div>

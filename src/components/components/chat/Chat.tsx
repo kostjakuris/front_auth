@@ -70,7 +70,11 @@ const Chat = () => {
     dispatch(setIsEditMessage(false));
     dispatch(setChatMessage(''));
     const socket = getSocket();
-    socket.emit('joinRoom', name);
+    socket.emit('joinRoom', {
+      roomName: name,
+      roomId: id,
+      userId
+    });
     setIsChat(true);
   };
   
