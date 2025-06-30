@@ -15,7 +15,7 @@ import { editTodoFields } from '../todoFormFunctions/todoFormFields';
 import { useGetInfo } from '../../hooks/useGetInfo';
 import { useLazyLogoutQuery } from '../../lib/authApi';
 import { useCreateNewTodoMutation, useEditTodoMutation, useGetUserInfoQuery } from '../../lib/userApi';
-import Chat from '../components/chat/Chat';
+import Chat from './components/chat/Chat';
 import { setUserInfo } from '../../lib/slice';
 
 const AuthorizedPage = () => {

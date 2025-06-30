@@ -1,16 +1,16 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import styles from '../../authorizedPage/authorized.module.scss';
-import Back from '../../../../public/images/Back';
-import { useAppSelector } from '../../../lib/hooks';
-import { useGetAllMessagesQuery, useGetCurrentRoomInfoQuery, useIsUserJoinedQuery, } from '../../../lib/roomApi';
+import styles from '../../authorized.module.scss';
+import Back from '../../../../../public/images/Back';
+import { useAppSelector } from '../../../../lib/hooks';
+import { useGetAllMessagesQuery, useGetCurrentRoomInfoQuery, useIsUserJoinedQuery, } from '../../../../lib/roomApi';
 import { FadeLoader } from 'react-spinners';
-import ContextMenu from '../../contextMenu/ContextMenu';
-import SendComponent from '../../sendComponent/SendComponent';
-import Menu from '../../../../public/images/Menu';
-import { Delete } from '../../../../public/images/Delete';
-import { useSocketEvents } from '../../../hooks/useSocketEvents';
+import ContextMenu from '../../../contextMenu/ContextMenu';
+import SendComponent from '../../../sendComponent/SendComponent';
+import Menu from '../../../../../public/images/Menu';
+import { Delete } from '../../../../../public/images/Delete';
+import { useSocketEvents } from '../../../../hooks/useSocketEvents';
 import dayjs from 'dayjs';
-import { getSocket } from '../../../api/socket';
+import { getSocket } from '../../../../api/socket';
 
 interface ChatRoomProps {
   isChat: boolean;
@@ -156,23 +156,37 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
                           className={userId === Number(element.userId) ? styles.authorized__myMessage_wrapper :
                             styles.authorized__message_wrapper}>
                           <p>{element.createdAt}</p>
-                          <div
-                            onContextMenu={(event) => handleContextMenu(event, element.message, element._id,
-                              element.userId
-                            )}
-                            className={userId === Number(element.userId) ?
-                              styles.authorized__chat_myMessage : styles.authorized__chat_message}>
-                            <p className={`${styles.authorized__chats_nickname}
+                          {
+                            element.type === 'image' ?
+                              <div
+                                onContextMenu={(event) => handleContextMenu(event, element.message, element._id,
+                                  element.userId
+                                )}
+                              >
+                                <img className={'max-w-[400px] max-h-[400px] w-full h-full'} src={element.message}
+                                  alt={element.message} />
+                              </div>
+                              :
+                              <div
+                                onContextMenu={(event) =>
+                                  handleContextMenu(event, element.message, element._id,
+                                    element.userId
+                                  )}
+                                className={userId === Number(element.userId) ?
+                                  styles.authorized__chat_myMessage : styles.authorized__chat_message}
+                              >
+                                <p className={`${styles.authorized__chats_nickname}
                               ${userId === Number(element.userId) ? 'text-yellow-300' : 'text-green-400'}`}>
-                              {element.username}
-                            </p>
-                            <p className={styles.authorized__text}>{element.message}</p>
-                            {
-                              element.updatedAt && element.isUpdated ?
-                                <p className={'mt-2 text-gray-300'}>updated at: {element.updatedAt}</p>
-                                : null
-                            }
-                          </div>
+                                  {element.username}
+                                </p>
+                                <p className={styles.authorized__text}>{element.message}</p>
+                                {
+                                  element.updatedAt && element.isUpdated ?
+                                    <p className={'mt-2 text-gray-300'}>updated at: {element.updatedAt}</p>
+                                    : null
+                                }
+                              </div>
+                          }
                         </div>
                       ))
                       :
