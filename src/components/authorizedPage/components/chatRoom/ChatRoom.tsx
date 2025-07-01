@@ -31,6 +31,7 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
   const [isChatMenu, setIsChatMenu] = useState(false);
   const [isUsersList, setIsUsersList] = useState(false);
   const [messageUserId, setMessageUserId] = useState('');
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
   const {userId, currentRoom, currentRoomId, ownerId} = useAppSelector(state => state.auth);
   const {data: messageData, isLoading} = useGetAllMessagesQuery(currentRoomId ? currentRoomId : '');
   const {data: isUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
@@ -163,7 +164,9 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
                                   element.userId
                                 )}
                               >
-                                <img className={'max-w-[400px] max-h-[400px] w-full h-full'} src={element.message}
+                                <img onLoad={() => console.log('loading')}  className={'max-w-[400px]' +
+                                  ' max-h-[400px]' +
+                                  ' w-full h-full'} src={element.message}
                                   alt={element.message} />
                               </div>
                               :
