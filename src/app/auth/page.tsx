@@ -4,7 +4,7 @@ import styles from '../root.module.scss';
 
 export async function generateMetadata() {
   const metadata: Metadata = {
-    title: 'Sign in',
+    title: 'Signin',
     description: 'Login into your account',
     keywords: 'sign in, account, email,password',
     alternates: {
