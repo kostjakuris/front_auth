@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import styles from '../../authorizedPage/authorized.module.scss';
-import Input from '../../input/Input';
+import styles from '../../authorized.module.scss';
+import Input from '../../../input/Input';
 import {
   getIsAuth,
   setChatMessage,
@@ -10,15 +10,15 @@ import {
   setIsEditMessage,
   setIsEditRoom,
   setOwnerId
-} from '../../../lib/slice';
-import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
+} from '../../../../lib/slice';
+import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
 import { useRouter } from 'next/navigation';
-import { useLazyLogoutQuery } from '../../../lib/authApi';
-import { useCreateNewRoomMutation, useEditRoomMutation, useLazyGetAllRoomsQuery } from '../../../lib/roomApi';
+import { useLazyLogoutQuery } from '../../../../lib/authApi';
+import { useCreateNewRoomMutation, useEditRoomMutation, useLazyGetAllRoomsQuery } from '../../../../lib/roomApi';
 import { FadeLoader } from 'react-spinners';
 import ChatRoom from '../chatRoom/ChatRoom';
-import { getSocket } from '../../../api/socket';
-import ContextMenu from '../../contextMenu/ContextMenu';
+import { getSocket } from '../../../../api/socket';
+import ContextMenu from '../../../contextMenu/ContextMenu';
 
 
 const Chat = () => {
@@ -70,7 +70,11 @@ const Chat = () => {
     dispatch(setIsEditMessage(false));
     dispatch(setChatMessage(''));
     const socket = getSocket();
-    socket.emit('joinRoom', name);
+    socket.emit('joinRoom', {
+      roomName: name,
+      roomId: id,
+      userId
+    });
     setIsChat(true);
   };
   

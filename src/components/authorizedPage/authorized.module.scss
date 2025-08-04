@@ -73,7 +73,6 @@
   }
 
   &__chat_userList {
-
   }
 
   &__chat_messageContainer, &__chat_userList {
@@ -274,7 +273,7 @@
 
   &__send {
     width: 50px;
-
+    margin-left: 8px;
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;

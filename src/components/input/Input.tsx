@@ -3,7 +3,7 @@ import styles from '../authorization/authorization.module.scss';
 
 interface InputProps {
   name: string;
-  placeholder: string;
+  placeholder?: string;
   type: string;
   value: string;
   onChangeFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
