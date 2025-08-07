@@ -78,7 +78,7 @@ const SendImageModal: FC<SendImageModalProps> = ({selectedFile}) => {
         }}>Cancel
         </button>
         <button className={styles.send__deleteButton} onClick={submitFile}>
-          Senddfg
+          Send
         </button>
       </div>
     </div>
