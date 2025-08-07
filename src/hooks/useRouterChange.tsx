@@ -11,9 +11,7 @@ export const useRouterChange = (isSuccess: boolean) => {
   const router = useRouter();
   const checkIsAuth = useCallback(() => {
     if (isAuth) {
-      router.push('/authorized');
-    } else {
-      router.push('/auth');
+      router.push('/');
     }
   }, [isAuth]);
   
@@ -21,7 +19,7 @@ export const useRouterChange = (isSuccess: boolean) => {
     dispatch(getIsAuth());
     if (isSuccess) {
       localStorage.setItem('isAuth', 'true');
-      router.push('/authorized');
+      router.push('/');
     }
   }, [isSuccess]);
   

@@ -10,6 +10,9 @@ export interface AppState {
   isCreateRoom: boolean;
   isEditRoom: boolean;
   isEditTodo: boolean;
+  isChat: boolean;
+  isRooms: boolean;
+  isUsersList: boolean;
   userName: string | null;
   currentRoom: string | null;
   currentRoomId: string | null;
@@ -28,6 +31,9 @@ const initialState: AppState = {
   isEditMessage: false,
   isCreateRoom: false,
   isEditRoom: false,
+  isChat: false,
+  isRooms: false,
+  isUsersList: false,
   isEditTask: false,
   isEditTodo: false,
   currentTodoId: null,
@@ -54,6 +60,15 @@ const appSlice = createSlice({
     },
     setIsEditMessage: (state, action) => {
       state.isEditMessage = action.payload;
+    },
+    setIsChat: (state, action) => {
+      state.isChat = action.payload;
+    },
+    setIsRooms: (state, action) => {
+      state.isRooms = action.payload;
+    },
+    setIsUsersList: (state, action) => {
+      state.isUsersList = action.payload;
     },
     setIsCreateRoom: (state, action) => {
       state.isCreateRoom = action.payload;
@@ -137,6 +152,9 @@ export const {
   setChatMessage,
   setOwnerId,
   setIsCreateRoom,
-  setIsEditRoom
+  setIsEditRoom,
+  setIsChat,
+  setIsRooms,
+  setIsUsersList
 } = appSlice.actions;
 export default appSlice.reducer;

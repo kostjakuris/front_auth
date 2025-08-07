@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from '../../authorized.module.scss';
 import Back from '../../../../../public/images/Back';
-import { useAppSelector } from '../../../../lib/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
 import { useGetAllMessagesQuery, useGetCurrentRoomInfoQuery, useIsUserJoinedQuery, } from '../../../../lib/roomApi';
 import { FadeLoader } from 'react-spinners';
 import ContextMenu from '../../../contextMenu/ContextMenu';
@@ -11,67 +11,68 @@ import { Delete } from '../../../../../public/images/Delete';
 import { useSocketEvents } from '../../../../hooks/useSocketEvents';
 import dayjs from 'dayjs';
 import { getSocket } from '../../../../api/socket';
+import { useContextMenu } from '../../../../hooks/useContextMenu';
+import { setIsUsersList } from '../../../../lib/slice';
+import { useCloseRoom } from '../../../../hooks/useCloseRoom';
 
-interface ChatRoomProps {
-  isChat: boolean;
-  setIsChat: (isChat: boolean) => void;
-  setIsRooms: (isRoom: boolean) => void;
-}
 
-const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
+const ChatRoom = () => {
   const [messages, setMessages] = useState<any[]>([]);
   
-  const [contextMenu, setContextMenu] = useState({
-    visible: false,
-    x: 0,
-    y: 0,
-    messageText: '',
-  });
   const [currentMessageId, setCurrentMessageId] = useState('');
   const [isChatMenu, setIsChatMenu] = useState(false);
-  const [isUsersList, setIsUsersList] = useState(false);
   const [messageUserId, setMessageUserId] = useState('');
-  const [isLoadingImage, setIsLoadingImage] = useState(false);
-  const {userId, currentRoom, currentRoomId, ownerId} = useAppSelector(state => state.auth);
+  const {userId, currentRoom, currentRoomId, ownerId, isChat, isUsersList} = useAppSelector(
+    state => state.auth);
   const {data: messageData, isLoading} = useGetAllMessagesQuery(currentRoomId ? currentRoomId : '');
   const {data: isUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
   const {data: roomData} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socket = getSocket();
+  const dispatch = useAppDispatch();
+  const {closeRoom} = useCloseRoom();
   
-  const handleContextMenu = (event: any, message: string, messageId: string, userId: string) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setContextMenu({
-      visible: true,
-      x: event.pageX,
-      y: event.pageY,
-      messageText: message,
+  const {
+    contextMenu,
+    handleContextMenu,
+    closeContextMenu,
+  } = useContextMenu<{
+    type: string;
+    fullPath: string;
+    messageId: string;
+    userId: string;
+  }>();
+  
+  const onContextMenu = (
+    event: any,
+    message: string,
+    messageId: string,
+    userId: string,
+    type: string,
+    fullPath: string
+  ) => {
+    handleContextMenu(event, message, {
+      type,
+      fullPath,
+      messageId,
+      userId,
     });
+    
     setCurrentMessageId(messageId);
     setMessageUserId(userId);
   };
-  
   const handleOnClick = () => {
     if (contextMenu.visible) {
-      setContextMenu({visible: false, x: 0, y: 0, messageText: ''});
+      closeContextMenu();
     }
     if (isChatMenu) {
       setIsChatMenu(false);
     }
   };
   
-  const closeRoom = () => {
-    if (isUsersList) {
-      setIsUsersList(false);
-    } else {
-      setIsRooms(true);
-      setIsChat(false);
-    }
-  };
   const openUsersList = (event: any) => {
     event.stopPropagation();
-    setIsUsersList(true);
+    dispatch(setIsUsersList(true));
     setIsChatMenu(false);
   };
   
@@ -88,18 +89,23 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
   
   useSocketEvents(setMessages);
   
-  useEffect(() => {
+  const scrollToBottom = () => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollTo({top: messagesEndRef.current.scrollHeight});
+      messagesEndRef.current.scrollTo({
+        top: messagesEndRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     }
-  }, [messages]);
+  };
   
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   
   return (
     <div
       onClick={handleOnClick}
-      onContextMenu={() => contextMenu.visible &&
-        setContextMenu({visible: false, x: 0, y: 0, messageText: ''})}
+      onContextMenu={() => contextMenu.visible && closeContextMenu()}
       className={!isChat ? 'hidden' : styles.authorized__chat}>
       {
         isLoading ?
@@ -160,21 +166,22 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
                           {
                             element.type === 'image' ?
                               <div
-                                onContextMenu={(event) => handleContextMenu(event, element.message, element._id,
-                                  element.userId
+                                onContextMenu={(event) => onContextMenu(event, element.message,
+                                  element._id,
+                                  element.userId, element.type, element.fullPath
                                 )}
                               >
-                                <img onLoad={() => console.log('loading')}  className={'max-w-[400px]' +
+                                <img onLoad={scrollToBottom} className={'max-w-[400px]' +
                                   ' max-h-[400px]' +
                                   ' w-full h-full'} src={element.message}
                                   alt={element.message} />
                               </div>
                               :
                               <div
-                                onContextMenu={(event) =>
-                                  handleContextMenu(event, element.message, element._id,
-                                    element.userId
-                                  )}
+                                onContextMenu={(event) => onContextMenu(event, element.message,
+                                  element._id,
+                                  element.userId, element.type, element.fullPath
+                                )}
                                 className={userId === Number(element.userId) ?
                                   styles.authorized__chat_myMessage : styles.authorized__chat_message}
                               >
@@ -206,7 +213,11 @@ const ChatRoom: FC<ChatRoomProps> = ({isChat, setIsChat, setIsRooms}) => {
             {
               !isUsersList ?
                 isUserJoin === 'true' ?
-                  <SendComponent messages={messages} messageId={currentMessageId} messageUserId={messageUserId} />
+                  <SendComponent
+                    messages={messages}
+                    messageId={currentMessageId}
+                    messageUserId={messageUserId}
+                  />
                   :
                   <div className={'flex items-center justify-center mb-5'}>
                     <button className={styles.authorized__button}

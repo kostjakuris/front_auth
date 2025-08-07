@@ -1,13 +1,16 @@
 .authorized {
-  height: 600px;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin-bottom: 20px;
 
   &__wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    height: 100%;
   }
 
   &__button {
@@ -72,8 +75,6 @@
     }
   }
 
-  &__chat_userList {
-  }
 
   &__chat_messageContainer, &__chat_userList {
     padding: 0 20px;
@@ -274,6 +275,7 @@
   &__send {
     width: 50px;
     margin-left: 8px;
+
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;

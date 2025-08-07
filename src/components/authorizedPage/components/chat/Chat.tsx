@@ -6,9 +6,11 @@ import {
   setChatMessage,
   setCurrentRoom,
   setCurrentRoomId,
+  setIsChat,
   setIsCreateRoom,
   setIsEditMessage,
   setIsEditRoom,
+  setIsRooms,
   setOwnerId
 } from '../../../../lib/slice';
 import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
@@ -19,29 +21,23 @@ import { FadeLoader } from 'react-spinners';
 import ChatRoom from '../chatRoom/ChatRoom';
 import { getSocket } from '../../../../api/socket';
 import ContextMenu from '../../../contextMenu/ContextMenu';
+import { useContextMenu } from '../../../../hooks/useContextMenu';
 
 
 const Chat = () => {
   const [roomName, setRoomName] = useState('');
-  const [isChat, setIsChat] = useState(false);
-  const [isRooms, setIsRooms] = useState(false);
   const dispatch = useAppDispatch();
-  const {currentRoomId, userId, isCreateRoom, isEditRoom, ownerId} = useAppSelector(state => state.auth);
+  const {currentRoomId, userId, isCreateRoom, isEditRoom, ownerId, isChat, isRooms} = useAppSelector(
+    state => state.auth);
   const router = useRouter();
   const [logout] = useLazyLogoutQuery();
   const [getAllRooms, {data, isLoading}] = useLazyGetAllRoomsQuery();
   const [createNewRoom, {isLoading: isCreateRoomLoading}] = useCreateNewRoomMutation();
   const [editRoom] = useEditRoomMutation();
-  const [contextMenu, setContextMenu] = useState({
-    visible: false,
-    x: 0,
-    y: 0,
-    messageText: '',
-  });
   
   const connectToChat = async() => {
     await getAllRooms('');
-    setIsRooms(true);
+    dispatch(setIsRooms(true));
   };
   
   const submitRoomName = async(event: any) => {
@@ -75,21 +71,26 @@ const Chat = () => {
       roomId: id,
       userId
     });
-    setIsChat(true);
+    dispatch(setIsChat(true));
   };
   
-  const handleContextMenu = (event: any, id: number, name: string, ownerId: number) => {
-    event.preventDefault();
-    event.stopPropagation();
-    dispatch(setCurrentRoomId(String(id)));
+  const {
+    contextMenu,
+    handleContextMenu,
+    closeContextMenu,
+  } = useContextMenu();
+  
+  const onRoomContextMenu = (
+    event: any,
+    roomId: number,
+    name: string,
+    ownerId: number
+  ) => {
+    handleContextMenu(event, name);
+    
+    dispatch(setCurrentRoomId(String(roomId)));
     dispatch(setOwnerId(ownerId));
     dispatch(setIsEditRoom(true));
-    setContextMenu({
-      visible: true,
-      x: event.pageX,
-      y: event.pageY,
-      messageText: name,
-    });
     setRoomName(name);
   };
   
@@ -106,10 +107,8 @@ const Chat = () => {
   
   return (
     <div
-      onClick={() => contextMenu.visible &&
-        setContextMenu({visible: false, x: 0, y: 0, messageText: ''})}
-      onContextMenu={() => contextMenu.visible &&
-        setContextMenu({visible: false, x: 0, y: 0, messageText: ''})}>
+      onClick={() => contextMenu.visible && closeContextMenu()}
+      onContextMenu={() => contextMenu.visible && closeContextMenu()}>
       <div className={'flex items-center justify-between px-5'}>
         <button className={styles.authorized__button} onClick={logoutFn}>Log out</button>
         <div></div>
@@ -143,7 +142,7 @@ const Chat = () => {
               {
                 data?.map((element: any) => (
                   <div key={element.id}
-                    onContextMenu={(event) => handleContextMenu(event, element.id, element.name, element.ownerId)}
+                    onContextMenu={(event) => onRoomContextMenu(event, element.id, element.name, element.ownerId)}
                     className={currentRoomId === String(element.id) ?
                       `${styles.authorized__chats_rooms} bg-gray-400` : styles.authorized__chats_rooms}
                     onClick={() => openRoom(element.id, element.name, element.ownerId)}>
@@ -153,11 +152,7 @@ const Chat = () => {
               }
               <ContextMenu contextMenu={contextMenu} location={'room'} />
             </div>
-            <ChatRoom
-              isChat={isChat}
-              setIsChat={setIsChat}
-              setIsRooms={setIsRooms}
-            />
+            <ChatRoom />
           </div>
         </div>
       </div>

@@ -5,15 +5,17 @@ import { Delete } from '../../../public/images/Delete';
 import Copy from '../../../public/images/Copy';
 import { setChatMessage, setIsCreateRoom, setIsEditMessage } from '../../lib/slice';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import { getSocket } from '../../api/socket';
-import { useDeleteRoomMutation } from '../../lib/roomApi';
+import { useModal } from '../../providers/ModalProvider/ModalProvider.hooks';
+import DeleteMessageModal from '../authorizedPage/components/chat/modals/DeleteMessageModal/DeleteMessageModal';
 
-interface MenuProps {
+export interface MenuProps {
   contextMenu: {
     visible: boolean,
     x: number,
     y: number,
     messageText: string,
+    type?: string,
+    fullPath?: string,
   };
   location: 'room' | 'message';
   messageId?: string;
@@ -23,9 +25,9 @@ interface MenuProps {
 
 const ContextMenu: FC<MenuProps> = ({contextMenu, messageId, messageUserId, location, setRoomName}) => {
   const dispatch = useAppDispatch();
-  const [deleteRoom] = useDeleteRoomMutation();
-  const socket = getSocket();
-  const {currentRoom, ownerId, userId, currentRoomId} = useAppSelector((state) => state.auth);
+  
+  const {openModal} = useModal();
+  const {ownerId, userId} = useAppSelector((state) => state.auth);
   const editMessage = () => {
     if (location === 'message') {
       dispatch(setChatMessage(contextMenu.messageText));
@@ -36,19 +38,6 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, messageId, messageUserId, loca
     }
   };
   
-  const deleteOneMessage = () => {
-    socket.emit('deleteMessage', {
-      messageUserId,
-      ownerId,
-      userId,
-      messageId,
-      roomName: currentRoom,
-    });
-  };
-  
-  const deleteOneRoom = async() => {
-    await deleteRoom({id: Number(currentRoomId), ownerId: Number(ownerId)});
-  };
   return (
     <div
       className={!contextMenu.visible ? 'hidden' : styles.authorized__chat_menu}
@@ -58,29 +47,45 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, messageId, messageUserId, loca
         left: contextMenu.x,
       }}>
       {
-        userId === Number(messageUserId) || userId === ownerId ?
+        (userId === Number(messageUserId) || userId === ownerId) && (
           <>
-            <button onClick={editMessage} className={styles.authorized__chat_btn}>
-              <Edit class_name={'w-[20px] h-[20px] mr-2 mb-0.5'} />
-              Edit
-            </button>
-            <button onClick={location === 'message' ? deleteOneMessage : deleteOneRoom}
+            {
+              (location !== 'message' || contextMenu.type === 'text') && (
+                <button onClick={editMessage} className={styles.authorized__chat_btn}>
+                  <Edit class_name={'w-[20px] h-[20px] mr-2 mb-0.5'} />
+                  Edit
+                </button>
+              )
+            }
+            <button onClick={() => openModal(
+              <DeleteMessageModal
+                location={location}
+                contextMenu={contextMenu}
+                messageId={messageId}
+                messageUserId={messageUserId}
+              />)}
               className={styles.authorized__chat_btn}>
               <Delete class_name={'w-[20px] h-[20px] mr-2 mb-0.5'} />
               Delete
             </button>
           </>
-          :
-          null
+        )
       }
       {
-        location === 'message' ?
-          <button onClick={() => navigator.clipboard.writeText(contextMenu.messageText)}
-            className={styles.authorized__chat_btn}>
-            <Copy class_name={'mr-2 mb-0.5'} />
-            Copy text
-          </button>
-          : null
+        location === 'message' && contextMenu.type === 'text' &&
+        <button onClick={() => navigator.clipboard.writeText(contextMenu.messageText)}
+          className={styles.authorized__chat_btn}>
+          <Copy class_name={'mr-2 mb-0.5'} />
+          Copy text
+        </button>
+      }
+      {
+        location === 'message' && contextMenu.type !== 'text' &&
+        <button
+          className={styles.authorized__chat_btn}>
+          <Copy class_name={'mr-2 mb-0.5'} />
+          Copy {contextMenu.type}
+        </button>
       }
     </div>
   );
