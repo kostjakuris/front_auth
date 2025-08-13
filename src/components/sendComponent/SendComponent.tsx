@@ -1,24 +1,19 @@
-import React, { FC } from 'react';
+import React from 'react';
 import styles from '../authorizedPage/authorized.module.scss';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import Send from '../../../public/images/Send';
-import Input from '../input/Input';
+import { Input } from '../input';
 import Close from '../../../public/images/Close';
 import { setChatMessage, setIsEditMessage } from '../../lib/slice';
 import { getSocket } from '../../api/socket';
-import InputFile from '../inputFile/InputFile';
+import { InputFile } from '../inputFile';
 import { useModal } from '../../providers/ModalProvider/ModalProvider.hooks';
-import SendImageModal from '../authorizedPage/components/chat/modals/SendImageModal/SendImageModal';
+import { SendImageModal } from '../authorizedPage';
 
-interface SendProps {
-  messages: any[];
-  messageId: string;
-  messageUserId: string;
-}
 
-const SendComponent: FC<SendProps> = ({messages, messageId, messageUserId}) => {
+const SendComponent = () => {
   const dispatch = useAppDispatch();
-  const {isEditMessage} = useAppSelector(state => state.auth);
+  const {isEditMessage, messages, currentMessageId, messageUserId} = useAppSelector(state => state.auth);
   const {userName, userId, currentRoomId, currentRoom, chatMessage, ownerId} = useAppSelector((state) => state.auth);
   const socket = getSocket();
   const {openModal} = useModal();
@@ -43,7 +38,7 @@ const SendComponent: FC<SendProps> = ({messages, messageId, messageUserId}) => {
         socket.emit('editMessage', {
           messageUserId,
           ownerId,
-          messageId,
+          currentMessageId,
           userId,
           roomName: currentRoom,
           content: chatMessage,
@@ -63,7 +58,7 @@ const SendComponent: FC<SendProps> = ({messages, messageId, messageUserId}) => {
         <p className={`${styles.authorized__text} ml-5 mb-4`}>{chatMessage}</p>
         <button className={'mr-2 cursor-pointer'} onClick={closeEditBlock}><Close /></button>
       </div>
-      <div className={'flex items-center justify-around w-full mb-5 px-5'}>
+      <div className={'flex items-center w-full mb-5 px-5'}>
         <Input
           name='message'
           placeholder='Send message'

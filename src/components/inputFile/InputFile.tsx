@@ -16,7 +16,7 @@ const InputFile: FC<InputFileProps> = ({
         type={'file'}
         onChange={onChangeFn}
         className={'opacity-0 w-full h-full absolute t-0 l-0 z-2 cursor-pointer'}
-        accept='image/png, image/jpeg, .webp, .bmp'
+        accept='image/png, image/jpeg, .webp, .bmp, video/*'
       />
       <button className={styles.input__image}>
         <Attach />

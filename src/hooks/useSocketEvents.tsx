@@ -3,11 +3,13 @@ import { useEffect } from 'react';
 import { getSocket } from '../api/socket';
 import dayjs from 'dayjs';
 import { useGetCurrentRoomInfoQuery, useIsUserJoinedQuery } from '../lib/roomApi';
-import { useAppSelector } from '../lib/hooks';
+import { useAppDispatch, useAppSelector } from '../lib/hooks';
+import { setMessages } from '../lib/slice';
 
-export const useSocketEvents = (setMessages: (messages: any) => void) => {
+export const useSocketEvents = () => {
   const socket = getSocket();
   const {currentRoomId} = useAppSelector(state => state.auth);
+  const dispatch = useAppDispatch();
   
   const {refetch} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '');
   const {refetch: refetchIsUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
@@ -15,10 +17,13 @@ export const useSocketEvents = (setMessages: (messages: any) => void) => {
   
   useEffect(() => {
     socket.on('getMessage', (data) => {
-      setMessages((prev: any) => [...prev, {...data, createdAt: dayjs(data.createdAt).format('MMM D, YYYY HH:mm')}]);
+      dispatch(setMessages((prev: any) => [...prev, {
+        ...data, createdAt: dayjs(data.createdAt).format('MMM D, YYYY' +
+          ' HH:mm')
+      }]));
     });
     socket.on('getUpdatedMessage', (data) => {
-      setMessages((prev: any[]) =>
+      dispatch(setMessages((prev: any[]) =>
         prev.map(element =>
           element._id === data._id ?
             {
@@ -28,14 +33,14 @@ export const useSocketEvents = (setMessages: (messages: any) => void) => {
               isUpdated: data.isUpdated
             } : element
         )
-      );
+      ));
     });
     socket.on('getDeletedId', (data) => {
-      setMessages((prev: any[]) =>
+      dispatch(setMessages((prev: any[]) =>
         prev.filter(element =>
           element._id !== data.id
         )
-      );
+      ));
     });
     socket.on('getKickedUser', () => {
       refetch();

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import styles from '../root.module.scss';
-import RegisterPage from '../../components/authorization/registerPage/RegisterPage';
+import { RegisterPage } from '../../components';
 
 export async function generateMetadata() {
   const metadata: Metadata = {

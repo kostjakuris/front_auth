@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import AuthPage from '../../components/authorization/authPage/AuthPage';
+import { AuthPage } from '../../components';
 import styles from '../root.module.scss';
 
 export async function generateMetadata() {

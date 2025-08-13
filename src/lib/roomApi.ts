@@ -69,7 +69,7 @@ export const roomApi = createApi({
 });
 
 export const {
-  useLazyGetAllRoomsQuery,
+  useGetAllRoomsQuery,
   useCreateNewRoomMutation,
   useGetAllMessagesQuery,
   useIsUserJoinedQuery,

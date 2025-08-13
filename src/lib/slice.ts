@@ -3,47 +3,41 @@ import { createSlice } from '@reduxjs/toolkit';
 
 export interface AppState {
   isAuth: boolean;
-  isTask: boolean;
-  isCreateTask: boolean;
   isEditMessage: boolean;
-  isEditTask: boolean;
   isCreateRoom: boolean;
+  messages: any[] | [];
+  messageUserId: string | null;
+  currentMessageId: string | null;
   isEditRoom: boolean;
-  isEditTodo: boolean;
   isChat: boolean;
   isRooms: boolean;
   isUsersList: boolean;
   userName: string | null;
+  roomName: string | null;
   currentRoom: string | null;
   currentRoomId: string | null;
-  currentTodoId: number | null;
   userId: number | null;
   ownerId: number | null;
   chatMessage: string | null;
-  currentTaskId: number | null;
-  currentTodoName: string | null;
 }
 
 const initialState: AppState = {
   isAuth: false,
-  isTask: false,
-  isCreateTask: false,
+  messages: [],
   isEditMessage: false,
   isCreateRoom: false,
+  roomName: null,
+  messageUserId: null,
+  currentMessageId: null,
   isEditRoom: false,
   isChat: false,
   isRooms: false,
   isUsersList: false,
-  isEditTask: false,
-  isEditTodo: false,
-  currentTodoId: null,
-  currentTaskId: null,
   currentRoom: null,
   chatMessage: null,
   currentRoomId: null,
   userId: null,
   ownerId: null,
-  currentTodoName: null,
   userName: null,
 };
 
@@ -57,6 +51,15 @@ const appSlice = createSlice({
     },
     setChatMessage: (state, action) => {
       state.chatMessage = action.payload;
+    },
+    setMessageUserId: (state, action) => {
+      state.messageUserId = action.payload;
+    },
+    setCurrentMessageId: (state, action) => {
+      state.currentMessageId = action.payload;
+    },
+    setMessages: (state, action) => {
+      state.messages = action.payload;
     },
     setIsEditMessage: (state, action) => {
       state.isEditMessage = action.payload;
@@ -85,54 +88,12 @@ const appSlice = createSlice({
     setCurrentRoomId: (state, action) => {
       state.currentRoomId = action.payload;
     },
-    closeTodoForm: (state) => {
-      state.isCreateTask = false;
-      state.isTask = false;
-      state.isEditTask = false;
-      state.isEditTodo = false;
-    },
     setUserInfo: (state, action) => {
       state.userName = action.payload.userName;
       state.userId = action.payload.userId;
     },
-    setPrevCreateTask: (state) => {
-      if (!state.isCreateTask) {
-        state.isCreateTask = !state.isCreateTask;
-      }
-      state.isTask = false;
-      state.isEditTask = false;
-      state.isEditTodo = false;
-      window.scrollTo(0, 0);
-    },
-    setPrevCreateSubTask: (state, action) => {
-      state.currentTaskId = action.payload;
-      if (!state.isCreateTask) {
-        state.isCreateTask = !state.isCreateTask;
-      }
-      if (!state.isTask) {
-        state.isTask = !state.isTask;
-      }
-      state.isEditTask = false;
-      state.isEditTodo = false;
-      window.scrollTo(0, 0);
-    },
-    setPrevEditTask: (state, action) => {
-      if (!state.isEditTask) {
-        state.isEditTask = !state.isEditTask;
-      }
-      state.isEditTodo = false;
-      state.isCreateTask = false;
-      state.currentTaskId = action.payload;
-      window.scrollTo(0, 0);
-    },
-    setPrevEditTodo: (state, action) => {
-      if (!state.isEditTodo) {
-        state.isEditTodo = !state.isEditTodo;
-      }
-      state.isCreateTask = false;
-      state.isEditTask = false;
-      state.currentTodoId = action.payload;
-      window.scrollTo(0, 0);
+    setRoomName: (state, action) => {
+      state.roomName = action.payload;
     },
   },
   
@@ -140,11 +101,6 @@ const appSlice = createSlice({
 
 export const {
   getIsAuth,
-  setPrevEditTodo,
-  setPrevEditTask,
-  setPrevCreateTask,
-  setPrevCreateSubTask,
-  closeTodoForm,
   setUserInfo,
   setIsEditMessage,
   setCurrentRoomId,
@@ -155,6 +111,11 @@ export const {
   setIsEditRoom,
   setIsChat,
   setIsRooms,
-  setIsUsersList
+  setIsUsersList,
+  setRoomName,
+  setMessages,
+  setMessageUserId,
+  setCurrentMessageId
+  
 } = appSlice.actions;
 export default appSlice.reducer;

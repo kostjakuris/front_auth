@@ -5,7 +5,7 @@ import styles from '../authorization.module.scss';
 import Link from 'next/link';
 import { registrationSchema } from '../../validation/validation';
 import { RegisterFormFields } from '../../../interfaces/form.interface';
-import Input from '../../input/Input';
+import { Input } from '../../input';
 import { FadeLoader } from 'react-spinners';
 import { useRegisterMutation } from '../../../lib/userApi';
 import { useRouterChange } from '../../../hooks/useRouterChange';

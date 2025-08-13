@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import styles from '../root.module.scss';
-import ResetPage from '../../components/resetPage/ResetPage';
+import { ResetPage } from '../../components';
 
 export async function generateMetadata() {
   const metadata: Metadata = {

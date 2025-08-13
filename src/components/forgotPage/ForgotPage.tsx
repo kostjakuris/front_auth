@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import styles from '../authorization/authorization.module.scss';
 import { useFormik } from 'formik';
 import Link from 'next/link';
-import Input from '../input/Input';
+import { Input } from '../input';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { getIsAuth } from '../../lib/slice';

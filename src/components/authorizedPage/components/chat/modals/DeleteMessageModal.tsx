@@ -1,21 +1,22 @@
 import React, { FC } from 'react';
-import styles from '../modals.module.scss';
-import { useModal } from '../../../../../../providers/ModalProvider/ModalProvider.hooks';
+import styles from './modals.module.scss';
+import { useModal } from '../../../../../providers/ModalProvider/ModalProvider.hooks';
 import { deleteObject, listAll, ref } from '@firebase/storage';
-import { storage } from '../../../../../../firebase';
-import { useDeleteRoomMutation } from '../../../../../../lib/roomApi';
-import { getSocket } from '../../../../../../api/socket';
-import { useAppSelector } from '../../../../../../lib/hooks';
-import { MenuProps } from '../../../../../contextMenu/ContextMenu';
-import { useCloseRoom } from '../../../../../../hooks/useCloseRoom';
+import { storage } from '../../../../../firebase';
+import { useDeleteRoomMutation } from '../../../../../lib/roomApi';
+import { getSocket } from '../../../../../api/socket';
+import { useAppSelector } from '../../../../../lib/hooks';
+import { MenuProps } from '../../../../contextMenu/ContextMenu';
+import { useCloseRoom } from '../../../../../hooks/useCloseRoom';
 
 interface DeleteModalProps extends Omit<MenuProps, 'setRoomName'> {
 }
 
-const DeleteMessageModal: FC<DeleteModalProps> = ({messageId, messageUserId, contextMenu, location}) => {
+const DeleteMessageModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   const {closeModal} = useModal();
   const [deleteRoom] = useDeleteRoomMutation();
-  const {currentRoom, ownerId, userId, currentRoomId} = useAppSelector((state) => state.auth);
+  const {currentRoom, ownerId, userId, currentRoomId, currentMessageId, messageUserId} = useAppSelector(
+    (state) => state.auth);
   const socket = getSocket();
   const {closeRoom} = useCloseRoom();
   const deleteOneMessage = () => {
@@ -23,7 +24,7 @@ const DeleteMessageModal: FC<DeleteModalProps> = ({messageId, messageUserId, con
       messageUserId,
       ownerId,
       userId,
-      messageId,
+      currentMessageId,
       roomName: currentRoom,
     });
     if (contextMenu.type !== 'text') {
@@ -33,7 +34,7 @@ const DeleteMessageModal: FC<DeleteModalProps> = ({messageId, messageUserId, con
           messageUserId,
           ownerId,
           userId,
-          messageId,
+          currentMessageId,
           roomName: currentRoom,
         });
       });
@@ -49,7 +50,7 @@ const DeleteMessageModal: FC<DeleteModalProps> = ({messageId, messageUserId, con
       result.items.map((itemRef) => {
         deleteObject(itemRef);
       });
-    })
+    });
   };
   
   const deleteOneRoom = async() => {
@@ -61,7 +62,7 @@ const DeleteMessageModal: FC<DeleteModalProps> = ({messageId, messageUserId, con
   return (
     <div className={styles.delete}>
       <p className={styles.delete__text}>Are you sure you want to delete?</p>
-      <div className={'flex justify-around items-center mt-10'}>
+      <div className={'flex justify-around items-center mt-10 mb-5'}>
         <button className={styles.delete__cancelButton} onClick={closeModal}>Cancel</button>
         <button className={styles.delete__deleteButton}
           onClick={location === 'message' ? deleteOneMessage : deleteOneRoom}>

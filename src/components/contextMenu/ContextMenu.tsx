@@ -6,7 +6,7 @@ import Copy from '../../../public/images/Copy';
 import { setChatMessage, setIsCreateRoom, setIsEditMessage } from '../../lib/slice';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { useModal } from '../../providers/ModalProvider/ModalProvider.hooks';
-import DeleteMessageModal from '../authorizedPage/components/chat/modals/DeleteMessageModal/DeleteMessageModal';
+import { DeleteMessageModal } from '../authorizedPage';
 
 export interface MenuProps {
   contextMenu: {
@@ -18,16 +18,14 @@ export interface MenuProps {
     fullPath?: string,
   };
   location: 'room' | 'message';
-  messageId?: string;
-  messageUserId?: string;
   setRoomName?: (roomName: string) => void;
 }
 
-const ContextMenu: FC<MenuProps> = ({contextMenu, messageId, messageUserId, location, setRoomName}) => {
+const ContextMenu: FC<MenuProps> = ({contextMenu, location, setRoomName}) => {
   const dispatch = useAppDispatch();
   
   const {openModal} = useModal();
-  const {ownerId, userId} = useAppSelector((state) => state.auth);
+  const {ownerId, userId, messageUserId} = useAppSelector((state) => state.auth);
   const editMessage = () => {
     if (location === 'message') {
       dispatch(setChatMessage(contextMenu.messageText));
@@ -61,8 +59,6 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, messageId, messageUserId, loca
               <DeleteMessageModal
                 location={location}
                 contextMenu={contextMenu}
-                messageId={messageId}
-                messageUserId={messageUserId}
               />)}
               className={styles.authorized__chat_btn}>
               <Delete class_name={'w-[20px] h-[20px] mr-2 mb-0.5'} />
