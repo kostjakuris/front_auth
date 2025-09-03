@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import styles from '../../../authorized.module.scss';
 import { useAppSelector } from '../../../../../lib/hooks';

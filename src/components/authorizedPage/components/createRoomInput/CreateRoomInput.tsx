@@ -1,8 +1,9 @@
+'use client';
 import React from 'react';
 import styles from '../../../authorizedPage/authorized.module.scss';
 import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
 import { setIsCreateRoom, setIsEditRoom, setRoomName } from '../../../../lib/slice';
-import { Input } from '../../../input';
+import { Input } from '../../../ui/input';
 import { useCreateNewRoomMutation, useEditRoomMutation } from '../../../../lib/roomApi';
 
 const CreateRoomInput = () => {

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import styles from '../authorization/authorization.module.scss';
+import styles from '../../authorization/authorization.module.scss';
 
 interface InputProps {
   name: string;

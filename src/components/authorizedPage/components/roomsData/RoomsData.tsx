@@ -1,7 +1,8 @@
-import React, { FC } from 'react';
+'use client';
+import React from 'react';
 import styles from '../../authorized.module.scss';
-import { ContextMenu } from '../../../contextMenu';
-import { ChatRoom } from '../../index';
+import { ContextMenu } from '../../../ui/contextMenu';
+import { Chat, ChatRoom } from '../../index';
 import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
 import {
   setChatMessage,
@@ -10,7 +11,8 @@ import {
   setIsChat,
   setIsEditMessage,
   setIsEditRoom,
-  setOwnerId, setRoomName
+  setOwnerId,
+  setRoomName
 } from '../../../../lib/slice';
 import { useContextMenu } from '../../../../hooks/useContextMenu';
 import { getSocket } from '../../../../api/socket';
@@ -26,6 +28,7 @@ const RoomsData = () => {
   const {
     contextMenu,
     handleContextMenu,
+    closeContextMenu
   } = useContextMenu();
   const onRoomContextMenu = (
     event: any,
@@ -57,7 +60,10 @@ const RoomsData = () => {
   };
   
   return (
-    <div className={styles.authorized__chat_container}>
+    <div
+      onClick={() => contextMenu.visible && closeContextMenu()}
+      onContextMenu={() => contextMenu.visible && closeContextMenu()}
+      className={styles.authorized__chat_container}>
       <div className={styles.authorized__chat_wrapper}>
         <div className={'flex justify-between'}>
           <div className={'flex flex-col items-center'}>
@@ -72,7 +78,7 @@ const RoomsData = () => {
                 </div>
               ))
             }
-            <ContextMenu contextMenu={contextMenu} location={'room'} />
+            <ContextMenu contextMenu={contextMenu} location={'room'} closeContextMenu={closeContextMenu} />
           </div>
           <ChatRoom />
         </div>

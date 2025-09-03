@@ -1,12 +1,13 @@
-import React, { FC } from 'react';
-import styles from '../authorizedPage/authorized.module.scss';
-import { Edit } from '../../../public/images/Edit';
-import { Delete } from '../../../public/images/Delete';
-import Copy from '../../../public/images/Copy';
-import { setChatMessage, setIsCreateRoom, setIsEditMessage } from '../../lib/slice';
-import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import { useModal } from '../../providers/ModalProvider/ModalProvider.hooks';
-import { DeleteMessageModal } from '../authorizedPage';
+'use client';
+import React, { FC, useEffect, useRef } from 'react';
+import styles from '../../authorizedPage/authorized.module.scss';
+import { Edit } from '../../../../public/images/Edit';
+import { Delete } from '../../../../public/images/Delete';
+import Copy from '../../../../public/images/Copy';
+import { setChatMessage, setIsCreateRoom, setIsEditMessage } from '../../../lib/slice';
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
+import { useModal } from '../../../providers/ModalProvider/ModalProvider.hooks';
+import { DeleteMessageModal } from '../../authorizedPage';
 
 export interface MenuProps {
   contextMenu: {
@@ -18,10 +19,11 @@ export interface MenuProps {
     fullPath?: string,
   };
   location: 'room' | 'message';
+  closeContextMenu: () => void;
   setRoomName?: (roomName: string) => void;
 }
 
-const ContextMenu: FC<MenuProps> = ({contextMenu, location, setRoomName}) => {
+const ContextMenu: FC<MenuProps> = ({contextMenu, location, setRoomName, closeContextMenu}) => {
   const dispatch = useAppDispatch();
   
   const {openModal} = useModal();
@@ -35,14 +37,34 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, location, setRoomName}) => {
       dispatch(setIsCreateRoom(true));
     }
   };
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuWidth = menuRef.current?.getBoundingClientRect().width || 200;
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        closeContextMenu();
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+  
+  if (!contextMenu.visible && !menuRef.current) {
+    return null;
+  }
   
   return (
     <div
-      className={!contextMenu.visible ? 'hidden' : styles.authorized__chat_menu}
+      ref={menuRef}
+      className={styles.authorized__chat_menu}
       style={{
-        position: 'absolute',
+        overflow: 'hidden',
         top: contextMenu.y,
-        left: contextMenu.x,
+        left: contextMenu.x - menuWidth,
       }}>
       {
         (userId === Number(messageUserId) || userId === ownerId) && (
@@ -55,11 +77,15 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, location, setRoomName}) => {
                 </button>
               )
             }
-            <button onClick={() => openModal(
-              <DeleteMessageModal
-                location={location}
-                contextMenu={contextMenu}
-              />)}
+            <button onClick={() => {
+              openModal(
+                <DeleteMessageModal
+                  location={location}
+                  contextMenu={contextMenu}
+                />
+              );
+              closeContextMenu();
+            }}
               className={styles.authorized__chat_btn}>
               <Delete class_name={'w-[20px] h-[20px] mr-2 mb-0.5'} />
               Delete

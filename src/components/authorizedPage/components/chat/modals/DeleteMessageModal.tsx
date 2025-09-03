@@ -1,3 +1,4 @@
+'use client';
 import React, { FC } from 'react';
 import styles from './modals.module.scss';
 import { useModal } from '../../../../../providers/ModalProvider/ModalProvider.hooks';
@@ -6,10 +7,10 @@ import { storage } from '../../../../../firebase';
 import { useDeleteRoomMutation } from '../../../../../lib/roomApi';
 import { getSocket } from '../../../../../api/socket';
 import { useAppSelector } from '../../../../../lib/hooks';
-import { MenuProps } from '../../../../contextMenu/ContextMenu';
+import { MenuProps } from '../../../../ui/contextMenu/ContextMenu';
 import { useCloseRoom } from '../../../../../hooks/useCloseRoom';
 
-interface DeleteModalProps extends Omit<MenuProps, 'setRoomName'> {
+interface DeleteModalProps extends Omit<MenuProps, 'setRoomName' | 'closeContextMenu'> {
 }
 
 const DeleteMessageModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
@@ -20,13 +21,6 @@ const DeleteMessageModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   const socket = getSocket();
   const {closeRoom} = useCloseRoom();
   const deleteOneMessage = () => {
-    socket.emit('deleteMessage', {
-      messageUserId,
-      ownerId,
-      userId,
-      currentMessageId,
-      roomName: currentRoom,
-    });
     if (contextMenu.type !== 'text') {
       const imageRef = ref(storage, contextMenu.fullPath);
       deleteObject(imageRef).then(() => {
@@ -34,9 +28,17 @@ const DeleteMessageModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
           messageUserId,
           ownerId,
           userId,
-          currentMessageId,
+          messageId: currentMessageId,
           roomName: currentRoom,
         });
+      });
+    } else {
+      socket.emit('deleteMessage', {
+        messageUserId,
+        ownerId,
+        userId,
+        messageId: currentMessageId,
+        roomName: currentRoom,
       });
     }
     closeModal();

@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import styles from '../../authorized.module.scss';
 import { getIsAuth } from '../../../../lib/slice';
@@ -6,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { useLazyLogoutQuery } from '../../../../lib/authApi';
 import { useCreateNewRoomMutation, useGetAllRoomsQuery } from '../../../../lib/roomApi';
 import { FadeLoader } from 'react-spinners';
-import { useContextMenu } from '../../../../hooks/useContextMenu';
 import RoomsData from '../roomsData/RoomsData';
 import CreateRoomInput from '../createRoomInput/CreateRoomInput';
 
@@ -25,11 +25,6 @@ const Chat = () => {
     router.push('/auth');
   };
   
-  const {
-    contextMenu,
-    closeContextMenu,
-  } = useContextMenu();
-  
   
   if (isLoading || isCreateRoomLoading) {
     return (
@@ -42,9 +37,7 @@ const Chat = () => {
   }
   
   return (
-    <div
-      onClick={() => contextMenu.visible && closeContextMenu()}
-      onContextMenu={() => contextMenu.visible && closeContextMenu()}>
+    <div>
       <div className={'flex items-center justify-between px-5'}>
         <button className={styles.authorized__button} onClick={logoutFn}>Log out</button>
         <div></div>

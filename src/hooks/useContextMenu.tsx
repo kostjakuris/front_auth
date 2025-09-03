@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 
 type ContextMenuBase = {
@@ -21,7 +22,6 @@ export function useContextMenu<T extends ContextMenuExtra = {}>(
     messageText: '',
     ...initialExtra,
   });
-  
   const handleContextMenu = (
     event: any,
     messageText: string,
@@ -42,6 +42,7 @@ export function useContextMenu<T extends ContextMenuExtra = {}>(
   const closeContextMenu = () => {
     setContextMenu((prev) => ({ ...prev, visible: false }));
   };
+  
   
   return {
     contextMenu,

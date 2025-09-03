@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect } from 'react';
 import { useAppDispatch } from '../lib/hooks';
-import { getRefreshToken } from '../api/cookiesOperation';
+import { getRefreshToken, getToken } from '../api/cookiesOperation';
 import { getIsAuth } from '../lib/slice';
 import { useGetUserInfoQuery, useRegenerateTokenMutation } from '../lib/userApi';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
@@ -24,6 +24,11 @@ export const useGetInfo = () => {
   useEffect(() => {
     dispatch(getIsAuth());
     getUserData();
+    getToken().then(response => {
+      if (response) {
+        localStorage.setItem('isAuth', 'true');
+      }
+    });
   }, [getUserData]);
   
 };

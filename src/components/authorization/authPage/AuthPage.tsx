@@ -5,7 +5,7 @@ import { useFormik } from 'formik';
 import Link from 'next/link';
 import { authSchema } from '../../validation/validation';
 import { LoginFormFields } from '../../../interfaces/form.interface';
-import { Input } from '../../input';
+import { Input } from '../../ui/input';
 import { FadeLoader } from 'react-spinners';
 import { useLoginMutation } from '../../../lib/userApi';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';

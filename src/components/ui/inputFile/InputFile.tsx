@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import styles from './input.module.scss';
-import Attach from '../../../public/images/Attach';
+import Attach from '../../../../public/images/Attach';
 
 interface InputFileProps {
   onChangeFn: (e: React.ChangeEvent<HTMLInputElement>) => void;

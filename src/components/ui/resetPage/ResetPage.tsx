@@ -1,16 +1,16 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import styles from '../authorization/authorization.module.scss';
+import styles from '../../authorization/authorization.module.scss';
 import { useFormik } from 'formik';
 import { Input } from '../input';
 import { notFound, useRouter, useSearchParams } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import { getIsAuth } from '../../lib/slice';
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
+import { getIsAuth } from '../../../lib/slice';
 import { FadeLoader } from 'react-spinners';
-import { resetSchema } from '../validation/validation';
-import { ResetFormFields } from '../../interfaces/form.interface';
+import { resetSchema } from '../../validation/validation';
+import { ResetFormFields } from '../../../interfaces/form.interface';
 import Link from 'next/link';
-import { useResetPasswordMutation } from '../../lib/authApi';
+import { useResetPasswordMutation } from '../../../lib/authApi';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const ResetPage = () => {

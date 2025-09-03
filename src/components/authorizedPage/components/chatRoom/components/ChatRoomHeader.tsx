@@ -1,3 +1,4 @@
+'use client';
 import React, { FC } from 'react';
 import styles from '../../../authorized.module.scss';
 import Back from '../../../../../../public/images/Back';

@@ -1,16 +1,16 @@
 'use client';
 import React, { useEffect } from 'react';
-import styles from '../authorization/authorization.module.scss';
+import styles from '../../authorization/authorization.module.scss';
 import { useFormik } from 'formik';
 import Link from 'next/link';
 import { Input } from '../input';
 import { useRouter } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import { getIsAuth } from '../../lib/slice';
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
+import { getIsAuth } from '../../../lib/slice';
 import { FadeLoader } from 'react-spinners';
-import { forgotSchema } from '../validation/validation';
-import { ForgotFormFields } from '../../interfaces/form.interface';
-import { useSendResetLinkMutation } from '../../lib/authApi';
+import { forgotSchema } from '../../validation/validation';
+import { ForgotFormFields } from '../../../interfaces/form.interface';
+import { useSendResetLinkMutation } from '../../../lib/authApi';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const ForgotPage = () => {

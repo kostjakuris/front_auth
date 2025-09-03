@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useRef } from 'react';
 import styles from '../../../authorized.module.scss';
 import { messageConfig, MessageProps } from '../messageConfig/MessageConfig';
@@ -7,6 +8,7 @@ import dayjs from 'dayjs';
 import { useGetAllMessagesQuery } from '../../../../../lib/roomApi';
 import { useAppDispatch, useAppSelector } from '../../../../../lib/hooks';
 import { setCurrentMessageId, setMessages, setMessageUserId } from '../../../../../lib/slice';
+import ContextMenu from '../../../../ui/contextMenu/ContextMenu';
 
 const RoomMessages = () => {
   const {userId, currentRoomId, messages} = useAppSelector(
@@ -15,15 +17,13 @@ const RoomMessages = () => {
   const {data: messageData} = useGetAllMessagesQuery(currentRoomId ? currentRoomId : '');
   const dispatch = useAppDispatch();
   
-  const {
-    handleContextMenu
-  } = useContextMenu<{
+  const {handleContextMenu, contextMenu, closeContextMenu} = useContextMenu<{
     type: string;
     fullPath: string;
     messageId: string;
     userId: string;
   }>();
-
+  
   const onContextMenu = (
     event: any,
     message: string,
@@ -38,7 +38,7 @@ const RoomMessages = () => {
       messageId,
       userId,
     });
-
+    
     dispatch(setCurrentMessageId(messageId));
     dispatch(setMessageUserId(userId));
   };
@@ -117,6 +117,11 @@ const RoomMessages = () => {
           :
           <p className={'text-center mt-5 font-medium text-xl'}>This chat doesn't have any messages yet!</p>
       }
+      <ContextMenu
+        closeContextMenu={closeContextMenu}
+        contextMenu={contextMenu}
+        location={'message'}
+      />
     </div>
   );
 };

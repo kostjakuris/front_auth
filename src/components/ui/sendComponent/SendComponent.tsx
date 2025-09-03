@@ -1,14 +1,15 @@
+'use client';
 import React from 'react';
-import styles from '../authorizedPage/authorized.module.scss';
-import { useAppDispatch, useAppSelector } from '../../lib/hooks';
-import Send from '../../../public/images/Send';
+import styles from '../../authorizedPage/authorized.module.scss';
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
+import Send from '../../../../public/images/Send';
 import { Input } from '../input';
-import Close from '../../../public/images/Close';
-import { setChatMessage, setIsEditMessage } from '../../lib/slice';
-import { getSocket } from '../../api/socket';
+import Close from '../../../../public/images/Close';
+import { setChatMessage, setIsEditMessage } from '../../../lib/slice';
+import { getSocket } from '../../../api/socket';
 import { InputFile } from '../inputFile';
-import { useModal } from '../../providers/ModalProvider/ModalProvider.hooks';
-import { SendImageModal } from '../authorizedPage';
+import { useModal } from '../../../providers/ModalProvider/ModalProvider.hooks';
+import { SendImageModal } from '../../authorizedPage';
 
 
 const SendComponent = () => {
