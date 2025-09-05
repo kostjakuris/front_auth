@@ -18,6 +18,7 @@ export async function generateMetadata() {
       type: 'website',
       
     },
+    
   };
   return metadata;
 }
