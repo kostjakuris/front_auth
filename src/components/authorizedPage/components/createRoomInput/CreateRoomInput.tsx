@@ -24,6 +24,7 @@ const CreateRoomInput = () => {
     dispatch(setIsCreateRoom(false));
     dispatch(setIsEditRoom(false));
   };
+  
   return (
     <div className={'flex items-center justify-center flex-col mt-10'}>
       <button className={styles.authorized__button}
@@ -36,7 +37,7 @@ const CreateRoomInput = () => {
           placeholder='Room name'
           type={'text'}
           value={roomName ? roomName : ''}
-          onChangeFn={(event) => setRoomName(event.target.value)}
+          onChangeFn={(event) => dispatch(setRoomName(event.target.value))}
           class_name={styles.authorized__chat_input}
         />
         <button className={styles.authorized__submit} type='submit'>

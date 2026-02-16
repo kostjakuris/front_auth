@@ -54,6 +54,7 @@ const SendComponent = () => {
   
   return (
     <form onSubmit={submitMessage}
+      onKeyDown={(event) => event.key === 'Enter' && submitMessage(event)}
       className={`${styles.authorized__chat_form} ${messages.length === 0 ? 'mt-auto' : 'mt-5'}`}>
       <div className={!isEditMessage ? 'hidden' : styles.authorized__chat_edit}>
         <p className={`${styles.authorized__text} ml-5 mb-4`}>{chatMessage}</p>

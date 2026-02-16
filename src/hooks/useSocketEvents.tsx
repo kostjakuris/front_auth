@@ -4,11 +4,11 @@ import { getSocket } from '../api/socket';
 import dayjs from 'dayjs';
 import { useGetCurrentRoomInfoQuery, useIsUserJoinedQuery } from '../lib/roomApi';
 import { useAppDispatch, useAppSelector } from '../lib/hooks';
-import { setMessages } from '../lib/slice';
+import { deleteMessageById, setNewMessage, updateMessage } from '../lib/slice';
 
 export const useSocketEvents = () => {
   const socket = getSocket();
-  const {currentRoomId} = useAppSelector(state => state.auth);
+  const {currentRoomId, messages} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
   
   const {refetch} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '');
@@ -17,30 +17,22 @@ export const useSocketEvents = () => {
   
   useEffect(() => {
     socket.on('getMessage', (data) => {
-      dispatch(setMessages((prev: any) => [...prev, {
-        ...data, createdAt: dayjs(data.createdAt).format('MMM D, YYYY' +
-          ' HH:mm')
-      }]));
+      dispatch(setNewMessage({
+        ...data,
+        createdAt: dayjs(data.createdAt).format('MMM D, YYYY HH:mm'),
+      }));
     });
     socket.on('getUpdatedMessage', (data) => {
-      dispatch(setMessages((prev: any[]) =>
-        prev.map(element =>
-          element._id === data._id ?
-            {
-              ...element,
-              message: data.message,
-              updatedAt: dayjs(data.updatedAt).format('MMM D, YYYY HH:mm'),
-              isUpdated: data.isUpdated
-            } : element
-        )
-      ));
+      console.log({data});
+      dispatch(updateMessage({
+        _id: data._id,
+        message: data.message,
+        updatedAt: dayjs(data.updatedAt).format('MMM D, YYYY HH:mm'),
+        isUpdated: data.isUpdated,
+      }));
     });
     socket.on('getDeletedId', (data) => {
-      dispatch(setMessages((prev: any[]) =>
-        prev.filter(element =>
-          element._id !== data.id
-        )
-      ));
+      dispatch(deleteMessageById(data.id));
     });
     socket.on('getKickedUser', () => {
       refetch();

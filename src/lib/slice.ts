@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Message } from 'yup';
 
 
 export interface AppState {
@@ -61,6 +62,19 @@ const appSlice = createSlice({
     setMessages: (state, action) => {
       state.messages = action.payload;
     },
+    setNewMessage: (state, action) => {
+      state.messages.push(action.payload as never);
+    },
+    updateMessage: (state, action) => {
+      const i = state.messages.findIndex(m => m._id === action.payload._id);
+      console.log({i});
+      if (i !== -1) {
+        state.messages[i] = { ...state.messages[i], ...action.payload };
+      }
+    },
+    deleteMessageById: (state, action: PayloadAction<string>) => {
+      state.messages = state.messages.filter(m => m._id !== action.payload);
+    },
     setIsEditMessage: (state, action) => {
       state.isEditMessage = action.payload;
     },
@@ -104,6 +118,9 @@ export const {
   setUserInfo,
   setIsEditMessage,
   setCurrentRoomId,
+  setNewMessage,
+  updateMessage,
+  deleteMessageById,
   setCurrentRoom,
   setChatMessage,
   setOwnerId,
