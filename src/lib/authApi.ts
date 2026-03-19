@@ -1,20 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { ResetPasswordParams } from '../interfaces/form.interface';
-import { getToken } from '../api/cookiesOperation';
+import { baseQueryWithReauth } from './baseQueryWithReauth';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
-    prepareHeaders: async(headers) => {
-      const token = await getToken();
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-    credentials: 'include',
-  }),
+  baseQuery: baseQueryWithReauth,
   endpoints: (build) => ({
     logout: build.query({
       query: () => ({

@@ -15,7 +15,7 @@ import { SendImageModal } from '../../authorizedPage';
 const SendComponent = () => {
   const dispatch = useAppDispatch();
   const {isEditMessage, messages, currentMessageId, messageUserId} = useAppSelector(state => state.auth);
-  const {userName, userId, currentRoomId, currentRoom, chatMessage, ownerId} = useAppSelector((state) => state.auth);
+  const {userInfo, currentRoomId, currentRoom, chatMessage, ownerId} = useAppSelector((state) => state.auth);
   const socket = getSocket();
   const {openModal} = useModal();
   const closeEditBlock = () => {
@@ -28,11 +28,11 @@ const SendComponent = () => {
     if (chatMessage) {
       if (!isEditMessage) {
         socket.emit('sendMessage', {
-          userId,
+          userId: userInfo?.userId,
           roomName: currentRoom,
           roomId: Number(currentRoomId),
           content: chatMessage,
-          username: userName,
+          username: userInfo?.username,
           type: 'text'
         });
       } else {
@@ -40,10 +40,10 @@ const SendComponent = () => {
           messageUserId,
           ownerId,
           currentMessageId,
-          userId,
+          userId: userInfo?.userId,
           roomName: currentRoom,
           content: chatMessage,
-          username: userName,
+          username: userInfo?.username,
         });
       }
     }

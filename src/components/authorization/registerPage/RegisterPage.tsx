@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
 import styles from '../authorization.module.scss';
 import Link from 'next/link';
@@ -10,11 +10,16 @@ import { FadeLoader } from 'react-spinners';
 import { useRegisterMutation } from '../../../lib/userApi';
 import { useRouterChange } from '../../../hooks/useRouterChange';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
+import { setIsAuthLoading } from '../../../lib/slice';
 
 
 const RegisterPage = () => {
-  const [register, {isSuccess, isLoading, error}] = useRegisterMutation();
+  const [register, {isSuccess, isLoading: isRegisterLoading, error}] = useRegisterMutation();
   const registerError = error as FetchBaseQueryError & {data: {message: string; code: string}};
+  const {isAuthLoading} = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const isLoading = isRegisterLoading || isAuthLoading;
   
   const formik = useFormik<RegisterFormFields>({
     initialValues: {
@@ -24,11 +29,24 @@ const RegisterPage = () => {
     },
     validationSchema: registrationSchema,
     onSubmit: async(values: RegisterFormFields) => {
+      dispatch(setIsAuthLoading(true));
       await register({...values});
     },
   });
   
   useRouterChange(isSuccess);
+  
+  useEffect(() => {
+    if (isAuthLoading) {
+      dispatch(setIsAuthLoading(false));
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (registerError) {
+      dispatch(setIsAuthLoading(false));
+    }
+  }, [registerError]);
   
   if (isLoading) {
     return (
@@ -39,7 +57,7 @@ const RegisterPage = () => {
   }
   
   return (
-    <div className={styles.authorization}>
+    <section className={styles.authorization}>
       <h2 className={styles.authorization__title}>Sign Up</h2>
       <p className={styles.authorization__text}>Please,enter your future profile data</p>
       <p className={styles.authorization__error}>{registerError?.data.message}</p>
@@ -85,7 +103,7 @@ const RegisterPage = () => {
           Sign in
         </Link>
       </p>
-    </div>
+    </section>
   );
 };
 

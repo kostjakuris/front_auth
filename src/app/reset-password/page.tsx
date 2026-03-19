@@ -22,11 +22,16 @@ export async function generateMetadata() {
   return metadata;
 }
 
-const Reset = () => {
+type ResetPageProps = {
+  params: Promise<{token: string;}>
+};
+
+const Reset = async(props: ResetPageProps) => {
+  const {token} = await props.params;
   return (
-    <div className={styles.root}>
-      <ResetPage />
-    </div>
+    <main className={styles.root}>
+      <ResetPage token={token} />
+    </main>
   );
 };
 

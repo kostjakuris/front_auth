@@ -6,6 +6,7 @@ type ContextMenuBase = {
   x: number;
   y: number;
   messageText: string;
+  dynamicPosition?: boolean;
 };
 
 type ContextMenuExtra = Record<string, any>;
@@ -20,6 +21,7 @@ export function useContextMenu<T extends ContextMenuExtra = {}>(
     x: 0,
     y: 0,
     messageText: '',
+    dynamicPosition: true,
     ...initialExtra,
   });
   const handleContextMenu = (
@@ -40,9 +42,8 @@ export function useContextMenu<T extends ContextMenuExtra = {}>(
   };
   
   const closeContextMenu = () => {
-    setContextMenu((prev) => ({ ...prev, visible: false }));
+    setContextMenu((prev) => ({...prev, visible: false}));
   };
-  
   
   return {
     contextMenu,

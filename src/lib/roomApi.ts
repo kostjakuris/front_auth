@@ -1,23 +1,13 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { getToken } from '../api/cookiesOperation';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { CreateRoomFields, DeleteRoomFields, EditRoomFields } from '../interfaces/form.interface';
+import { baseQueryWithReauth } from './baseQueryWithReauth';
 
 export const roomApi = createApi({
   reducerPath: 'roomApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
-    prepareHeaders: async(headers) => {
-      const token = await getToken();
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-    credentials: 'include',
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ['Room'],
   endpoints: (build) => ({
-    getAllRooms: build.query({
+    getAllRooms: build.query<any, void>({
       query: () => ({
         url: '/room/all',
       }),

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styles from '../../authorization/authorization.module.scss';
 import { useFormik } from 'formik';
 import { Input } from '../input';
-import { notFound, useRouter, useSearchParams } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import { getIsAuth } from '../../../lib/slice';
 import { FadeLoader } from 'react-spinners';
@@ -13,9 +13,8 @@ import Link from 'next/link';
 import { useResetPasswordMutation } from '../../../lib/authApi';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
-const ResetPage = () => {
+const ResetPage = ({token}: {token: string}) => {
   const router = useRouter();
-  const params = useSearchParams();
   const [resetToken, setResetToken] = useState('');
   const {isAuth} = useAppSelector((state) => state.auth);
   const [resetPassword, {data, isLoading, error}] = useResetPasswordMutation();
@@ -33,7 +32,6 @@ const ResetPage = () => {
   });
   
   useEffect(() => {
-    const token = params.get('token');
     if (!token) {
       notFound();
     }
@@ -63,7 +61,7 @@ const ResetPage = () => {
     );
   }
   return (
-    <div className={styles.authorization}>
+    <section className={styles.authorization}>
       <h2 className={styles.authorization__title}>Reset your password</h2>
       <p className={styles.authorization__text}>Please,enter your new password</p>
       <p className={styles.authorization__error}>{resetError?.data.message}</p>
@@ -84,7 +82,7 @@ const ResetPage = () => {
           </button>
         </div>
       </form>
-    </div>
+    </section>
   );
 };
 

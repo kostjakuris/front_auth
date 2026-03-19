@@ -7,16 +7,28 @@ import { storage } from '../../../../../firebase';
 import { useDeleteRoomMutation } from '../../../../../lib/roomApi';
 import { getSocket } from '../../../../../api/socket';
 import { useAppSelector } from '../../../../../lib/hooks';
-import { MenuProps } from '../../../../ui/contextMenu/ContextMenu';
 import { useCloseRoom } from '../../../../../hooks/useCloseRoom';
+import { motion } from 'framer-motion';
 
-interface DeleteModalProps extends Omit<MenuProps, 'setRoomName' | 'closeContextMenu'> {
+interface DeleteModalProps {
+  location: 'room' | 'message';
+  contextMenu: {messageText: string; type?: string; fullPath?: string};
 }
 
-const DeleteMessageModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
+const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   const {closeModal} = useModal();
   const [deleteRoom] = useDeleteRoomMutation();
-  const {currentRoom, ownerId, userId, currentRoomId, currentMessageId, messageUserId} = useAppSelector(
+  const {
+    currentRoom,
+    chosenRoom,
+    chosenOwnerId,
+    currentRoomId,
+    chosenRoomId,
+    ownerId,
+    userInfo,
+    currentMessageId,
+    messageUserId
+  } = useAppSelector(
     (state) => state.auth);
   const socket = getSocket();
   const {closeRoom} = useCloseRoom();
@@ -27,7 +39,7 @@ const DeleteMessageModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
         socket.emit('deleteMessage', {
           messageUserId,
           ownerId,
-          userId,
+          userId: userInfo?.userId,
           messageId: currentMessageId,
           roomName: currentRoom,
         });
@@ -36,7 +48,7 @@ const DeleteMessageModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
       socket.emit('deleteMessage', {
         messageUserId,
         ownerId,
-        userId,
+        userId: userInfo?.userId,
         messageId: currentMessageId,
         roomName: currentRoom,
       });
@@ -56,23 +68,30 @@ const DeleteMessageModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   };
   
   const deleteOneRoom = async() => {
-    await deleteRoom({id: Number(currentRoomId), ownerId: Number(ownerId)});
-    deleteRoomFolder(String(currentRoom));
+    await deleteRoom({id: Number(chosenRoomId), ownerId: Number(chosenOwnerId)});
+    deleteRoomFolder(String(chosenRoom));
     closeModal();
-    closeRoom();
+    if (chosenRoomId === currentRoomId) {
+      closeRoom();
+    }
   };
   return (
-    <div className={styles.delete}>
+    <motion.div
+      className={styles.delete}
+      initial={{scale: 0.7}}
+      animate={{scale: 1}}
+      transition={{duration: 0.4}}
+    >
       <p className={styles.delete__text}>Are you sure you want to delete?</p>
-      <div className={'flex justify-around items-center mt-10 mb-5'}>
+      <div className={'flex justify-around items-center mt-10 gap-[20px]'}>
         <button className={styles.delete__cancelButton} onClick={closeModal}>Cancel</button>
         <button className={styles.delete__deleteButton}
           onClick={location === 'message' ? deleteOneMessage : deleteOneRoom}>
           Delete
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-export default DeleteMessageModal;
+export default DeleteModal;

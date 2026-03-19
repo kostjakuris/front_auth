@@ -1,30 +1,16 @@
 'use client';
 import React from 'react';
 import styles from '../../authorized.module.scss';
-import { getIsAuth } from '../../../../lib/slice';
-import { useAppDispatch } from '../../../../lib/hooks';
-import { useRouter } from 'next/navigation';
-import { useLazyLogoutQuery } from '../../../../lib/authApi';
+import { useAppSelector } from '../../../../lib/hooks';
 import { useCreateNewRoomMutation, useGetAllRoomsQuery } from '../../../../lib/roomApi';
-import { FadeLoader } from 'react-spinners';
 import RoomsData from '../roomsData/RoomsData';
-import CreateRoomInput from '../createRoomInput/CreateRoomInput';
+import { FadeLoader } from 'react-spinners';
 
 
 const Chat = () => {
-  const dispatch = useAppDispatch();
-  const router = useRouter();
-  const [logout] = useLazyLogoutQuery();
-  const {isLoading} = useGetAllRoomsQuery('');
+  const {isAuth} = useAppSelector(state => state.auth);
+  const {isLoading} = useGetAllRoomsQuery(undefined, {skip: !isAuth, refetchOnMountOrArgChange: true});
   const [_, {isLoading: isCreateRoomLoading}] = useCreateNewRoomMutation();
-  
-  const logoutFn = async() => {
-    await logout('');
-    localStorage.setItem('isAuth', 'false');
-    dispatch(getIsAuth());
-    router.push('/auth');
-  };
-  
   
   if (isLoading || isCreateRoomLoading) {
     return (
@@ -35,13 +21,9 @@ const Chat = () => {
       </div>
     );
   }
+  
   return (
-    <div>
-      <div className={'flex items-center justify-between px-5'}>
-        <button className={styles.authorized__button} onClick={logoutFn}>Log out</button>
-        <div></div>
-      </div>
-      <CreateRoomInput />
+    <div className={'h-full'}>
       <RoomsData />
     </div>
   );

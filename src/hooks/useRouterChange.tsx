@@ -1,30 +1,36 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../lib/hooks';
 import { useRouter } from 'next/navigation';
-import { getIsAuth } from '../lib/slice';
+import { getIsAuth, setIsAuthLoading } from '../lib/slice';
 
 export const useRouterChange = (isSuccess: boolean) => {
   const {isAuth} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const checkIsAuth = useCallback(() => {
-    if (isAuth) {
-      router.push('/');
-    }
-  }, [isAuth]);
   
   useEffect(() => {
-    dispatch(getIsAuth());
     if (isSuccess) {
       localStorage.setItem('isAuth', 'true');
-      router.push('/');
+    }
+    dispatch(getIsAuth());
+    if (isSuccess) {
+      router.replace('/');
     }
   }, [isSuccess]);
   
   useEffect(() => {
+    const checkIsAuth = () => {
+      if (isAuth) {
+        router.replace('/');
+      } else {
+        dispatch(setIsAuthLoading(false));
+      }
+    };
+    dispatch(setIsAuthLoading(true));
     checkIsAuth();
-  }, [checkIsAuth]);
+  }, [isAuth]);
+  
   
 };

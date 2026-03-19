@@ -24,9 +24,9 @@ export async function generateMetadata() {
 
 const Home = () => {
   return (
-    <div className={styles.root}>
+    <main className={styles.root}>
       <AuthorizedPage />
-    </div>
+    </main>
   );
 };
 

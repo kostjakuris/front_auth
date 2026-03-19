@@ -1,11 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Message } from 'yup';
 
+export type User = {
+  userId: number;
+  username: string;
+  email: string;
+};
 
 export interface AppState {
   isAuth: boolean;
+  isAuthLoading: boolean;
   isEditMessage: boolean;
-  isCreateRoom: boolean;
   messages: any[] | [];
   messageUserId: string | null;
   currentMessageId: string | null;
@@ -13,20 +17,26 @@ export interface AppState {
   isChat: boolean;
   isRooms: boolean;
   isUsersList: boolean;
-  userName: string | null;
   roomName: string | null;
   currentRoom: string | null;
+  chosenRoom: string | null;
   currentRoomId: string | null;
-  userId: number | null;
+  chosenRoomId: string | null;
+  userInfo: User | null;
   ownerId: number | null;
+  chosenOwnerId: number | null;
   chatMessage: string | null;
 }
 
 const initialState: AppState = {
   isAuth: false,
+  isAuthLoading: true,
+  chosenRoom: null,
+  chosenRoomId: null,
+  chosenOwnerId: null,
   messages: [],
+  userInfo: null,
   isEditMessage: false,
-  isCreateRoom: false,
   roomName: null,
   messageUserId: null,
   currentMessageId: null,
@@ -37,9 +47,7 @@ const initialState: AppState = {
   currentRoom: null,
   chatMessage: null,
   currentRoomId: null,
-  userId: null,
   ownerId: null,
-  userName: null,
 };
 
 const appSlice = createSlice({
@@ -67,9 +75,8 @@ const appSlice = createSlice({
     },
     updateMessage: (state, action) => {
       const i = state.messages.findIndex(m => m._id === action.payload._id);
-      console.log({i});
       if (i !== -1) {
-        state.messages[i] = { ...state.messages[i], ...action.payload };
+        state.messages[i] = {...state.messages[i], ...action.payload};
       }
     },
     deleteMessageById: (state, action: PayloadAction<string>) => {
@@ -87,11 +94,17 @@ const appSlice = createSlice({
     setIsUsersList: (state, action) => {
       state.isUsersList = action.payload;
     },
-    setIsCreateRoom: (state, action) => {
-      state.isCreateRoom = action.payload;
-    },
     setIsEditRoom: (state, action) => {
       state.isEditRoom = action.payload;
+    },
+    setChosenOwnerId: (state, action) => {
+      state.chosenOwnerId = action.payload;
+    },
+    setChosenRoom: (state, action) => {
+      state.chosenRoom = action.payload;
+    },
+    setChosenRoomId: (state, action) => {
+      state.chosenRoomId = action.payload;
     },
     setOwnerId: (state, action) => {
       state.ownerId = action.payload;
@@ -103,11 +116,13 @@ const appSlice = createSlice({
       state.currentRoomId = action.payload;
     },
     setUserInfo: (state, action) => {
-      state.userName = action.payload.userName;
-      state.userId = action.payload.userId;
+      state.userInfo = action.payload;
     },
     setRoomName: (state, action) => {
       state.roomName = action.payload;
+    },
+    setIsAuthLoading: (state, action: PayloadAction<boolean>) => {
+      state.isAuthLoading = action.payload;
     },
   },
   
@@ -121,10 +136,12 @@ export const {
   setNewMessage,
   updateMessage,
   deleteMessageById,
+  setChosenRoomId,
+  setChosenRoom,
+  setChosenOwnerId,
   setCurrentRoom,
   setChatMessage,
   setOwnerId,
-  setIsCreateRoom,
   setIsEditRoom,
   setIsChat,
   setIsRooms,
@@ -132,7 +149,8 @@ export const {
   setRoomName,
   setMessages,
   setMessageUserId,
-  setCurrentMessageId
-  
+  setCurrentMessageId,
+  setIsAuthLoading,
+
 } = appSlice.actions;
 export default appSlice.reducer;

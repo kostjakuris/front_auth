@@ -24,9 +24,9 @@ export async function generateMetadata() {
 
 const Forgot = () => {
   return (
-    <div className={styles.root}>
+    <main className={styles.root}>
       <ForgotPage />
-    </div>
+    </main>
   );
 };
 

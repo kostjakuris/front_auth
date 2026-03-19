@@ -8,12 +8,12 @@ import { deleteMessageById, setNewMessage, updateMessage } from '../lib/slice';
 
 export const useSocketEvents = () => {
   const socket = getSocket();
-  const {currentRoomId, messages} = useAppSelector(state => state.auth);
+  const {currentRoomId} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
-  
-  const {refetch} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '');
+  const {refetch} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '', {
+    refetchOnMountOrArgChange: true,
+  });
   const {refetch: refetchIsUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
-  
   
   useEffect(() => {
     socket.on('getMessage', (data) => {
@@ -23,7 +23,6 @@ export const useSocketEvents = () => {
       }));
     });
     socket.on('getUpdatedMessage', (data) => {
-      console.log({data});
       dispatch(updateMessage({
         _id: data._id,
         message: data.message,

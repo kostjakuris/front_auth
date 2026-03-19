@@ -8,6 +8,8 @@ import { storage } from '../../../../../firebase';
 import { v4 } from 'uuid';
 import { getSocket } from '../../../../../api/socket';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
+
 
 interface SendImageModalProps {
   selectedFile: EventTarget & HTMLInputElement;
@@ -15,7 +17,7 @@ interface SendImageModalProps {
 
 const SendImageModal: FC<SendImageModalProps> = ({selectedFile}) => {
   const {closeModal} = useModal();
-  const {userId, userName, currentRoomId, currentRoom} = useAppSelector((state) => state.auth);
+  const {userInfo, currentRoomId, currentRoom} = useAppSelector((state) => state.auth);
   const socket = getSocket();
   const [chosenFile, setChosenFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -66,12 +68,12 @@ const SendImageModal: FC<SendImageModalProps> = ({selectedFile}) => {
       uploadBytes(fileRef, chosenFile).then((response) => {
         getDownloadURL(fileRef).then((url) => {
           socket.emit('sendMessage', {
-            userId,
+            userId: userInfo?.userId,
             roomName: currentRoom,
             roomId: Number(currentRoomId),
             content: url,
             fullPath: response.metadata.fullPath,
-            username: userName,
+            username: userInfo?.username,
             type: chosenFile.type.substring(0, chosenFile.type.indexOf('/'))
           });
         });
@@ -85,7 +87,12 @@ const SendImageModal: FC<SendImageModalProps> = ({selectedFile}) => {
     handleFile();
   }, [selectedFile.files]);
   return (
-    <div className={styles.send}>
+    <motion.div
+      className={styles.send}
+      initial={{scale: 0.7}}
+      animate={{scale: 1}}
+      transition={{duration: 0.4}}
+    >
       {
         selectedImage &&
         <Image src={selectedImage} className={styles.send__image} alt={'selected image'} width={330} height={300} />
@@ -96,7 +103,7 @@ const SendImageModal: FC<SendImageModalProps> = ({selectedFile}) => {
           <source src={selectedVideo} type={chosenFile?.type} />
         </video>
       }
-      <div className={'flex justify-around items-center mt-10 mb-5'}>
+      <div className={'flex justify-around items-center mt-10'}>
         <button className={styles.send__cancelButton} onClick={() => {
           closeModal();
           setChosenFile(null);
@@ -106,7 +113,7 @@ const SendImageModal: FC<SendImageModalProps> = ({selectedFile}) => {
           Send
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

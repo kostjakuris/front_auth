@@ -1,9 +1,15 @@
 import React from 'react';
+import { IconProps } from './Edit';
 
-export const Create = () => {
+export const Create = ({className, ...props}: IconProps) => {
   return (
-    <svg width='30' height='30' viewBox='0 0 25 25' fill='none' xmlns='http://www.w3.org/2000/svg'>
-      <path d='M13.75 16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75V16.25Z' fill='white' />
+    <svg className={className} {...props} fill='#ffffff' width='38px' height='38px' viewBox='0 0 22 22' xmlns='http://www.w3.org/2000/svg'
+      id='memory-plus' stroke='#ffffff'>
+      <g id='SVGRepo_bgCarrier' strokeWidth='0'></g>
+      <g id='SVGRepo_tracerCarrier' strokeLinecap='round' strokeLinejoin='round'></g>
+      <g id='SVGRepo_iconCarrier'>
+        <path d='M12 17H10V12H5V10H10V5H12V10H17V12H12Z'></path>
+      </g>
     </svg>
   );
 };

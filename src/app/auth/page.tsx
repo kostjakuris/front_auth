@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { AuthPage } from '../../components';
 import styles from '../root.module.scss';
+import { redirect } from 'next/navigation';
+import { getToken } from '../../api/cookiesOperation';
 
 export async function generateMetadata() {
   const metadata: Metadata = {
@@ -22,11 +24,14 @@ export async function generateMetadata() {
   return metadata;
 }
 
-const Auth = () => {
+const Auth = async () => {
+  const token = await getToken();
+  if (token) redirect('/');
+
   return (
-    <div className={styles.root}>
+    <main className={styles.root}>
       <AuthPage />
-    </div>
+    </main>
   );
 };
 

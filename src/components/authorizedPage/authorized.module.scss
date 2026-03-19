@@ -11,16 +11,24 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    height: 100%;
   }
 
   &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    width: 150px;
-    height: 40px;
-    background: #9890e3;
     color: white;
-    border-radius: 25px;
-    margin-top: 20px;
+    width: fit-content;
+    padding: 5px;
+    border-radius: 10px;
+    border-color: transparent;
+    height: fit-content;
+    margin-bottom: 10px;
+    &:hover {
+      background: rgba(128, 128, 128, 0.8);
+    }
   }
 
   &__chats {
@@ -32,16 +40,36 @@
   }
 
   &__chat_container {
-    padding: 0 20px;
-    margin: 40px auto;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: space-between;
   }
 
-  &__chat_wrapper {
+  &__chat_rooms {
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
+    max-width: 25%;
+    flex: 1;
+    padding: 10px;
+    background-color: #212121;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+      background-color: #989292;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: transparent;
+    }
+
   }
 
   &__chats_title {
@@ -56,18 +84,14 @@
     }
   }
 
-  &__chats_rooms {
+  &__chats_room {
     position: relative;
     cursor: pointer;
-    display: block;
-    margin-right: 40px;
-    padding-top: 10px;
-    width: 400px;
-    height: 70px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
-
+    width: 100%;
+    padding: 20px 14px;
+    border-radius: 15px;
     &:hover {
-      background: rgba(128, 128, 128, 0.8);
+      background: rgba(128, 128, 128, 0.5);
     }
 
     &:first-child {
@@ -79,10 +103,7 @@
     padding: 0 20px;
     overflow-y: auto;
     overflow-x: hidden;
-
-    &::-webkit-scrollbar-track {
-      margin: 0 0 40px;
-    }
+    height: 100%;
 
     &::-webkit-scrollbar-thumb {
       border-radius: 10px;
@@ -110,47 +131,24 @@
 
   &__chat_myMessage {
     position: relative;
+    z-index: 2;
     background: green;
     border-radius: 20px;
-    padding: 0 20px 20px 20px;
+    padding: 0 0 20px 0;
     margin-top: 5px;
-
-    &::before {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      right: -10px;
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 40px solid green;
-    }
   }
 
   &__chat_message {
     position: relative;
+    z-index: 2;
     background: gray;
     border-radius: 20px;
     margin-top: 5px;
-    padding: 0 20px 20px 20px;
-
-    &::before {
-      content: "";
-      position: absolute;
-      z-index: 0;
-      bottom: 0;
-      left: -10px;
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 40px solid gray;
-    }
+    padding: 0 0 20px 0;
   }
 
   &__chats_nickname {
-    padding-top: 10px;
+    padding: 10px 20px;
     font-family: sans-serif;
     font-size: 18px;
     font-weight: 400;
@@ -161,11 +159,33 @@
     }
   }
 
+  &__chat_LeftTriangle, &__chat_RightTriangle {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    z-index: -1;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+  }
+
+  &__chat_RightTriangle {
+    border-bottom: 40px solid green;
+    right: -10px;
+  }
+
+  &__chat_LeftTriangle {
+    left: -10px;
+    border-bottom: 40px solid gray;
+  }
+
   &__chat {
     background: rgba(28, 28, 29);
-    border-radius: 10px;
     margin: 0 auto;
+    height: 100%;
     width: 100%;
+    flex: 1;
     display: flex;
     flex-direction: column;
   }
@@ -179,7 +199,6 @@
   }
 
   &__chat_input {
-    max-width: 80%;
     width: 100%;
     color: white;
     border: 1px solid white;
@@ -193,6 +212,7 @@
     display: block;
     background: black;
     width: 200px;
+    z-index: 10;
     border-radius: 15px;
   }
 
@@ -241,12 +261,27 @@
     }
   }
 
+  &__return_btn {
+    cursor: pointer;
+    color: white;
+    margin-top: 20px;
+    border-radius: 10px;
+    background: #9890e3;
+    padding: 9px 14px;
+    transition: scale 0.3s ease-in-out;
+
+    &:hover {
+      scale: 1.05;
+    }
+  }
+
   &__text {
     margin-top: 20px;
     font-family: sans-serif;
     font-size: 18px;
     font-weight: 400;
     line-height: 21.6px;
+    padding: 0 20px;
     color: white;
     @media screen and (max-width: 460px) {
       font-size: 14px;
