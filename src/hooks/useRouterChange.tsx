@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../lib/hooks';
 import { useRouter } from 'next/navigation';
 import { getIsAuth, setIsAuthLoading } from '../lib/slice';
+import { getToken } from '../api/cookiesOperation';
 
 export const useRouterChange = (isSuccess: boolean) => {
   const {isAuth} = useAppSelector(state => state.auth);
@@ -12,11 +13,16 @@ export const useRouterChange = (isSuccess: boolean) => {
   
   useEffect(() => {
     if (isSuccess) {
-      localStorage.setItem('isAuth', 'true');
-    }
-    dispatch(getIsAuth());
-    if (isSuccess) {
-      router.replace('/');
+      getToken().then(response => {
+        if (response) {
+          console.log(response, 'response');
+          localStorage.setItem('isAuth', 'true');
+          dispatch(getIsAuth());
+          router.replace('/');
+        } else {
+          dispatch(setIsAuthLoading(false));
+        }
+      });
     }
   }, [isSuccess]);
   

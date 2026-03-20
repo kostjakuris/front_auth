@@ -38,6 +38,8 @@ export const useGetInfo = () => {
         localStorage.setItem('isAuth', 'true');
         dispatch(getIsAuth());
       } else {
+        localStorage.setItem('isAuth', 'false');
+        dispatch(getIsAuth());
         router.push('/auth');
       }
     });
