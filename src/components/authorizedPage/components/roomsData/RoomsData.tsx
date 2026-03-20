@@ -27,6 +27,7 @@ import { useModal } from '../../../../providers/ModalProvider/ModalProvider.hook
 import { Edit } from '../../../../../public/images/Edit';
 import { Delete } from '../../../../../public/images/Delete';
 import { useLazyLogoutQuery } from '../../../../lib/authApi';
+import { userApi } from '../../../../lib/userApi';
 import { useRouter } from 'next/navigation';
 import Logout from '../../../../../public/images/Logout';
 import { Create } from '../../../../../public/images/Create';
@@ -35,7 +36,7 @@ import CreateAndEditRoomModal from '../chat/modals/CreateAndEditRoomModal';
 
 const RoomsData = () => {
   const dispatch = useAppDispatch();
-  const {currentRoomId, userInfo, isChat, isAuth, ownerId, chosenOwnerId} = useAppSelector(
+  const {currentRoomId, userInfo, isChat, ownerId, chosenOwnerId} = useAppSelector(
     state => state.auth);
   const {data} = useGetAllRoomsQuery(undefined, {refetchOnMountOrArgChange: true});
   const {openModal} = useModal();
@@ -106,8 +107,9 @@ const RoomsData = () => {
   
   const logoutFn = async() => {
     dispatch(setIsAuthLoading(true));
-    dispatch(setUserInfo(null));
     await logout('');
+    dispatch(userApi.util.resetApiState());
+    dispatch(setUserInfo(null));
     localStorage.setItem('isAuth', 'false');
     dispatch(getIsAuth());
     router.push('/auth');
