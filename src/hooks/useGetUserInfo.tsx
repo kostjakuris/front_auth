@@ -9,25 +9,25 @@ import { useGetUserInfoQuery } from '../lib/userApi';
 export const useGetUserInfo = (isSuccess?: boolean) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const {data: userData, isError} = useGetUserInfoQuery(undefined, {
+  const {data: userData} = useGetUserInfoQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
   
   useEffect(() => {
-    console.log(userData, 'userData');
-    if (userData) {
-      console.log(userData, 'userData1');
-      dispatch(setUserInfo(userData));
-      dispatch(getIsAuth());
-      localStorage.setItem('isAuth', 'true');
-      router.replace('/');
-    }
-    if (isError) {
-      localStorage.setItem('isAuth', 'false');
-      dispatch(getIsAuth());
-      router.replace('/auth');
-      dispatch(setIsAuthLoading(false));
-    }
-  }, [userData, isError, isSuccess]);
+    const checkUserData = () => {
+      if (userData) {
+        dispatch(setUserInfo(userData));
+        dispatch(getIsAuth());
+        localStorage.setItem('isAuth', 'true');
+        router.replace('/');
+      } else {
+        localStorage.setItem('isAuth', 'false');
+        dispatch(getIsAuth());
+        router.replace('/auth');
+        dispatch(setIsAuthLoading(false));
+      }
+    };
+    checkUserData();
+  }, [userData, isSuccess]);
   
 };

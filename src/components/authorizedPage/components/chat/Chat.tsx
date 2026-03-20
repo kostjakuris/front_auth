@@ -8,11 +8,11 @@ import { FadeLoader } from 'react-spinners';
 
 
 const Chat = () => {
-  const {isAuth} = useAppSelector(state => state.auth);
+  const {isAuthLoading} = useAppSelector(state => state.auth);
   const {isLoading} = useGetAllRoomsQuery(undefined, {refetchOnMountOrArgChange: true});
   const [_, {isLoading: isCreateRoomLoading}] = useCreateNewRoomMutation();
   
-  if (isLoading || isCreateRoomLoading) {
+  if (isLoading || isCreateRoomLoading || isAuthLoading) {
     return (
       <div className={styles.authorized__wrapper}>
         <div className={styles.authorized}>
