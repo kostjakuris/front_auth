@@ -12,7 +12,7 @@ import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import { setIsAuthLoading } from '../../../lib/slice';
 import Google from '../../../../public/images/Google';
-import { useRouterChange } from '../../../hooks/useRouterChange';
+import { useGetUserInfo } from '../../../hooks/useGetUserInfo';
 
 
 const AuthPage = () => {
@@ -52,13 +52,8 @@ const AuthPage = () => {
       `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
   };
   
-  useRouterChange(isSuccess);
+  useGetUserInfo(isSuccess);
   
-  // useEffect(() => {
-  //   if (isAuthLoading) {
-  //     dispatch(setIsAuthLoading(false));
-  //   }
-  // }, []);
   
   if (isLoading) {
     return (

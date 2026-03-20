@@ -3,11 +3,11 @@ import React, { useEffect } from 'react';
 import styles from './authorized.module.scss';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { FadeLoader } from 'react-spinners';
-import { useGetInfo } from '../../hooks/useGetInfo';
 import { useGetUserInfoQuery } from '../../lib/userApi';
 import { Chat } from './index';
 import { setIsAuthLoading, setUserInfo } from '../../lib/slice';
 import { useGetAllRoomsQuery } from '../../lib/roomApi';
+import { useGetUserInfo } from '../../hooks/useGetUserInfo';
 
 const AuthorizedPage = () => {
   const dispatch = useAppDispatch();
@@ -17,11 +17,10 @@ const AuthorizedPage = () => {
   
   const {data: userData, isLoading: isUserInfoLoading} = useGetUserInfoQuery(undefined, {
     refetchOnMountOrArgChange: true,
-    skip: !isAuth,
   });
   const isLoading = isUserInfoLoading || isAuthLoading;
   
-  useGetInfo();
+  useGetUserInfo();
   
   useEffect(() => {
     if (userData) {

@@ -8,7 +8,7 @@ import { RegisterFormFields } from '../../../interfaces/form.interface';
 import { Input } from '../../ui/input';
 import { FadeLoader } from 'react-spinners';
 import { useRegisterMutation } from '../../../lib/userApi';
-import { useRouterChange } from '../../../hooks/useRouterChange';
+import { useGetUserInfo } from '../../../hooks/useGetUserInfo';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import { setIsAuthLoading } from '../../../lib/slice';
@@ -34,7 +34,7 @@ const RegisterPage = () => {
     },
   });
   
-  useRouterChange(isSuccess);
+  useGetUserInfo(isSuccess);
   
   useEffect(() => {
     if (isAuthLoading) {

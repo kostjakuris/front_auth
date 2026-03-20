@@ -1,17 +1,9 @@
 import { BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
-import { getRefreshToken, getToken } from '../api/cookiesOperation';
+import { Mutex } from 'async-mutex';
 
+const mutex = new Mutex();
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
-  prepareHeaders: async(headers) => {
-    const token = await getToken();
-    console.log(token, 'token1');
-    
-    if (token) {
-      headers.set('authorization', `Bearer ${token}`);
-    }
-    return headers;
-  },
   credentials: 'include',
 });
 
@@ -20,19 +12,22 @@ export const baseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async(args, api, extraOptions) => {
+  await mutex.waitForUnlock();
   let result = await rawBaseQuery(args, api, extraOptions);
   
   if (result.error?.status === 401) {
-    const refreshToken = await getRefreshToken();
-    if (refreshToken) {
+    if (!mutex.isLocked()) {
       const refreshResult = await rawBaseQuery(
-        {url: '/auth/regenerate-token', method: 'POST', body: {refreshToken}},
+        {url: '/auth/regenerate-token', method: 'POST'},
         api,
         extraOptions
       );
       if (refreshResult.data) {
         result = await rawBaseQuery(args, api, extraOptions);
       }
+    } else {
+      await mutex.waitForUnlock();
+      result = await rawBaseQuery(args, api, extraOptions);
     }
   }
   
