@@ -22,6 +22,7 @@ export const useGetInfo = () => {
   const getUserData = useCallback(async() => {
     if (userError?.data?.message.name === 'TokenExpiredError') {
       const refreshToken = await getRefreshToken();
+      console.log(refreshToken, 'refreshToken');
       if (refreshToken) {
         await regenerateToken(refreshToken);
       }
@@ -33,6 +34,7 @@ export const useGetInfo = () => {
     getUserData();
     getToken().then(response => {
       if (response) {
+        console.log(response, 'response');
         localStorage.setItem('isAuth', 'true');
         dispatch(getIsAuth());
       } else {
