@@ -14,7 +14,9 @@ export const useGetUserInfo = (isSuccess?: boolean) => {
   });
   
   useEffect(() => {
+    console.log(userData, 'userData');
     if (userData) {
+      console.log(userData, 'userData1');
       dispatch(setUserInfo(userData));
       dispatch(getIsAuth());
       localStorage.setItem('isAuth', 'true');
