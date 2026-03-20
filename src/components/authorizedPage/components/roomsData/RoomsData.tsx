@@ -37,7 +37,7 @@ const RoomsData = () => {
   const dispatch = useAppDispatch();
   const {currentRoomId, userInfo, isChat, isAuth, ownerId, chosenOwnerId} = useAppSelector(
     state => state.auth);
-  const {data} = useGetAllRoomsQuery(undefined, {skip: !isAuth, refetchOnMountOrArgChange: true});
+  const {data} = useGetAllRoomsQuery(undefined, {refetchOnMountOrArgChange: true});
   const {openModal} = useModal();
   const router = useRouter();
   

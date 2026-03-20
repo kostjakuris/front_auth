@@ -21,9 +21,10 @@ export const useGetUserInfo = (isSuccess?: boolean) => {
       router.replace('/');
     }
     if (isError) {
-      localStorage.removeItem('isAuth');
-      dispatch(setIsAuthLoading(false));
+      localStorage.setItem('isAuth', 'false');
+      dispatch(getIsAuth());
       router.replace('/auth');
+      dispatch(setIsAuthLoading(false));
     }
   }, [userData, isError, isSuccess]);
   
