@@ -34,19 +34,7 @@ const RegisterPage = () => {
     },
   });
   
-  useGetUserInfo(isSuccess);
-  
-  useEffect(() => {
-    if (isAuthLoading) {
-      dispatch(setIsAuthLoading(false));
-    }
-  }, []);
-  
-  useEffect(() => {
-    if (registerError) {
-      dispatch(setIsAuthLoading(false));
-    }
-  }, [registerError]);
+  useGetUserInfo(isSuccess, registerError);
   
   if (isLoading) {
     return (

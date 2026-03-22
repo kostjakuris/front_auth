@@ -110,6 +110,13 @@ const RoomsData = () => {
     await logout('');
     dispatch(userApi.util.resetApiState());
     dispatch(setUserInfo(null));
+    dispatch(setCurrentRoomId(null));
+    dispatch(setCurrentRoom(null));
+    dispatch(setOwnerId(null));
+    dispatch(setIsEditMessage(false));
+    dispatch(setIsUsersList(false));
+    dispatch(setChatMessage(''));
+    dispatch(setIsChat(false));
     localStorage.setItem('isAuth', 'false');
     dispatch(getIsAuth());
     router.push('/auth');

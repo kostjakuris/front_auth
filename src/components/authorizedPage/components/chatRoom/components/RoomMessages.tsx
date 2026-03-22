@@ -26,7 +26,9 @@ const RoomMessages = () => {
     state => state.auth);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const {data: messageData} = useGetAllMessagesQuery(currentRoomId ? currentRoomId : '');
+  const {data: messageData} = useGetAllMessagesQuery(currentRoomId ? currentRoomId : '', {
+    refetchOnMountOrArgChange: true
+  });
   const dispatch = useAppDispatch();
   const {openModal} = useModal();
   

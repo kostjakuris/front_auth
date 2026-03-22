@@ -1,8 +1,6 @@
 import { Metadata } from 'next';
 import styles from '../root.module.scss';
 import { RegisterPage } from '../../components';
-import { redirect } from 'next/navigation';
-import { getToken } from '../../api/cookiesOperation';
 
 export async function generateMetadata() {
   const metadata: Metadata = {
@@ -26,8 +24,6 @@ export async function generateMetadata() {
 }
 
 const Register = async () => {
-  const token = await getToken();
-  if (token) redirect('/');
 
   return (
     <main className={styles.root}>

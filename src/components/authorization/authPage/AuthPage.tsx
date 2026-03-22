@@ -52,7 +52,7 @@ const AuthPage = () => {
       `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
   };
   
-  useGetUserInfo(isSuccess);
+  useGetUserInfo(isSuccess, authError);
   
   
   if (isLoading) {
