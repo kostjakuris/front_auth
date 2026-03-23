@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import styles from '../../../authorized.module.scss';
+import usersListStyles from './usersList.module.scss';
 import { useAppSelector } from '../../../../../lib/hooks';
 import { Delete } from '../../../../../../public/images/Delete';
 import { useGetCurrentRoomInfoQuery } from '../../../../../lib/roomApi';
@@ -18,7 +19,7 @@ const UsersList = () => {
   useSocketEvents();
   
   return (
-    <div className={styles.authorized__chat_userList}>
+    <div className={usersListStyles.user_list}>
       <p className={`${styles.authorized__chats_title} my-5 text-center`}>All users</p>
       {
         roomData?.users?.map((user: any) => (

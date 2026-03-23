@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import styles from '../../authorized.module.scss';
+import chatStyles from './chatRoom.module.scss';
 import { useAppSelector } from '../../../../lib/hooks';
 import { useGetAllMessagesQuery, useIsUserJoinedQuery, } from '../../../../lib/roomApi';
 import { SendComponent } from '../../../ui/sendComponent';
@@ -22,17 +23,17 @@ const ChatRoom = () => {
   
   if (isLoading) {
     return (
-      <div className={!isChat ? 'hidden' : styles.authorized__chat}>
+      <div className={!isChat ? 'hidden' : chatStyles.chat}>
         <div className={'h-full flex items-center justify-center'}>
           <FadeLoader color={'white'} loading={true} />
         </div>
       </div>
     );
   }
-  
+
   return (
     <div
-      className={!isChat ? 'hidden' : styles.authorized__chat}>
+      className={!isChat ? 'hidden' : chatStyles.chat}>
       <ChatRoomHeader />
       {
         isUsersList ?

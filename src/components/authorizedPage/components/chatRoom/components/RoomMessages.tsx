@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
-import styles from '../../../authorized.module.scss';
+import styles from './roomMessages.module.scss';
 import { messageConfig, MessageProps } from '../messageConfig/MessageConfig';
 import { useContextMenu } from '../../../../../hooks/useContextMenu';
 import { useSocketEvents } from '../../../../../hooks/useSocketEvents';
@@ -136,13 +136,13 @@ const RoomMessages = () => {
   ];
   
   return (
-    <div className={styles.authorized__chat_messageContainer} ref={messagesEndRef}>
+    <div className={styles.message_container} ref={messagesEndRef}>
       {
         messages.length > 0 ?
           messages.map((element: any) => (
             <div key={element._id}
-              className={userInfo?.userId === Number(element.userId) ? styles.authorized__myMessage_wrapper :
-                styles.authorized__message_wrapper}>
+              className={userInfo?.userId === Number(element.userId) ? styles.my_message_wrapper :
+                styles.message_wrapper}>
               <p className={'text-white'}>{element.createdAt}</p>
               {
                 renderMessage({

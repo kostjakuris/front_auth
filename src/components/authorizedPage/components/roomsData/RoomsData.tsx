@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import styles from '../../authorized.module.scss';
+import roomsStyles from './roomsData.module.scss';
 import { ContextMenu, ContextMenuButton } from '../../../ui/contextMenu';
 import { ChatRoom, DeleteMessageModal } from '../../index';
 import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
@@ -127,9 +128,9 @@ const RoomsData = () => {
     <div
       onClick={() => contextMenu.visible && closeContextMenu()}
       onContextMenu={() => contextMenu.visible && closeContextMenu()}
-      className={styles.authorized__chat_container}>
-      <div className={styles.authorized__chat_rooms}>
-        <div className={'flex items-center justify-end gap-[15px] sticky top-0 z-10 left-0'}>
+      className={roomsStyles.chat_container}>
+      <div className={roomsStyles.chat__rooms}>
+        <div className={'flex items-center justify-end gap-[15px] px-[10px] sticky top-0 z-10 left-0'}>
           <button className={styles.authorized__button} onClick={logoutFn}>
             <Logout className={'fill-white'} />
           </button>
@@ -140,23 +141,25 @@ const RoomsData = () => {
             <Create />
           </button>
         </div>
-        {
-          data?.length === 0 ?
-            <div className={'h-full flex items-center justify-center flex-1'}>
-              <p className={'text-center text-white mt-5 font-medium text-xl'}>Please create new room to start
-                messaging!</p>
-            </div> :
-            data?.map((element: any) => (
-              <div key={element.id}
-                onContextMenu={(event) => onRoomContextMenu(event, element.id, element.name, element.ownerId)}
-                className={`${styles.authorized__chats_room} ${currentRoomId === String(element.id) ? 'bg-[#808080FF]' :
-                  ''}`}
-                onMouseDown={(event) => openRoom(element.id, element.name, element.ownerId, event)}>
-                <p className={styles.authorized__chats_title}>{element.name}</p>
-              </div>
-            ))
-        }
-        <ContextMenu contextMenu={contextMenu} buttons={roomButtons} closeContextMenu={closeContextMenu} />
+        <div className={roomsStyles.chat__scrollContainer}>
+          {
+            data?.length === 0 ?
+              <div className={'h-full flex items-center justify-center flex-1'}>
+                <p className={'text-center text-white mt-5 font-medium text-xl'}>Please create new room to start
+                  messaging!</p>
+              </div> :
+              data?.map((element: any) => (
+                <div key={element.id}
+                  onContextMenu={(event) => onRoomContextMenu(event, element.id, element.name, element.ownerId)}
+                  className={`${roomsStyles.chats_room} ${currentRoomId === String(element.id) ?
+                    roomsStyles.chat__active : ''}`}
+                  onMouseDown={(event) => openRoom(element.id, element.name, element.ownerId, event)}>
+                  <p className={styles.authorized__chats_title}>{element.name}</p>
+                </div>
+              ))
+          }
+          <ContextMenu contextMenu={contextMenu} buttons={roomButtons} closeContextMenu={closeContextMenu} />
+        </div>
       </div>
       {isChat ? <ChatRoom /> :
         <div className={'h-full flex items-center justify-center flex-1'}>

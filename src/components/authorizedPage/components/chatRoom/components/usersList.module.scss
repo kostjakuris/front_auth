@@ -1,0 +1,17 @@
+.user_list {
+  padding: 0 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: var(--text-secondary);
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+  }
+}

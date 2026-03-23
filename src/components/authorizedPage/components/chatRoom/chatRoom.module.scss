@@ -1,0 +1,51 @@
+.chat {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: inset -1.5px 1.5px 8px rgba(255,255,255,0.9);
+
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: fixed;
+    width: 200px;
+    height: 200px;
+    filter: blur(50px);
+    z-index: -1;
+    bottom: 100px;
+    left: -50px;
+    background: var(--gradient-glow);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: linear-gradient(
+            45deg,
+            rgba(91, 134, 229, 0.5) 30%,
+            rgba(91, 134, 229, 0.8) 30%,
+    );
+
+    mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+
+    pointer-events: none;
+  }
+}

@@ -71,7 +71,7 @@ const CreateAndEditRoomModal = () => {
           isTouched={formik.touched.roomName}
           error={formik.errors.roomName}
         />
-        <div className={'flex justify-around items-center gap-[20px]'}>
+        <div className={'flex justify-around items-center mt-[20px] gap-[20px]'}>
           <button className={styles.delete__cancelButton} onClick={closeModal}>Cancel</button>
           <button className={styles.createModal__submit} type='submit'>
             {isEditRoom ? 'Save' : 'Create'}

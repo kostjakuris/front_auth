@@ -1,0 +1,32 @@
+.menu {
+  position: absolute;
+  display: block;
+  background: black;
+  width: 200px;
+  z-index: 10;
+  border-radius: 15px;
+}
+
+.btn {
+  cursor: pointer;
+  width: 100%;
+  height: 48px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: 1px solid gray;
+  color: white;
+  padding-left: 10px;
+  padding-top: 5px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: 500;
+
+  &:hover {
+    background: rgba(128, 128, 128, 0.8);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}

@@ -1,6 +1,6 @@
 'use client';
 import React, { FC, ReactNode, useEffect, useRef } from 'react';
-import styles from '../../authorizedPage/authorized.module.scss';
+import styles from './contextMenu.module.scss';
 
 export interface ContextMenuButton {
   label: string;
@@ -41,7 +41,7 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) =>
   return (
     <div
       ref={menuRef}
-      className={!contextMenu.visible ? 'hidden' : styles.authorized__chat_menu}
+      className={!contextMenu.visible ? 'hidden' : styles.menu}
       style={{
         overflow: 'hidden',
         top: contextMenu.y - window.innerHeight <= 200 && contextMenu.dynamicPosition ? contextMenu.y - menuHeight :
@@ -49,7 +49,7 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) =>
         left: contextMenu.x <= 200 && contextMenu.dynamicPosition ? contextMenu.x + menuWidth / 3 : contextMenu.x - menuWidth,
       }}>
       {buttons.map((btn, i) => (
-        <button key={i} onClick={btn.onClick} className={styles.authorized__chat_btn}>
+        <button key={i} onClick={btn.onClick} className={styles.btn}>
           {btn.icon}{btn.label}
         </button>
       ))}

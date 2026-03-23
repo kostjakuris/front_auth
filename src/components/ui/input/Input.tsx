@@ -10,6 +10,7 @@ interface InputProps {
   onBlurFn?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   class_name?: string;
   isTouched?: boolean | undefined;
+  isErrorHidden?: boolean;
   error?: string | undefined;
 }
 
@@ -22,7 +23,8 @@ const Input: FC<InputProps> = ({
   onBlurFn,
   isTouched,
   class_name,
-  error
+  error,
+  isErrorHidden = false
 }) => {
   return (
     <>
@@ -35,14 +37,14 @@ const Input: FC<InputProps> = ({
         onChange={onChangeFn}
         onBlur={onBlurFn}
       />
-      <div
-        className={`${styles.form__unverified_text} ${isTouched && error
-          ? styles.form__open
-          : styles.form__close},
-        `}
-      >
-        {error}
-      </div>
+      {
+        !isErrorHidden &&
+        <div
+          className={`${styles.form__unverified_text} ${isTouched && error ? styles.form__open : ''}`}
+        >
+          {error}
+        </div>
+      }
     </>
   );
 };

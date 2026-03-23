@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import styles from '../../authorizedPage/authorized.module.scss';
+import sendStyles from './sendComponent.module.scss';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import Send from '../../../../public/images/Send';
 import { Input } from '../input';
@@ -55,8 +56,8 @@ const SendComponent = () => {
   return (
     <form onSubmit={submitMessage}
       onKeyDown={(event) => event.key === 'Enter' && submitMessage(event)}
-      className={`${styles.authorized__chat_form} ${messages.length === 0 ? 'mt-auto' : 'mt-5'}`}>
-      <div className={!isEditMessage ? 'hidden' : styles.authorized__chat_edit}>
+      className={`${sendStyles.form} ${messages.length === 0 ? 'mt-auto' : 'mt-5'}`}>
+      <div className={!isEditMessage ? 'hidden' : sendStyles.edit}>
         <p className={`${styles.authorized__text} ml-5 mb-4`}>{chatMessage}</p>
         <button className={'mr-2 cursor-pointer'} onClick={closeEditBlock}><Close /></button>
       </div>
@@ -67,13 +68,13 @@ const SendComponent = () => {
           type={'text'}
           value={chatMessage ? chatMessage : ''}
           onChangeFn={(event) => dispatch(setChatMessage(event.target.value))}
-          class_name={styles.authorized__chat_input}
+          class_name={sendStyles.input}
         />
         <InputFile
           onChangeFn={(event) => openModal(<SendImageModal selectedFile={event.target} />)} />
         <button
           disabled={!chatMessage}
-          className={styles.authorized__send}
+          className={sendStyles.send}
           type='submit'>
           <Send />
         </button>

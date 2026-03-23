@@ -1,4 +1,5 @@
 import styles from '../../../authorized.module.scss';
+import msgStyles from './messageConfig.module.scss';
 import React, { JSX } from 'react';
 
 export type MessageType = 'text' | 'image' | 'video';
@@ -35,15 +36,15 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
   }: MessageProps) => (
     <div
       onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath))}
-      className={userId === Number(messageUserId) ? styles.authorized__chat_myMessage :
-        styles.authorized__chat_message}
+      className={userId === Number(messageUserId) ? msgStyles.my_message :
+        msgStyles.message}
     >
-      <p className={`${styles.authorized__chats_nickname} ${userId === Number(messageUserId) ? 'text-yellow-300' :
+      <p className={`${msgStyles.nickname} ${userId === Number(messageUserId) ? 'text-yellow-300' :
         'text-green-400'}`}>
         {username}
       </p>
-      <span className={userId === Number(messageUserId) ? styles.authorized__chat_RightTriangle :
-        styles.authorized__chat_LeftTriangle} />
+      <span className={userId === Number(messageUserId) ? msgStyles.right_triangle :
+        msgStyles.left_triangle} />
       <p className={`${styles.authorized__text} whitespace-pre-line break-all`}>{message}</p>
       {
         updatedAt && isUpdated ?
@@ -54,13 +55,13 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
   ),
   image: ({id, message, userId, fullPath, scrollFn, contextMenuFn, messageUserId, type, username}: MessageProps) => (
     <div
-      className={`${userId === Number(messageUserId) ? styles.authorized__chat_myMessage :
-        styles.authorized__chat_message} px-0! pb-0! rounded-b-[25px]!`}
+      className={`${userId === Number(messageUserId) ? msgStyles.my_message :
+        msgStyles.message} px-0! pb-0! rounded-b-[25px]!`}
       onContextMenu={(event) => contextMenuFn(event, message,
         id, String(messageUserId), type, String(fullPath)
       )}
     >
-      <p className={`${styles.authorized__chats_nickname} ${userId === Number(messageUserId) ? 'text-yellow-300' :
+      <p className={`${msgStyles.nickname} ${userId === Number(messageUserId) ? 'text-yellow-300' :
         'text-green-400'}`}>
         {username}
       </p>
@@ -70,13 +71,13 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
   ),
   video: ({id, message, userId, scrollFn, fullPath, contextMenuFn, messageUserId, username, type}: MessageProps) => (
     <div
-      className={`${userId === Number(messageUserId) ? styles.authorized__chat_myMessage :
-        styles.authorized__chat_message} px-0! pb-0! rounded-b-[25px]!`}
+      className={`${userId === Number(messageUserId) ? msgStyles.my_message :
+        msgStyles.message} px-0! pb-0! rounded-b-[25px]!`}
       onContextMenu={(event) => contextMenuFn(event, message,
         id, String(messageUserId), type, String(fullPath)
       )}
     >
-      <p className={`${styles.authorized__chats_nickname} ${userId === Number(messageUserId) ? 'text-yellow-300' :
+      <p className={`${msgStyles.nickname} ${userId === Number(messageUserId) ? 'text-yellow-300' :
         'text-green-400'}`}>
         {username}
       </p>
