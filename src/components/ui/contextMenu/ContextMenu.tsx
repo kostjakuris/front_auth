@@ -1,5 +1,5 @@
 'use client';
-import React, { FC, ReactNode, useEffect, useRef } from 'react';
+import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import styles from './contextMenu.module.scss';
 
 export interface ContextMenuButton {
@@ -10,7 +10,7 @@ export interface ContextMenuButton {
 
 export interface MenuProps {
   contextMenu: {
-    visible: boolean; x: number; y: number, dynamicPosition?: boolean
+    visible: boolean; x: number; y: number;
   };
   buttons: ContextMenuButton[];
   closeContextMenu: () => void;
@@ -20,6 +20,7 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) =>
   const menuRef = useRef<HTMLDivElement>(null);
   const menuWidth = menuRef.current?.getBoundingClientRect().width || 200;
   const menuHeight = menuRef.current?.getBoundingClientRect().height || 100;
+  console.log(contextMenu,'contextMenu');
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,10 +44,8 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) =>
       ref={menuRef}
       className={!contextMenu.visible ? 'hidden' : styles.menu}
       style={{
-        overflow: 'hidden',
-        top: contextMenu.y - window.innerHeight <= 200 && contextMenu.dynamicPosition ? contextMenu.y - menuHeight :
-          contextMenu.y,
-        left: contextMenu.x <= 200 && contextMenu.dynamicPosition ? contextMenu.x + menuWidth / 3 : contextMenu.x - menuWidth,
+        top: 40,
+        left: 20,
       }}>
       {buttons.map((btn, i) => (
         <button key={i} onClick={btn.onClick} className={styles.btn}>

@@ -96,7 +96,7 @@ const RoomMessages = () => {
       clearTimeout(scrollTimeoutRef.current);
     }
     scrollTimeoutRef.current = setTimeout(() => {
-      bottomRef.current?.scrollIntoView({behavior: 'smooth'});
+      bottomRef.current?.scrollIntoView({behavior: 'instant'});
     }, 100);
   };
   
@@ -143,7 +143,7 @@ const RoomMessages = () => {
             <div key={element._id}
               className={userInfo?.userId === Number(element.userId) ? styles.my_message_wrapper :
                 styles.message_wrapper}>
-              <p className={'text-white'}>{element.createdAt}</p>
+              <p className={'text-white font-normal text-[14px]'}>{element.createdAt}</p>
               {
                 renderMessage({
                   id: element._id,

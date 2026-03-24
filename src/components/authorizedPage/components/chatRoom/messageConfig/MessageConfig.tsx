@@ -43,8 +43,6 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
         'text-green-400'}`}>
         {username}
       </p>
-      <span className={userId === Number(messageUserId) ? msgStyles.right_triangle :
-        msgStyles.left_triangle} />
       <p className={`${styles.authorized__text} whitespace-pre-line break-all`}>{message}</p>
       {
         updatedAt && isUpdated ?
@@ -65,7 +63,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
         'text-green-400'}`}>
         {username}
       </p>
-      <img onLoad={scrollFn} className={'w-fit h-fit rounded-b-[20px]'} src={message}
+      <img onLoad={scrollFn} className={'w-fit h-fit mt-[15px] rounded-b-[20px]'} src={message}
         alt={message} />
     </div>
   ),
@@ -81,7 +79,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
         'text-green-400'}`}>
         {username}
       </p>
-      <video onLoadedData={scrollFn} controls className={'w-fit h-fit rounded-b-[20px]'}>
+      <video onLoadedData={scrollFn} controls className={'w-fit h-fit mt-[15px] rounded-b-[20px]'}>
         <source src={message} />
       </video>
     </div>
