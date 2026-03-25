@@ -1,5 +1,5 @@
 .message_container {
-  padding: 0 20px;
+  padding: 0 15px;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
@@ -30,12 +30,14 @@
 }
 
 .my_message_wrapper {
+  z-index: 0;
   width: fit-content;
   max-width: 50%;
   margin: 20px 0 0 auto;
 }
 
 .message_wrapper {
+  z-index: 0;
   width: fit-content;
   max-width: 50%;
   margin: 20px auto 0 0;

@@ -46,7 +46,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
       <p className={`${styles.authorized__text} whitespace-pre-line break-all`}>{message}</p>
       {
         updatedAt && isUpdated ?
-          <p className={'mt-2 text-gray-300 px-[20px]'}>updated at: {updatedAt}</p>
+          <p className={'mt-2 text-gray-300! font-normal text-[12px] px-[15px]'}>updated at: {updatedAt}</p>
           : null
       }
     </div>
@@ -63,7 +63,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
         'text-green-400'}`}>
         {username}
       </p>
-      <img onLoad={scrollFn} className={'w-fit h-fit mt-[15px] rounded-b-[20px]'} src={message}
+      <img onLoad={scrollFn} className={'w-fit h-fit mt-[9px] rounded-b-[20px]'} src={message}
         alt={message} />
     </div>
   ),
@@ -75,11 +75,11 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
         id, String(messageUserId), type, String(fullPath)
       )}
     >
-      <p className={`${msgStyles.nickname} ${userId === Number(messageUserId) ? 'text-yellow-300' :
-        'text-green-400'}`}>
+      <p className={`${msgStyles.nickname} ${userId === Number(messageUserId) ? 'text-[#facc15]' :
+        'text-[#34d397]'}`}>
         {username}
       </p>
-      <video onLoadedData={scrollFn} controls className={'w-fit h-fit mt-[15px] rounded-b-[20px]'}>
+      <video onLoadedData={scrollFn} controls className={'w-fit h-fit mt-[9px] rounded-b-[20px]'}>
         <source src={message} />
       </video>
     </div>

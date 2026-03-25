@@ -61,7 +61,7 @@ const SendComponent = () => {
         <p className={`${styles.authorized__text} ml-5 mb-4`}>{chatMessage}</p>
         <button className={'mr-2 cursor-pointer'} onClick={closeEditBlock}><Close /></button>
       </div>
-      <div className={'flex items-center w-full mb-5 px-5'}>
+      <div className={'flex items-center w-full mb-[15px] px-[15px]'}>
         <Input
           name='message'
           placeholder='Send message'

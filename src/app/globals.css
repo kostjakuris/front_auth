@@ -5,15 +5,15 @@
   --foreground: #171717;
   --bg-main: #0b0f1a;
   --bg-secondary: #0f1629;
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: blur(20px);
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-primary: #e6edf3;
+  --text-secondary: #9aa4b2;
   --gradient-main: linear-gradient(135deg, #1a2a6c, #16213e, #0f3460);
   --gradient-accent: linear-gradient(135deg, #5f2c82, #49a09d);
   --gradient-glow: radial-gradient(circle at 30% 30%, rgba(91, 134, 229, 0.3), transparent);
-  --glow-blue: rgba(91, 134, 229, 0.35);
+  --glow-blue: rgba(91, 134, 229, 0.15);
   --glow-purple: rgba(168, 85, 247, 0.3);
 }
 

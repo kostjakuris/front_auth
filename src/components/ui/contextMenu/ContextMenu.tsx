@@ -10,7 +10,7 @@ export interface ContextMenuButton {
 
 export interface MenuProps {
   contextMenu: {
-    visible: boolean; x: number; y: number;
+    visible: boolean; x: number; y: number, dynamicPosition?: boolean
   };
   buttons: ContextMenuButton[];
   closeContextMenu: () => void;
@@ -20,7 +20,6 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) =>
   const menuRef = useRef<HTMLDivElement>(null);
   const menuWidth = menuRef.current?.getBoundingClientRect().width || 200;
   const menuHeight = menuRef.current?.getBoundingClientRect().height || 100;
-  console.log(contextMenu,'contextMenu');
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,14 +37,18 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) =>
   if (!contextMenu.visible && !menuRef.current) {
     return null;
   }
+  console.log(Boolean(contextMenu.dynamicPosition),'pos');
+  console.log(contextMenu.x,'x');
   
   return (
     <div
       ref={menuRef}
       className={!contextMenu.visible ? 'hidden' : styles.menu}
       style={{
-        top: 40,
-        left: 20,
+        overflow: 'hidden',
+        top: contextMenu.y - window.innerHeight <= 200 && contextMenu.dynamicPosition ? contextMenu.y - menuHeight :
+          contextMenu.y,
+        left: contextMenu.x <= 200 && contextMenu.dynamicPosition ? contextMenu.x + menuWidth / 3 : contextMenu.x - menuWidth,
       }}>
       {buttons.map((btn, i) => (
         <button key={i} onClick={btn.onClick} className={styles.btn}>

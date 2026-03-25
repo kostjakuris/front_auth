@@ -130,7 +130,7 @@ const RoomsData = () => {
       onContextMenu={() => contextMenu.visible && closeContextMenu()}
       className={roomsStyles.chat_container}>
       <div className={roomsStyles.chat__rooms}>
-        <div className={'flex items-center justify-end gap-[15px] px-[10px] sticky top-0 z-10 left-0'}>
+        <div className={'flex items-center justify-end gap-[15px] px-[15px] sticky top-0 z-10 left-0'}>
           <button className={styles.authorized__button} onClick={logoutFn}>
             <Logout className={'fill-white'} />
           </button>

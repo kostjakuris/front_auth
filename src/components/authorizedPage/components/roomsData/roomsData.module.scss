@@ -3,7 +3,7 @@
   height: 100%;
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 15px;
 }
 
 .chat {
@@ -18,20 +18,21 @@
     min-height: 0;
     border-radius: 16px;
     padding: 15px 0;
+    background: rgba(255,255,255,0.03);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6),
-    inset 0 0 20px rgba(91, 134, 229, 0.5);
+    inset 0 0 20px #53CBF3B3;
 
     &::before {
       content: '';
-      position: absolute;
+      position: fixed;
       width: 25%;
       height: 50%;
       filter: blur(60px);
       border-radius: 50%;
       top: 30%;
-      left: -5%;
+      left: 0;
       z-index: 0;
       background: var(--glow-blue);
       pointer-events: none;
@@ -60,7 +61,7 @@
   }
 
   &__scrollContainer {
-    padding: 0 10px;
+    padding: 0 15px;
     position: relative;
     z-index: 1;
     flex: 1;
@@ -126,7 +127,7 @@
   position: relative;
   cursor: pointer;
   width: 100%;
-  padding: 20px 14px;
+  padding: 15px;
   border-radius: 15px;
 
   &:hover {

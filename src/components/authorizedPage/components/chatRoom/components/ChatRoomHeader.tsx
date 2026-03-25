@@ -28,7 +28,7 @@ const ChatRoomHeader = () => {
   ];
   
   return (
-    <div className={'flex justify-between items-center pl-5 my-5'}>
+    <div className={'flex justify-between items-center pl-[15px] my-5'}>
       <Back onClickFn={closeRoom} />
       <p className={`${styles.authorized__chats_title} text-center w-full pr-10`}>{currentRoom}</p>
       <div className={'relative'}>

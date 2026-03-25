@@ -1,6 +1,6 @@
 'use client';
 
-import { setIsChat, setIsRooms, setIsUsersList } from '../lib/slice';
+import { setCurrentRoom, setCurrentRoomId, setIsChat, setIsRooms, setIsUsersList } from '../lib/slice';
 import { useAppDispatch, useAppSelector } from '../lib/hooks';
 
 export const useCloseRoom = () => {
@@ -13,6 +13,8 @@ export const useCloseRoom = () => {
     } else {
       dispatch(setIsRooms(true));
       dispatch(setIsChat(false));
+      dispatch(setCurrentRoomId(null));
+      dispatch(setCurrentRoom(null));
     }
   };
   return {

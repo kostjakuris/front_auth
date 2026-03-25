@@ -143,7 +143,7 @@ const RoomMessages = () => {
             <div key={element._id}
               className={userInfo?.userId === Number(element.userId) ? styles.my_message_wrapper :
                 styles.message_wrapper}>
-              <p className={'text-white font-normal text-[14px]'}>{element.createdAt}</p>
+              <p className={'text-white/80 font-normal text-[12px]'}>{element.createdAt}</p>
               {
                 renderMessage({
                   id: element._id,
