@@ -37,8 +37,6 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) =>
   if (!contextMenu.visible && !menuRef.current) {
     return null;
   }
-  console.log(Boolean(contextMenu.dynamicPosition),'pos');
-  console.log(contextMenu.x,'x');
   
   return (
     <div

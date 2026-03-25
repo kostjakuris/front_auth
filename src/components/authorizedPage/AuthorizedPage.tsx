@@ -12,8 +12,8 @@ import { useGetUserInfo } from '../../hooks/useGetUserInfo';
 const AuthorizedPage = () => {
   const dispatch = useAppDispatch();
   
-  const {isAuthLoading} = useAppSelector((state) => state.auth);
-  const {data: roomData} = useGetAllRoomsQuery(undefined, {refetchOnMountOrArgChange: true});
+  const {isAuthLoading, isAuth} = useAppSelector((state) => state.auth);
+  const {data: roomData} = useGetAllRoomsQuery(undefined, {skip: !isAuth, refetchOnMountOrArgChange: true});
   
   const {data: userData, isLoading: isUserInfoLoading} = useGetUserInfoQuery(undefined, {
     refetchOnMountOrArgChange: true,

@@ -19,14 +19,18 @@
   }
 
   &__deleteButton {
+    max-width: 100%;
+    width: 100%;
     cursor: pointer;
-    padding: 8px 50px;
+    padding: 8px 40px;
     background: #9890e3;
     color: white;
     border-radius: 25px;
   }
 
   &__cancelButton {
+    max-width: 100%;
+    width: 100%;
     cursor: pointer;
     padding: 6.5px 40px;
     color: white;
@@ -47,7 +51,7 @@
 
 .send {
   &__image {
-    margin: 20px auto;
+    margin: 0 auto;
   }
 }
 

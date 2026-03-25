@@ -55,6 +55,12 @@ export const roomApi = createApi({
       }),
       providesTags: ['Room']
     }),
+    searchRooms: build.query<any, string>({
+      query: (q) => ({
+        url: `/room/search?q=${encodeURIComponent(q)}`,
+      }),
+      providesTags: ['Room'],
+    }),
   }),
 });
 
@@ -65,5 +71,6 @@ export const {
   useIsUserJoinedQuery,
   useDeleteRoomMutation,
   useEditRoomMutation,
-  useGetCurrentRoomInfoQuery
+  useGetCurrentRoomInfoQuery,
+  useSearchRoomsQuery
 } = roomApi;

@@ -11,6 +11,8 @@ import { getSocket } from '../../../api/socket';
 import { InputFile } from '../inputFile';
 import { useModal } from '../../../providers/ModalProvider/ModalProvider.hooks';
 import { SendImageModal } from '../../authorizedPage';
+import Microphone from '../../../../public/images/Microphone';
+import { useVoiceRecording } from '../../../hooks/useVoiceRecording';
 
 
 const SendComponent = () => {
@@ -19,11 +21,13 @@ const SendComponent = () => {
   const {userInfo, currentRoomId, currentRoom, chatMessage, ownerId} = useAppSelector((state) => state.auth);
   const socket = getSocket();
   const {openModal} = useModal();
+  const {isRecording, startRecording, stopRecording} = useVoiceRecording();
+
   const closeEditBlock = () => {
     dispatch(setChatMessage(''));
     dispatch(setIsEditMessage(false));
   };
-  
+
   const submitMessage = (event: any) => {
     event.preventDefault();
     if (chatMessage) {
@@ -51,35 +55,42 @@ const SendComponent = () => {
     dispatch(setChatMessage(''));
     dispatch(setIsEditMessage(false));
   };
-  
-  
+
+
   return (
-    <form onSubmit={submitMessage}
-      onKeyDown={(event) => event.key === 'Enter' && submitMessage(event)}
-      className={`${sendStyles.form} ${messages.length === 0 ? 'mt-auto' : 'mt-5'}`}>
-      <div className={!isEditMessage ? 'hidden' : sendStyles.edit}>
-        <p className={`${styles.authorized__text} ml-5 mb-4`}>{chatMessage}</p>
-        <button className={'mr-2 cursor-pointer'} onClick={closeEditBlock}><Close /></button>
-      </div>
-      <div className={'flex items-center w-full mb-[15px] px-[15px]'}>
-        <Input
-          name='message'
-          placeholder='Send message'
-          type={'text'}
-          value={chatMessage ? chatMessage : ''}
-          onChangeFn={(event) => dispatch(setChatMessage(event.target.value))}
-          class_name={sendStyles.input}
-        />
-        <InputFile
-          onChangeFn={(event) => openModal(<SendImageModal selectedFile={event.target} />)} />
-        <button
-          disabled={!chatMessage}
-          className={sendStyles.send}
-          type='submit'>
-          <Send />
-        </button>
-      </div>
-    </form>
+    <>
+      <form onSubmit={submitMessage}
+        onKeyDown={(event) => event.key === 'Enter' && submitMessage(event)}
+        className={`${sendStyles.form} ${messages.length === 0 ? 'mt-auto' : 'mt-5'}`}>
+        <div className={!isEditMessage ? 'hidden' : sendStyles.edit}>
+          <p className={`${styles.authorized__text} ml-5 mb-4`}>{chatMessage}</p>
+          <button className={'mr-2 cursor-pointer'} onClick={closeEditBlock}><Close /></button>
+        </div>
+        <div className={'flex items-center w-full mb-[15px] px-[15px]'}>
+          <Input
+            name='message'
+            placeholder='Send message'
+            type={'text'}
+            value={chatMessage ? chatMessage : ''}
+            onChangeFn={(event) => dispatch(setChatMessage(event.target.value))}
+            class_name={sendStyles.input}
+          />
+          <button className={`${isRecording ? 'bg-[#3a5bbf] scale-116' :
+            ''} transition-all cursor-pointer rounded-full p-[5px] mr-[7px]`}
+            onMouseDown={startRecording} onMouseUp={stopRecording} onMouseLeave={stopRecording}>
+            <Microphone />
+          </button>
+          <InputFile
+            onChangeFn={(event) => openModal(<SendImageModal selectedFile={event.target} />)} />
+          <button
+            disabled={!chatMessage}
+            className={sendStyles.send}
+            type='submit'>
+            <Send />
+          </button>
+        </div>
+      </form>
+    </>
   );
 };
 

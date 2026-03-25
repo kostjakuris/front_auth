@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import styles from '../../authorized.module.scss';
 import roomsStyles from './roomsData.module.scss';
 import { ContextMenu, ContextMenuButton } from '../../../ui/contextMenu';
@@ -23,7 +23,7 @@ import {
 } from '../../../../lib/slice';
 import { useContextMenu } from '../../../../hooks/useContextMenu';
 import { getSocket } from '../../../../api/socket';
-import { useGetAllRoomsQuery } from '../../../../lib/roomApi';
+import { roomApi, useGetAllRoomsQuery, useSearchRoomsQuery } from '../../../../lib/roomApi';
 import { useModal } from '../../../../providers/ModalProvider/ModalProvider.hooks';
 import { Edit } from '../../../../../public/images/Edit';
 import { Delete } from '../../../../../public/images/Delete';
@@ -33,15 +33,19 @@ import { useRouter } from 'next/navigation';
 import Logout from '../../../../../public/images/Logout';
 import { Create } from '../../../../../public/images/Create';
 import CreateAndEditRoomModal from '../chat/modals/CreateAndEditRoomModal';
+import { Input } from '../../../ui/input';
+import sendStyles from '../../../ui/sendComponent/sendComponent.module.scss';
 
 
 const RoomsData = () => {
   const dispatch = useAppDispatch();
-  const {currentRoomId, userInfo, isChat, ownerId, chosenOwnerId} = useAppSelector(
+  const {currentRoomId, userInfo, isChat, ownerId, isAuth, chosenOwnerId} = useAppSelector(
     state => state.auth);
-  const {data} = useGetAllRoomsQuery(undefined, {refetchOnMountOrArgChange: true});
+  const {data} = useGetAllRoomsQuery(undefined, {skip: !isAuth, refetchOnMountOrArgChange: true});
   const {openModal} = useModal();
   const router = useRouter();
+  const [text, setText] = useState('');
+  const {data: searchResults} = useSearchRoomsQuery(text, {skip: text.length <= 0});
   
   const {
     contextMenu,
@@ -110,6 +114,7 @@ const RoomsData = () => {
     dispatch(setIsAuthLoading(true));
     await logout('');
     dispatch(userApi.util.resetApiState());
+    dispatch(roomApi.util.resetApiState());
     dispatch(setUserInfo(null));
     dispatch(setCurrentRoomId(null));
     dispatch(setCurrentRoom(null));
@@ -123,6 +128,7 @@ const RoomsData = () => {
     router.push('/auth');
   };
   
+  const roomsToDisplay = text.length > 1 ? searchResults : data;
   
   return (
     <div
@@ -130,7 +136,16 @@ const RoomsData = () => {
       onContextMenu={() => contextMenu.visible && closeContextMenu()}
       className={roomsStyles.chat_container}>
       <div className={roomsStyles.chat__rooms}>
-        <div className={'flex items-center justify-end gap-[15px] px-[15px] sticky top-0 z-10 left-0'}>
+        <div className={'flex items-center justify-end gap-[15px] px-[15px] mb-[10px] sticky top-0 z-10 left-0'}>
+          <Input
+            isErrorHidden
+            name='message'
+            placeholder='Send message'
+            type={'text'}
+            value={text}
+            onChangeFn={(event) => setText(event.target.value)}
+            class_name={sendStyles.input}
+          />
           <button className={styles.authorized__button} onClick={logoutFn}>
             <Logout className={'fill-white'} />
           </button>
@@ -143,12 +158,12 @@ const RoomsData = () => {
         </div>
         <div className={roomsStyles.chat__scrollContainer}>
           {
-            data?.length === 0 ?
+            roomsToDisplay?.length === 0 ?
               <div className={'h-full flex items-center justify-center flex-1'}>
                 <p className={'text-center text-white mt-5 font-medium text-xl'}>Please create new room to start
                   messaging!</p>
               </div> :
-              data?.map((element: any) => (
+              roomsToDisplay?.map((element: any) => (
                 <div key={element.id}
                   onContextMenu={(event) => onRoomContextMenu(event, element.id, element.name, element.ownerId)}
                   className={`${roomsStyles.chats_room} ${currentRoomId === String(element.id) ?
