@@ -1,21 +1,10 @@
 .message_container {
-  padding: 0 15px;
+  padding: 0 25px 0 30px;
+  margin: 5px 0;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
 
-
-  &::before {
-    content: '';
-    position: fixed;
-    width: 200px;
-    height: 200px;
-    filter: blur(50px);
-    z-index: -1;
-    top: 20%;
-    right: -90px;
-    background: var(--gradient-glow);
-  }
 
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
@@ -30,6 +19,7 @@
 }
 
 .my_message_wrapper {
+  padding-top: 5px;
   z-index: 0;
   width: fit-content;
   max-width: 50%;
@@ -37,6 +27,7 @@
 }
 
 .message_wrapper {
+  padding-top: 5px;
   z-index: 0;
   width: fit-content;
   max-width: 50%;

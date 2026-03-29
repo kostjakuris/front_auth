@@ -3,18 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --bg-main: #0b0f1a;
-  --bg-secondary: #0f1629;
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: blur(20px);
+  --bg-main: #221f2d;
   --text-primary: #e6edf3;
   --text-secondary: #9aa4b2;
-  --gradient-main: linear-gradient(135deg, #1a2a6c, #16213e, #0f3460);
-  --gradient-accent: linear-gradient(135deg, #5f2c82, #49a09d);
-  --gradient-glow: radial-gradient(circle at 30% 30%, rgba(91, 134, 229, 0.3), transparent);
-  --glow-blue: rgba(91, 134, 229, 0.15);
-  --glow-purple: rgba(168, 85, 247, 0.3);
 }
 
 @theme inline {
@@ -23,16 +14,7 @@
   --font-inter: var(--font-inter), sans-serif;
   --color-primary: var(--text-primary);
   --color-secondary: var(--text-secondary);
-  --gradient-main: var(--gradient-main);
-  --gradient-accent: var(--gradient-accent);
-  --gradient-glow: var(--gradient-glow);
-  --glow-blue: var(--glow-blue);
-  --glow-purple: var(--glow-purple);
   --bg-main: var(--bg-main);
-  --bg-secondary: var(--bg-secondary);
-  --glass-bg: var(--glass-bg);
-  --glass-border: var(--glass-border);
-  --glass-blur: var(--glass-blur);
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -52,7 +34,7 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 10px;
+  padding: 20px 30px;
   color: var(--text-primary);
   background: var(--bg-main);
   font-family: var(--font-inter), sans-serif;

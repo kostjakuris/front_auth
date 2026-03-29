@@ -28,13 +28,15 @@ const ChatRoomHeader = () => {
   ];
   
   return (
-    <div className={'flex justify-between items-center pl-[15px] my-5'}>
-      <Back onClickFn={closeRoom} />
-      <p className={`${styles.authorized__chats_title} text-center w-full pr-10`}>{currentRoom}</p>
+    <div className={'flex justify-between items-center pb-[26px] pt-[30px] px-[30px]'}>
+      <div className={'flex items-center gap-2'}>
+        <Back fill={'#2242b4'} className={'drop-shadow-[0_0_3px_#2242b4]'} onClickFn={closeRoom} />
+        <p className={`${styles.authorized__chats_title} text-center w-full ml-[10px]`}>{currentRoom}</p>
+      </div>
       <div className={'relative'}>
-        <button className={'mr-3 cursor-pointer'}
+        <button className={'cursor-pointer'}
           onClick={(e) => handleContextMenu(e, '', {x: 5, y: 20, dynamicPosition: false})}>
-          <Menu />
+          <Menu fill={'#2242b4'} className={'drop-shadow-[0_0_3px_#2242b4]'} />
         </button>
         <ContextMenu contextMenu={contextMenu} buttons={headerButtons} closeContextMenu={closeContextMenu} />
       </div>

@@ -30,11 +30,12 @@ const ChatRoom = () => {
       </div>
     );
   }
-
+  
   return (
     <div
       className={!isChat ? 'hidden' : chatStyles.chat}>
       <ChatRoomHeader />
+      <div className={'w-full h-[8px] bg-[#292634] border-t-[2px] border-b-[2px] border-[#221f2d]'} />
       {
         isUsersList ?
           <UsersList />
@@ -43,7 +44,9 @@ const ChatRoom = () => {
       }
       {
         (!isUsersList && isUserJoin === 'true') ?
-          <SendComponent />
+          <>
+            <SendComponent />
+          </>
           :
           <div className={isUsersList ? 'hidden' : 'block mb-5 mx-auto'}>
             <button className={styles.authorized__button}

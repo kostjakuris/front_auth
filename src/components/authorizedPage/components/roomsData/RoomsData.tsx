@@ -30,11 +30,13 @@ import { Delete } from '../../../../../public/images/Delete';
 import { useLazyLogoutQuery } from '../../../../lib/authApi';
 import { userApi } from '../../../../lib/userApi';
 import { useRouter } from 'next/navigation';
-import Logout from '../../../../../public/images/Logout';
-import { Create } from '../../../../../public/images/Create';
 import CreateAndEditRoomModal from '../chat/modals/CreateAndEditRoomModal';
 import { Input } from '../../../ui/input';
 import sendStyles from '../../../ui/sendComponent/sendComponent.module.scss';
+import Search from '../../../../../public/images/Search';
+import Settings from '../../../../../public/images/Settings';
+import { Create } from '../../../../../public/images/Create';
+import Logout from '../../../../../public/images/Logout';
 
 
 const RoomsData = () => {
@@ -59,7 +61,7 @@ const RoomsData = () => {
     roomOwnerId: number
   ) => {
     
-    handleContextMenu(event, name, {dynamicPosition: true});
+    handleContextMenu(event, name, {dynamicPosition: true, isSettings: false});
     
     dispatch(setChosenRoomId(String(roomId)));
     dispatch(setChosenOwnerId(roomOwnerId));
@@ -87,7 +89,7 @@ const RoomsData = () => {
   
   const isOwner = userInfo?.userId === ownerId || userInfo?.userId === chosenOwnerId;
   
-  const roomButtons: ContextMenuButton[] = isOwner ? [
+  const roomButtons: ContextMenuButton[] = isOwner && !contextMenu.isSettings ? [
     {
       label: 'Edit',
       icon: <Edit className={'w-[20px] h-[20px] mr-2 mb-0.5'} />,
@@ -130,37 +132,59 @@ const RoomsData = () => {
   
   const roomsToDisplay = text.length > 1 ? searchResults : data;
   
+  const settingsButtons: ContextMenuButton[] = contextMenu.isSettings ? [
+    {
+      label: 'Logout',
+      icon: <Logout className={'w-[30px] h-[30px] fill-white mr-2 mb-0.5'} />,
+      onClick: () => logoutFn(),
+    },
+    {
+      label: 'Create room',
+      icon: <Create className={'w-[30px] h-[30px] mr-2 mb-0.5'} />,
+      onClick: () => {
+        dispatch(setIsEditRoom(false));
+        openModal(<CreateAndEditRoomModal />);
+      },
+    },
+  ] : [];
+  
   return (
     <div
       onClick={() => contextMenu.visible && closeContextMenu()}
       onContextMenu={() => contextMenu.visible && closeContextMenu()}
       className={roomsStyles.chat_container}>
       <div className={roomsStyles.chat__rooms}>
-        <div className={'flex items-center justify-end gap-[15px] px-[15px] mb-[10px] sticky top-0 z-10 left-0'}>
-          <Input
-            isErrorHidden
-            name='message'
-            placeholder='Send message'
-            type={'text'}
-            value={text}
-            onChangeFn={(event) => setText(event.target.value)}
-            class_name={sendStyles.input}
-          />
-          <button className={styles.authorized__button} onClick={logoutFn}>
-            <Logout className={'fill-white'} />
-          </button>
-          <button className={styles.authorized__button} onClick={() => {
-            dispatch(setIsEditRoom(false));
-            openModal(<CreateAndEditRoomModal />);
-          }}>
-            <Create />
-          </button>
+        <div className={'flex items-center justify-end gap-[15px] px-[15px] mb-[25px] sticky top-0 z-10 left-0'}>
+          <div className={'relative w-full'}>
+            <span className={'absolute top-[10px] left-0'}>
+              <Search />
+            </span>
+            <Input
+              isErrorHidden
+              name='message'
+              placeholder='Search'
+              type={'text'}
+              value={text}
+              onChangeFn={(event) => setText(event.target.value)}
+              class_name={`${sendStyles.input} px-[35px]!`}
+            />
+          </div>
+          <div className={'relative'}>
+            <button className={'cursor-pointer'}
+              onClick={(e) => {
+              e.stopPropagation();
+              handleContextMenu(e, '', {x: 5, y: 20, dynamicPosition: false, isSettings: true});
+            }}>
+              <Settings />
+            </button>
+            <ContextMenu contextMenu={contextMenu} buttons={settingsButtons} closeContextMenu={closeContextMenu} />
+          </div>
         </div>
         <div className={roomsStyles.chat__scrollContainer}>
           {
             roomsToDisplay?.length === 0 ?
               <div className={'h-full flex items-center justify-center flex-1'}>
-                <p className={'text-center text-white mt-5 font-medium text-xl'}>Please create new room to start
+                <p className={'text-center text-[16px] text-white mt-5 font-medium text-xl'}>Please create new room to start
                   messaging!</p>
               </div> :
               roomsToDisplay?.map((element: any) => (
@@ -178,7 +202,7 @@ const RoomsData = () => {
       </div>
       {isChat ? <ChatRoom /> :
         <div className={'h-full flex items-center justify-center flex-1'}>
-          <p className={'text-center text-white mt-5 font-medium text-xl'}>Please select a chat to start messaging!</p>
+          <p className={'text-center text-[16px] text-white mt-5 font-medium text-xl'}>Please select a chat to start messaging!</p>
         </div>}
     </div>
   );

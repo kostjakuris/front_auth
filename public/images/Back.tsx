@@ -1,17 +1,19 @@
 import React, { FC } from 'react';
+import { IconProps } from './Edit';
 
-interface BackArrowProps {
+interface BackArrowProps extends IconProps {
   onClickFn: () => void;
+  fill?: string;
 }
 
-const Back: FC<BackArrowProps> = ({onClickFn}) => {
+const Back: FC<BackArrowProps> = ({onClickFn, fill, className}) => {
   return (
     <svg
-      className={'-rotate-90 cursor-pointer'}
+      className={`-rotate-90 cursor-pointer ${className}`}
       onClick={onClickFn}
       width='30px'
       height='30px'
-      fill='white'
+      fill={fill || 'white'}
       id='_1-Arrow_Up'
       data-name='1-Arrow Up'
       xmlns='http://www.w3.org/2000/svg'

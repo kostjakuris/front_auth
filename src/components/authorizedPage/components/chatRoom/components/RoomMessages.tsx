@@ -61,6 +61,7 @@ const RoomMessages = () => {
   const renderMessage = (messageProps: MessageProps) => {
     return messageConfig[messageProps.type]({
       id: messageProps.id,
+      messages,
       createdAt: messageProps.createdAt,
       fullPath: messageProps.fullPath,
       isUpdated: messageProps.isUpdated,
@@ -74,7 +75,8 @@ const RoomMessages = () => {
       userId: Number(userInfo?.userId),
       username: messageProps.username,
       scrollFn: messageProps.scrollFn,
-      contextMenuFn: onContextMenu
+      contextMenuFn: onContextMenu,
+      isTheSameUser: messageProps.isTheSameUser,
     });
   };
   
@@ -141,35 +143,46 @@ const RoomMessages = () => {
     <div className={styles.message_container} ref={messagesEndRef}>
       {
         messages.length > 0 ?
-          messages.map((element: any) => (
-            <div key={element._id}
-              className={userInfo?.userId === Number(element.userId) ? styles.my_message_wrapper :
-                styles.message_wrapper}>
-              <p className={'text-white/80 font-normal text-[12px]'}>{element.createdAt}</p>
-              {
-                renderMessage({
-                  id: element._id,
-                  createdAt: element.createdAt,
-                  fullPath: element.fullPath,
-                  isUpdated: element.isUpdated,
-                  message: element.message,
-                  roomId: Number(currentRoomId),
-                  updatedAt: element.updatedAt,
-                  fileName: element.fileName,
-                  fileSize: element.fileSize,
-                  messageUserId: element.userId,
-                  type: element.type,
-                  userId: Number(element.userId),
-                  username: element.username,
-                  scrollFn: scrollToBottom,
-                  contextMenuFn: onContextMenu
-                })
-              }
-            </div>
-          ))
+          messages.map((element: any, index: number) => {
+            const prev = messages[index - 1];
+            const isTheSameUser = Number(prev?.userId) === Number(element.userId);
+            const isSameDay = prev ? dayjs(element.createdAt).isSame(dayjs(prev.createdAt), 'day') : false;
+            const isMyMessage = userInfo?.userId === Number(element.userId);
+            return (
+              <div key={element._id}>
+                {!isSameDay &&
+                  <p className={'text-[#67667a] py-[50px] font-normal text-center text-[14px]'}>{dayjs(element.createdAt).format(
+                    'dddd, MM.DD.YYYY')}</p>}
+                <div
+                  className={`${isMyMessage ? styles.my_message_wrapper : styles.message_wrapper} ${isMyMessage && !isTheSameUser ? 'mt-[45px]!' : 'my-0!'}`}>
+                  {
+                    renderMessage({
+                      id: element._id,
+                      createdAt: element.createdAt,
+                      messages,
+                      fullPath: element.fullPath,
+                      isUpdated: element.isUpdated,
+                      message: element.message,
+                      roomId: Number(currentRoomId),
+                      updatedAt: element.updatedAt,
+                      fileName: element.fileName,
+                      fileSize: element.fileSize,
+                      messageUserId: element.userId,
+                      type: element.type,
+                      userId: Number(element.userId),
+                      username: element.username,
+                      isTheSameUser,
+                      scrollFn: scrollToBottom,
+                      contextMenuFn: onContextMenu
+                    })
+                  }
+                </div>
+              </div>
+            );
+          })
           :
           <div className={'h-full flex items-center justify-center flex-1'}>
-            <p className={'text-center text-white mt-5 font-medium text-xl'}>This chat doesn't have any messages
+            <p className={'text-center text-[16px] text-white mt-5 font-medium text-xl'}>This chat doesn't have any messages
               yet!</p>
           </div>
       }

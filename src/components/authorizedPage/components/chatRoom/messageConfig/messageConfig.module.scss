@@ -1,28 +1,32 @@
 .my_message {
   width: 100%;
   position: relative;
+  line-height: 100%;
+  display: flex;
+  flex-direction: column;
   z-index: 2;
-  border-radius: 20px;
-  padding: 0 0 15px 0;
-  margin-top: 6px;
-  background: #3a5bbf;
+  border-radius: 10px;
+  padding: 13px 0;
+  background: linear-gradient(90deg, #297ef7 0%, #296cf9 50%, #2758f8 100%);
   color: #e6edf3;
 }
 
 .message {
   position: relative;
+  display: flex;
+  flex-direction: column;
   z-index: 2;
   color: #e6edf3;
-  background: rgba(255,255,255,0.085);
-  border-radius: 20px;
-  margin-top: 6px;
-  padding: 0 0 15px 0;
+  line-height: 100%;
+  background: #343144;
+  border-radius: 10px;
+  padding: 0 0 13px 0;
 }
 
 .nickname {
-  padding: 9px 15px 0 15px;
+  padding: 13px 10px 8px;
   line-height: 100%;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
 }
 
