@@ -3,9 +3,8 @@ import React, { useEffect } from 'react';
 import styles from './authorized.module.scss';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { FadeLoader } from 'react-spinners';
-import { useGetUserInfoQuery } from '../../lib/userApi';
 import { Chat } from './index';
-import { setIsAuthLoading, setUserInfo } from '../../lib/slice';
+import { setIsAuthLoading } from '../../lib/slice';
 import { useGetAllRoomsQuery } from '../../lib/roomApi';
 import { useGetUserInfo } from '../../hooks/useGetUserInfo';
 
@@ -15,24 +14,16 @@ const AuthorizedPage = () => {
   const {isAuthLoading, isAuth} = useAppSelector((state) => state.auth);
   const {data: roomData} = useGetAllRoomsQuery(undefined, {skip: !isAuth, refetchOnMountOrArgChange: true});
   
-  const {data: userData, isLoading: isUserInfoLoading} = useGetUserInfoQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
-  const isLoading = isUserInfoLoading || isAuthLoading;
-  
   useGetUserInfo();
   
   useEffect(() => {
-    if (userData) {
-      dispatch(setUserInfo({...userData}));
-    }
-    if (roomData && userData) {
+    if (roomData) {
       dispatch(setIsAuthLoading(false));
     }
-  }, [userData, roomData]);
+  }, [roomData]);
   
   
-  if (isLoading) {
+  if (isAuthLoading) {
     return (
       <div className={styles.authorized__wrapper}>
         <div className={styles.authorized}>

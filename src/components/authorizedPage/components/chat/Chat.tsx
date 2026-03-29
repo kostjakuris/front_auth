@@ -11,7 +11,6 @@ const Chat = () => {
   const {isAuthLoading, isAuth} = useAppSelector(state => state.auth);
   const {isLoading} = useGetAllRoomsQuery(undefined, {skip: !isAuth, refetchOnMountOrArgChange: true});
   const [_, {isLoading: isCreateRoomLoading}] = useCreateNewRoomMutation();
-  
   if (isLoading || isCreateRoomLoading || isAuthLoading) {
     return (
       <div className={styles.authorized__wrapper}>
@@ -21,7 +20,7 @@ const Chat = () => {
       </div>
     );
   }
-  
+
   return (
     <div className={'h-full'}>
       <RoomsData />
