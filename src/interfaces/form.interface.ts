@@ -47,6 +47,20 @@ export interface EditTaskFields {
   id: number;
 }
 
+export interface LastMessage {
+  type: 'text' | 'image' | 'video' | 'voice' | 'file';
+  message: string;
+  fileName?: string;
+  username: string;
+}
+
+export interface Room {
+  id: number;
+  name: string;
+  ownerId: number;
+  lastMessage: LastMessage | null;
+}
+
 export interface CreateRoomFields {
   name: string;
   ownerId: number;

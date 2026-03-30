@@ -164,7 +164,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     >
       {
         showNickname &&
-        <p className={`${msgStyles.nickname} text-green-400`}>
+        <p className={`${msgStyles.nickname} pl-0! text-green-400`}>
           {username}
         </p>
       }
@@ -205,7 +205,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
       <a href={message} download={message}
         className={'flex h-full items-stretch gap-[10px] px-[10px]'}>
         <span className={`${userId === Number(messageUserId) ? 'bg-[#0C36B6FF]' :
-          'bg-[#222030FF]'} h-full rounded-full p-[10px] flex-1`}><File /></span>
+          'bg-[#222030FF]'} h-full rounded-full p-[10px] w-fit`}><File /></span>
         <div className={'flex-1 flex flex-col justify-between gap-[5px] h-full'}>
           <p
             className={`${styles.authorized__text} font-medium! px-0! pt-[5px]! mt-0! whitespace-pre-line`}>{fileName}</p>

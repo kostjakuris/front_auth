@@ -4,17 +4,19 @@ import { getSocket } from '../api/socket';
 import dayjs from 'dayjs';
 import { useGetCurrentRoomInfoQuery, useIsUserJoinedQuery } from '../lib/roomApi';
 import { useAppDispatch, useAppSelector } from '../lib/hooks';
-import { deleteMessageById, setNewMessage, updateMessage } from '../lib/slice';
+import { deleteMessageById, setNewMessage, updateMessage, updateRoomLastMessage } from '../lib/slice';
+import { LastMessage } from '../interfaces/form.interface';
 
 export const useSocketEvents = () => {
   const socket = getSocket();
   const {currentRoomId} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
   const {refetch} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '', {
+    skip: !currentRoomId,
     refetchOnMountOrArgChange: true,
   });
   const {refetch: refetchIsUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
-  
+
   useEffect(() => {
     socket.on('getMessage', (data) => {
       dispatch(setNewMessage({
@@ -32,6 +34,9 @@ export const useSocketEvents = () => {
     });
     socket.on('getDeletedId', (data) => {
       dispatch(deleteMessageById(data.id));
+      if (data.roomId) {
+        dispatch(updateRoomLastMessage({ roomId: data.roomId, lastMessage: data.lastMessage ?? null }));
+      }
     });
     socket.on('getKickedUser', () => {
       refetch();
@@ -41,12 +46,24 @@ export const useSocketEvents = () => {
       refetch();
       refetchIsUserJoin();
     });
+    socket.on('getLastMessage', (data) => {
+      if (data.roomId) {
+        const lastMessage: LastMessage = {
+          type: data.type,
+          message: data.message,
+          fileName: data.fileName,
+          username: data.username,
+        };
+        dispatch(updateRoomLastMessage({ roomId: data.roomId, lastMessage }));
+      }
+    });
     return (() => {
       socket.off('getMessage');
       socket.off('getUpdatedMessage');
       socket.off('getDeletedId');
       socket.off('getKickedUser');
       socket.off('getJoinedUser');
+      socket.off('getLastMessage');
     });
   }, []);
 };

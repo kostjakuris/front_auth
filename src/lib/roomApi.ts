@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { CreateRoomFields, DeleteRoomFields, EditRoomFields } from '../interfaces/form.interface';
+import { CreateRoomFields, DeleteRoomFields, EditRoomFields, Room } from '../interfaces/form.interface';
 import { baseQueryWithReauth } from './baseQueryWithReauth';
 
 export const roomApi = createApi({
@@ -7,7 +7,7 @@ export const roomApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ['Room'],
   endpoints: (build) => ({
-    getAllRooms: build.query<any, void>({
+    getAllRooms: build.query<Room[], void>({
       query: () => ({
         url: '/room/all',
       }),
@@ -55,7 +55,7 @@ export const roomApi = createApi({
       }),
       providesTags: ['Room']
     }),
-    searchRooms: build.query<any, string>({
+    searchRooms: build.query<Room[], string>({
       query: (q) => ({
         url: `/room/search?q=${encodeURIComponent(q)}`,
       }),

@@ -66,7 +66,7 @@ const SendComponent = () => {
       <div className={'w-full h-[8px] bg-[#292634] border-t-[2px] border-b-[2px] border-[#221f2d]'} />
       <form onSubmit={submitMessage}
         onKeyDown={(event) => event.key === 'Enter' && submitMessage(event)}
-        className={`${sendStyles.form} ${messages.length === 0 ? 'mt-auto' : 'mt-[25px]'}`}>
+        className={`${sendStyles.form} mt-[25px]`}>
         <div className={'flex items-center w-full mb-[25px] px-[30px]'}>
           <Input
             isErrorHidden

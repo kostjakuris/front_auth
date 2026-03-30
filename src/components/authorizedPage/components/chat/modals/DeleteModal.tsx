@@ -42,6 +42,7 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
           userId: userInfo?.userId,
           messageId: currentMessageId,
           roomName: currentRoom,
+          roomId: Number(currentRoomId),
         });
       });
     } else {
@@ -51,6 +52,7 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
         userId: userInfo?.userId,
         messageId: currentMessageId,
         roomName: currentRoom,
+        roomId: Number(currentRoomId),
       });
     }
     closeModal();

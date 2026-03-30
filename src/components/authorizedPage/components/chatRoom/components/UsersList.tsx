@@ -12,6 +12,7 @@ const UsersList = () => {
   const {userInfo, currentRoom, currentRoomId, ownerId} = useAppSelector(
     state => state.auth);
   const {data: roomData, refetch} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '', {
+    skip: !currentRoomId,
     refetchOnMountOrArgChange: true,
   });
   const socket = getSocket();

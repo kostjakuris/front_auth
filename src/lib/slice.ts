@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { LastMessage, Room } from '../interfaces/form.interface';
 
 export type User = {
   userId: number;
@@ -11,6 +12,7 @@ export interface AppState {
   isAuthLoading: boolean;
   isEditMessage: boolean;
   messages: any[] | [];
+  rooms: Room[] | [];
   messageUserId: string | null;
   currentMessageId: string | null;
   isEditRoom: boolean;
@@ -35,6 +37,7 @@ const initialState: AppState = {
   chosenRoomId: null,
   chosenOwnerId: null,
   messages: [],
+  rooms: [],
   userInfo: null,
   isEditMessage: false,
   roomName: null,
@@ -70,6 +73,9 @@ const appSlice = createSlice({
     setMessages: (state, action) => {
       state.messages = action.payload;
     },
+    setRooms: (state, action) => {
+      state.rooms = action.payload;
+    },
     setNewMessage: (state, action) => {
       state.messages.push(action.payload as never);
     },
@@ -81,6 +87,12 @@ const appSlice = createSlice({
     },
     deleteMessageById: (state, action: PayloadAction<string>) => {
       state.messages = state.messages.filter(m => m._id !== action.payload);
+    },
+    updateRoomLastMessage: (state, action: PayloadAction<{ roomId: number; lastMessage: LastMessage | null }>) => {
+      const room = state.rooms.find(r => r.id === action.payload.roomId);
+      if (room) {
+        room.lastMessage = action.payload.lastMessage;
+      }
     },
     setIsEditMessage: (state, action) => {
       state.isEditMessage = action.payload;
@@ -136,6 +148,7 @@ export const {
   setNewMessage,
   updateMessage,
   deleteMessageById,
+  updateRoomLastMessage,
   setChosenRoomId,
   setChosenRoom,
   setChosenOwnerId,
@@ -148,6 +161,7 @@ export const {
   setIsUsersList,
   setRoomName,
   setMessages,
+  setRooms,
   setMessageUserId,
   setCurrentMessageId,
   setIsAuthLoading,
