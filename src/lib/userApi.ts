@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { LoginFormFields, RegisterFormFields } from '../interfaces/form.interface';
 import { baseQueryWithReauth } from './baseQueryWithReauth';
-import { User } from './slice';
+import { User } from './authSlice';
 
 export const userApi = createApi({
   reducerPath: 'userApi',

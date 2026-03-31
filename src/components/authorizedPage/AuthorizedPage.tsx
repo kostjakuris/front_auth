@@ -4,7 +4,7 @@ import styles from './authorized.module.scss';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { FadeLoader } from 'react-spinners';
 import { Chat } from './index';
-import { setIsAuthLoading } from '../../lib/slice';
+import { setIsAuthLoading } from '../../lib/authSlice';
 import { useGetAllRoomsQuery } from '../../lib/roomApi';
 import { useGetUserInfo } from '../../hooks/useGetUserInfo';
 

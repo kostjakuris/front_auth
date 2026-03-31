@@ -35,8 +35,8 @@ export function useContextMenu<T extends ContextMenuExtra = {}>(
     event.stopPropagation();
     setContextMenu({
       visible: true,
-      x: event.pageX,
-      y: event.pageY,
+      x: event.clientX,
+      y: event.clientY,
       messageText,
       ...initialExtra,
       ...extraData,

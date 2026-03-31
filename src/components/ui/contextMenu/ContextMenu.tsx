@@ -1,5 +1,5 @@
 'use client';
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styles from './contextMenu.module.scss';
 
 export interface ContextMenuButton {
@@ -10,16 +10,26 @@ export interface ContextMenuButton {
 
 export interface MenuProps {
   contextMenu: {
-    visible: boolean; x: number; y: number, dynamicPosition?: boolean
+    visible: boolean; x: number; y: number; dynamicPosition?: boolean;
   };
   buttons: ContextMenuButton[];
   closeContextMenu: () => void;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const menuWidth = menuRef.current?.getBoundingClientRect().width || 200;
-  const menuHeight = menuRef.current?.getBoundingClientRect().height || 100;
+  const [pos, setPos] = useState({top: contextMenu.y, left: contextMenu.x});
+  
+  useLayoutEffect(() => {
+    if (!contextMenu.visible || !menuRef.current) return;
+    const {width, height} = menuRef.current.getBoundingClientRect();
+    let top = contextMenu.y;
+    let left = contextMenu.x;
+    if (top + height > window.innerHeight) top = contextMenu.y - height;
+    if (left + width > window.innerWidth) left = contextMenu.x - width;
+    setPos({top: Math.max(0, top), left: Math.max(0, left)});
+  }, [contextMenu.visible, contextMenu.x, contextMenu.y]);
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -27,7 +37,6 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) =>
         closeContextMenu();
       }
     };
-    
     document.addEventListener('click', handleClickOutside);
     return () => {
       document.removeEventListener('click', handleClickOutside);
@@ -42,14 +51,11 @@ const ContextMenu: FC<MenuProps> = ({contextMenu, buttons, closeContextMenu}) =>
     <div
       ref={menuRef}
       className={!contextMenu.visible ? 'hidden' : styles.menu}
-      style={{
-        overflow: 'hidden',
-        top: contextMenu.y - window.innerHeight <= 200 && contextMenu.dynamicPosition ? contextMenu.y - menuHeight :
-          contextMenu.y,
-        left: contextMenu.x <= 200 && contextMenu.dynamicPosition ? contextMenu.x + menuWidth / 3 : contextMenu.x - menuWidth,
-      }}>
-      {buttons.map((btn, i) => (
-        <button key={i} onClick={btn.onClick} className={styles.btn}>
+      style={{top: pos.top, left: pos.left}}>
+      {buttons.map((btn, index) => (
+        <button key={index} onClick={btn.onClick}
+          className={`${styles.btn} ${index === 0 ? 'hover:rounded-t-[15px]' : ''} ${index + 1 === buttons.length ?
+            'hover:rounded-b-[15px]' : ''}`}>
           {btn.icon}{btn.label}
         </button>
       ))}

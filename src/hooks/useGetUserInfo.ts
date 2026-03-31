@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAppDispatch } from '../lib/hooks';
+import { useAppDispatch, useAppSelector } from '../lib/hooks';
 import { usePathname, useRouter } from 'next/navigation';
-import { getIsAuth, setIsAuthLoading, setUserInfo } from '../lib/slice';
+import { setIsAuth, setIsAuthLoading, setUserInfo } from '../lib/authSlice';
 import { useGetUserInfoQuery } from '../lib/userApi';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
@@ -12,6 +12,8 @@ export const useGetUserInfo = (
   authError?: FetchBaseQueryError & {data: {message: string; code: string}}
 ) => {
   const dispatch = useAppDispatch();
+  const {isAuth} = useAppSelector(state => state.auth);
+
   const router = useRouter();
   const pathname = usePathname();
   const {data: userData, isFetching, refetch} = useGetUserInfoQuery(undefined, {
@@ -28,8 +30,7 @@ export const useGetUserInfo = (
   useEffect(() => {
     if (userData) {
       dispatch(setUserInfo({...userData}));
-      localStorage.setItem('isAuth', 'true');
-      dispatch(getIsAuth());
+      dispatch(setIsAuth(true));
       router.replace('/');
       return;
     }
@@ -37,11 +38,9 @@ export const useGetUserInfo = (
     if (isFetching) return; // Still loading — keep the loader, don't conclude anything yet
     
     // Query finished with no data → user is not authenticated
-    localStorage.setItem('isAuth', 'false');
-    dispatch(getIsAuth());
+    dispatch(setIsAuth(false));
     
-    const isAuth = localStorage.getItem('isAuth');
-    if (pathname === '/' && isAuth === 'false') {
+    if (pathname === '/' && !isAuth) {
       router.replace('/auth');
     }
     if (pathname === '/auth' || pathname === '/register') {

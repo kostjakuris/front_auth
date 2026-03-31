@@ -1,11 +1,10 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from '../../authorization/authorization.module.scss';
 import { useFormik } from 'formik';
 import { Input } from '../input';
-import { notFound, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
-import { getIsAuth } from '../../../lib/slice';
 import { FadeLoader } from 'react-spinners';
 import { resetSchema } from '../../validation/validation';
 import { ResetFormFields } from '../../../interfaces/form.interface';
@@ -30,17 +29,17 @@ const ResetPage = ({token}: {token: string}) => {
       await resetPassword({token: resetToken, password: values.password});
     },
   });
-  
-  useEffect(() => {
-    if (!token) {
-      notFound();
-    }
-    setResetToken(token);
-    dispatch(getIsAuth());
-    if (isAuth) {
-      router.push('/authorized');
-    }
-  }, []);
+  //
+  // useEffect(() => {
+  //   if (!token) {
+  //     notFound();
+  //   }
+  //   setResetToken(token);
+  //   dispatch(getIsAuth());
+  //   if (isAuth) {
+  //     router.push('/authorized');
+  //   }
+  // }, []);
   
   if (data) {
     return (

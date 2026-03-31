@@ -4,18 +4,19 @@ import { getSocket } from '../api/socket';
 import dayjs from 'dayjs';
 import { useGetCurrentRoomInfoQuery, useIsUserJoinedQuery } from '../lib/roomApi';
 import { useAppDispatch, useAppSelector } from '../lib/hooks';
-import { deleteMessageById, setNewMessage, updateMessage, updateRoomLastMessage } from '../lib/slice';
+import { deleteMessageById, setNewMessage, updateMessage } from '../lib/messagesSlice';
+import { updateRoomLastMessage } from '../lib/roomsSlice';
 import { LastMessage } from '../interfaces/form.interface';
 
 export const useSocketEvents = () => {
   const socket = getSocket();
-  const {currentRoomId} = useAppSelector(state => state.auth);
+  const {currentRoom} = useAppSelector(state => state.rooms);
   const dispatch = useAppDispatch();
-  const {refetch} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '', {
-    skip: !currentRoomId,
+  const {refetch} = useGetCurrentRoomInfoQuery(currentRoom?.id ? String(currentRoom?.id) : '', {
+    skip: !currentRoom?.id,
     refetchOnMountOrArgChange: true,
   });
-  const {refetch: refetchIsUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
+  const {refetch: refetchIsUserJoin} = useIsUserJoinedQuery(currentRoom?.id ? String(currentRoom?.id) : '');
 
   useEffect(() => {
     socket.on('getMessage', (data) => {

@@ -1,17 +1,8 @@
 import { useAppDispatch } from '../lib/hooks';
-import {
-  getIsAuth,
-  setChatMessage,
-  setCurrentRoom,
-  setCurrentRoomId,
-  setIsAuthLoading,
-  setIsChat,
-  setIsEditMessage,
-  setIsUsersList,
-  setOwnerId,
-  setRooms,
-  setUserInfo,
-} from '../lib/slice';
+import { setIsAuth, setIsAuthLoading, setUserInfo } from '../lib/authSlice';
+import { setChatMessage, setIsEditMessage } from '../lib/messagesSlice';
+import { setCurrentRoom, setOwnerId, setRooms } from '../lib/roomsSlice';
+import { setIsChat, setIsUsersList } from '../lib/uiSlice';
 import { roomApi } from '../lib/roomApi';
 import { userApi } from '../lib/userApi';
 import { useLazyLogoutQuery } from '../lib/authApi';
@@ -29,15 +20,13 @@ export const useLogout = () => {
     dispatch(roomApi.util.resetApiState());
     dispatch(setUserInfo(null));
     dispatch(setRooms([]));
-    dispatch(setCurrentRoomId(null));
     dispatch(setCurrentRoom(null));
     dispatch(setOwnerId(null));
     dispatch(setIsEditMessage(false));
     dispatch(setIsUsersList(false));
     dispatch(setChatMessage(''));
     dispatch(setIsChat(false));
-    localStorage.setItem('isAuth', 'false');
-    dispatch(getIsAuth());
+    dispatch(setIsAuth(false));
     router.push('/auth');
   };
   

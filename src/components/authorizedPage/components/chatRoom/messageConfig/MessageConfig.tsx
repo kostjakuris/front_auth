@@ -13,7 +13,7 @@ export interface MessageProps {
   fullPath: string | null;
   isUpdated: boolean;
   message: string;
-  roomId: number;
+  roomId?: number;
   updatedAt: string;
   messageUserId: string;
   fileName: string;

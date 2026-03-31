@@ -6,19 +6,21 @@ import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import Send from '../../../../public/images/Send';
 import { Input } from '../input';
 import Close from '../../../../public/images/Close';
-import { setChatMessage, setIsEditMessage } from '../../../lib/slice';
+import { setChatMessage, setIsEditMessage } from '../../../lib/messagesSlice';
 import { getSocket } from '../../../api/socket';
 import { InputFile } from '../inputFile';
 import { useModal } from '../../../providers/ModalProvider/ModalProvider.hooks';
 import { SendImageModal } from '../../authorizedPage';
 import Microphone from '../../../../public/images/Microphone';
 import { useVoiceRecording } from '../../../hooks/useVoiceRecording';
+import Attach from '../../../../public/images/Attach';
 
 
 const SendComponent = () => {
   const dispatch = useAppDispatch();
-  const {isEditMessage, messages, currentMessageId, messageUserId} = useAppSelector(state => state.auth);
-  const {userInfo, currentRoomId, currentRoom, chatMessage, ownerId} = useAppSelector((state) => state.auth);
+  const {isEditMessage, currentMessageId, messageUserId, chatMessage} = useAppSelector(state => state.messages);
+  const {userInfo} = useAppSelector(state => state.auth);
+  const {currentRoom, ownerId} = useAppSelector(state => state.rooms);
   const socket = getSocket();
   const {openModal} = useModal();
   const {isRecording, startRecording, stopRecording} = useVoiceRecording();
@@ -34,8 +36,8 @@ const SendComponent = () => {
       if (!isEditMessage) {
         socket.emit('sendMessage', {
           userId: userInfo?.userId,
-          roomName: currentRoom,
-          roomId: Number(currentRoomId),
+          roomName: currentRoom?.name,
+          roomId: Number(currentRoom?.id),
           content: chatMessage,
           username: userInfo?.username,
           type: 'text'
@@ -46,7 +48,7 @@ const SendComponent = () => {
           ownerId,
           currentMessageId,
           userId: userInfo?.userId,
-          roomName: currentRoom,
+          roomName: currentRoom?.name,
           content: chatMessage,
           username: userInfo?.username,
         });
@@ -84,6 +86,7 @@ const SendComponent = () => {
               <Microphone className={'drop-shadow-[0_0_3px_#2242b4]'} stroke={isRecording ? '#fff' : '#2242b4'} />
             </button>
             <InputFile
+              buttonImage={<Attach className={'drop-shadow-[0_0_3px_#2242b4]'} />}
               onChangeFn={(event) => openModal(<SendImageModal selectedFile={event.target} />)} />
             <button
               disabled={!chatMessage}

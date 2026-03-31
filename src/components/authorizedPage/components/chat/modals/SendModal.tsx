@@ -19,7 +19,8 @@ interface SendImageModalProps {
 
 const SendModal: FC<SendImageModalProps> = ({selectedFile}) => {
   const {closeModal} = useModal();
-  const {userInfo, currentRoomId, currentRoom} = useAppSelector((state) => state.auth);
+  const {userInfo} = useAppSelector(state => state.auth);
+  const {currentRoom} = useAppSelector(state => state.rooms);
   const socket = getSocket();
   const [chosenFile, setChosenFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -92,8 +93,8 @@ const SendModal: FC<SendImageModalProps> = ({selectedFile}) => {
         getDownloadURL(fileRef).then((url) => {
           socket.emit('sendMessage', {
             userId: userInfo?.userId,
-            roomName: currentRoom,
-            roomId: Number(currentRoomId),
+            roomName: currentRoom?.name,
+            roomId: Number(currentRoom?.id),
             content: url,
             fileName: chosenFile.name,
             fileSize: formatFileSize(chosenFile.size),

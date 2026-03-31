@@ -1,12 +1,11 @@
 'use client';
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from '../../authorization/authorization.module.scss';
 import { useFormik } from 'formik';
 import Link from 'next/link';
 import { Input } from '../input';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
-import { getIsAuth } from '../../../lib/slice';
 import { FadeLoader } from 'react-spinners';
 import { forgotSchema } from '../../validation/validation';
 import { ForgotFormFields } from '../../../interfaces/form.interface';
@@ -30,12 +29,12 @@ const ForgotPage = () => {
     },
   });
   
-  useEffect(() => {
-    dispatch(getIsAuth());
-    if (isAuth) {
-      router.push('/authorized');
-    }
-  }, []);
+  // useEffect(() => {
+  //   dispatch(getIsAuth());
+  //   if (isAuth) {
+  //     router.push('/authorized');
+  //   }
+  // }, []);
   
   if (data) {
     return (

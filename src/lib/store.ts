@@ -1,5 +1,8 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import authReducer from './slice';
+import authReducer from './authSlice';
+import messagesReducer from './messagesSlice';
+import roomsReducer from './roomsSlice';
+import uiReducer from './uiSlice';
 import { authApi } from './authApi';
 import { userApi } from './userApi';
 import { roomApi } from './roomApi';
@@ -7,10 +10,14 @@ import { roomApi } from './roomApi';
 
 const userReducer = combineReducers({
   auth: authReducer,
+  messages: messagesReducer,
+  rooms: roomsReducer,
+  ui: uiReducer,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [roomApi.reducerPath]: roomApi.reducer,
 });
+
 export const setupStore = () => {
   return configureStore({
     reducer: userReducer,

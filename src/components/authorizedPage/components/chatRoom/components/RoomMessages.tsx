@@ -13,7 +13,7 @@ import {
   setIsEditMessage,
   setMessages,
   setMessageUserId
-} from '../../../../../lib/slice';
+} from '../../../../../lib/messagesSlice';
 import ContextMenu, { ContextMenuButton } from '../../../../ui/contextMenu/ContextMenu';
 import { useModal } from '../../../../../providers/ModalProvider/ModalProvider.hooks';
 import { DeleteMessageModal } from '../../../index';
@@ -22,11 +22,13 @@ import { Delete } from '../../../../../../public/images/Delete';
 import Copy from '../../../../../../public/images/Copy';
 
 const RoomMessages = () => {
-  const {userInfo, currentRoomId, messages, messageUserId} = useAppSelector(
-    state => state.auth);
+  const {userInfo} = useAppSelector(state => state.auth);
+  const {currentRoom} = useAppSelector(state => state.rooms);
+  const {messages, messageUserId} = useAppSelector(state => state.messages);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const {data: messageData} = useGetAllMessagesQuery(currentRoomId ? currentRoomId : '', {
+  const {data: messageData} = useGetAllMessagesQuery(currentRoom?.id ? String(currentRoom?.id) : '', {
+    skip: !currentRoom?.id,
     refetchOnMountOrArgChange: true
   });
   const dispatch = useAppDispatch();
@@ -68,7 +70,7 @@ const RoomMessages = () => {
       message: messageProps.message,
       fileName: messageProps.fileName,
       fileSize: messageProps.fileSize,
-      roomId: Number(currentRoomId),
+      roomId: Number(currentRoom?.id),
       updatedAt: messageProps.updatedAt,
       messageUserId: messageProps.messageUserId,
       type: messageProps.type,
@@ -163,7 +165,6 @@ const RoomMessages = () => {
                       fullPath: element.fullPath,
                       isUpdated: element.isUpdated,
                       message: element.message,
-                      roomId: Number(currentRoomId),
                       updatedAt: element.updatedAt,
                       fileName: element.fileName,
                       fileSize: element.fileSize,

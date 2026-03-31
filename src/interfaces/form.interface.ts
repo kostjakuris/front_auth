@@ -58,18 +58,18 @@ export interface Room {
   id: number;
   name: string;
   ownerId: number;
-  lastMessage: LastMessage | null;
+  avatar?: string;
+  lastMessage?: LastMessage | null;
 }
 
 export interface CreateRoomFields {
   name: string;
   ownerId: number;
+  avatar?: string;
 }
 
-export interface EditRoomFields {
+export interface EditRoomFields extends CreateRoomFields {
   id: number;
-  name: string;
-  ownerId: number;
 }
 
 export interface DeleteRoomFields {

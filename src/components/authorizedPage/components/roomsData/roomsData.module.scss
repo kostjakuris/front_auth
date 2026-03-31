@@ -57,6 +57,9 @@
   position: relative;
   background: #252330;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 18px;
   width: 100%;
   padding: 18px 17px;
   border-radius: 10px;

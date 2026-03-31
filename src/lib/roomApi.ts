@@ -25,18 +25,18 @@ export const roomApi = createApi({
       }),
     }),
     createNewRoom: build.mutation({
-      query: ({name, ownerId}: CreateRoomFields) => ({
+      query: ({name, ownerId, avatar}: CreateRoomFields) => ({
         url: '/room/create',
         method: 'POST',
-        body: {name, ownerId},
+        body: {name, ownerId, avatar},
       }),
       invalidatesTags: ['Room']
     }),
     editRoom: build.mutation({
-      query: ({id, name, ownerId}: EditRoomFields) => ({
+      query: ({id, name, ownerId, avatar}: EditRoomFields) => ({
         url: '/room/edit',
         method: 'PATCH',
-        body: {id, name, ownerId},
+        body: {id, name, ownerId, avatar},
       }),
       invalidatesTags: ['Room']
     }),

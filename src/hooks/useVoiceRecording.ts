@@ -6,7 +6,8 @@ import { storage } from '../firebase';
 import { v4 } from 'uuid';
 
 export const useVoiceRecording = () => {
-  const {userInfo, currentRoomId, currentRoom} = useAppSelector((state) => state.auth);
+  const {userInfo} = useAppSelector(state => state.auth);
+  const {currentRoom} = useAppSelector(state => state.rooms);
   const socket = getSocket();
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -43,8 +44,8 @@ export const useVoiceRecording = () => {
         getDownloadURL(fileRef).then((url) => {
           socket.emit('sendMessage', {
             userId: userInfo?.userId,
-            roomName: currentRoom,
-            roomId: Number(currentRoomId),
+            roomName: currentRoom?.name,
+            roomId: Number(currentRoom?.id),
             content: url,
             fullPath: response.metadata.fullPath,
             username: userInfo?.username,

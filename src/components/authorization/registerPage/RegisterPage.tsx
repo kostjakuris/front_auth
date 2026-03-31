@@ -11,7 +11,7 @@ import { useRegisterMutation } from '../../../lib/userApi';
 import { useGetUserInfo } from '../../../hooks/useGetUserInfo';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
-import { setIsAuthLoading } from '../../../lib/slice';
+import { setIsAuthLoading } from '../../../lib/authSlice';
 
 
 const RegisterPage = () => {

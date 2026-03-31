@@ -10,7 +10,7 @@ import { FadeLoader } from 'react-spinners';
 import { useLoginMutation } from '../../../lib/userApi';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
-import { setIsAuthLoading } from '../../../lib/slice';
+import { setIsAuthLoading } from '../../../lib/authSlice';
 import Google from '../../../../public/images/Google';
 import { useGetUserInfo } from '../../../hooks/useGetUserInfo';
 
@@ -66,7 +66,7 @@ const AuthPage = () => {
     <section className={styles.authorization}>
       <h2 className={styles.authorization__title}>Sign In</h2>
       <p className={styles.authorization__text}>Please,enter your email and password!</p>
-      <p className={styles.authorization__error}>{authError?.data.message}</p>
+      <p className={styles.authorization__error}>{authError?.data?.message}</p>
       <form onSubmit={formik.handleSubmit} className={styles.form}>
         <Input
           name='email'

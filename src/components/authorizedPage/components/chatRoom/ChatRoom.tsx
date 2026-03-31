@@ -13,12 +13,14 @@ import { FadeLoader } from 'react-spinners';
 
 
 const ChatRoom = () => {
-  const {userInfo, currentRoom, currentRoomId, isChat, isUsersList} = useAppSelector(
-    state => state.auth);
-  const {isLoading} = useGetAllMessagesQuery(currentRoomId ? currentRoomId : '', {
+  const {userInfo} = useAppSelector(state => state.auth);
+  const {currentRoom} = useAppSelector(state => state.rooms);
+  const {isChat, isUsersList} = useAppSelector(state => state.ui);
+  const {isLoading} = useGetAllMessagesQuery(currentRoom?.id ? String(currentRoom?.id) : '', {
+    skip: !currentRoom?.id,
     refetchOnMountOrArgChange: true
   });
-  const {data: isUserJoin} = useIsUserJoinedQuery(currentRoomId ? currentRoomId : '');
+  const {data: isUserJoin} = useIsUserJoinedQuery(currentRoom?.id ? String(currentRoom?.id) : '');
   const socket = getSocket();
   
   if (isLoading) {
@@ -52,7 +54,7 @@ const ChatRoom = () => {
             <button className={styles.authorized__button}
               style={{background: '#9890e3', padding: '10px 20px'}}
               onClick={() => socket.emit('joinRoom',
-                {roomName: currentRoom, roomId: currentRoomId, userId: userInfo?.userId},
+                {roomName: currentRoom, roomId: currentRoom?.id, userId: userInfo?.userId},
               )}>
               Join a room
             </button>

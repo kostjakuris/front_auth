@@ -18,18 +18,9 @@ interface DeleteModalProps {
 const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   const {closeModal} = useModal();
   const [deleteRoom] = useDeleteRoomMutation();
-  const {
-    currentRoom,
-    chosenRoom,
-    chosenOwnerId,
-    currentRoomId,
-    chosenRoomId,
-    ownerId,
-    userInfo,
-    currentMessageId,
-    messageUserId
-  } = useAppSelector(
-    (state) => state.auth);
+  const {userInfo} = useAppSelector(state => state.auth);
+  const {currentRoom, chosenRoom, ownerId} = useAppSelector(state => state.rooms);
+  const {currentMessageId, messageUserId} = useAppSelector(state => state.messages);
   const socket = getSocket();
   const {closeRoom} = useCloseRoom();
   const deleteOneMessage = () => {
@@ -41,8 +32,8 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
           ownerId,
           userId: userInfo?.userId,
           messageId: currentMessageId,
-          roomName: currentRoom,
-          roomId: Number(currentRoomId),
+          roomName: currentRoom?.name,
+          roomId: Number(currentRoom?.id),
         });
       });
     } else {
@@ -51,8 +42,8 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
         ownerId,
         userId: userInfo?.userId,
         messageId: currentMessageId,
-        roomName: currentRoom,
-        roomId: Number(currentRoomId),
+        roomName: currentRoom?.name,
+        roomId: Number(currentRoom?.id),
       });
     }
     closeModal();
@@ -70,10 +61,10 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   };
   
   const deleteOneRoom = async() => {
-    await deleteRoom({id: Number(chosenRoomId), ownerId: Number(chosenOwnerId)});
-    deleteRoomFolder(String(chosenRoom));
+    await deleteRoom({id: Number(chosenRoom?.id), ownerId: Number(chosenRoom?.ownerId)});
+    deleteRoomFolder(String(chosenRoom?.name));
     closeModal();
-    if (chosenRoomId === currentRoomId) {
+    if (chosenRoom?.id === currentRoom?.id) {
       closeRoom();
     }
   };

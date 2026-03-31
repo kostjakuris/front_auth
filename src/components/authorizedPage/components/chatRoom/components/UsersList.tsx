@@ -9,10 +9,10 @@ import { getSocket } from '../../../../../api/socket';
 import { useSocketEvents } from '../../../../../hooks/useSocketEvents';
 
 const UsersList = () => {
-  const {userInfo, currentRoom, currentRoomId, ownerId} = useAppSelector(
-    state => state.auth);
-  const {data: roomData, refetch} = useGetCurrentRoomInfoQuery(currentRoomId ? currentRoomId : '', {
-    skip: !currentRoomId,
+  const {userInfo} = useAppSelector(state => state.auth);
+  const {currentRoom, ownerId} = useAppSelector(state => state.rooms);
+  const {data: roomData, refetch} = useGetCurrentRoomInfoQuery(currentRoom?.id ? String(currentRoom.id) : '', {
+    skip: !currentRoom?.id,
     refetchOnMountOrArgChange: true,
   });
   const socket = getSocket();
@@ -32,7 +32,7 @@ const UsersList = () => {
                 <button className={'cursor-pointer'}
                   onClick={() => {
                     socket.emit('kickUserFromRoom',
-                      {roomName: currentRoom, roomId: currentRoomId, userId: user.id}
+                      {roomName: currentRoom?.name, roomId: currentRoom?.id, userId: user.id}
                     );
                     refetch();
                   }}>

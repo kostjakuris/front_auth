@@ -1,23 +1,17 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import roomsStyles from './roomsData.module.scss';
 import { ContextMenu, ContextMenuButton } from '../../../ui/contextMenu';
 import { ChatRoom, DeleteMessageModal } from '../../index';
 import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
+import { setChatMessage, setIsEditMessage } from '../../../../lib/messagesSlice';
 import {
-  setChatMessage,
-  setChosenOwnerId,
   setChosenRoom,
-  setChosenRoomId,
   setCurrentRoom,
-  setCurrentRoomId,
-  setIsChat,
-  setIsEditMessage,
   setIsEditRoom,
-  setIsUsersList,
-  setOwnerId,
   setRooms,
-} from '../../../../lib/slice';
+} from '../../../../lib/roomsSlice';
+import { setIsChat, setIsUsersList } from '../../../../lib/uiSlice';
 import { useContextMenu } from '../../../../hooks/useContextMenu';
 import { getSocket } from '../../../../api/socket';
 import { useGetAllRoomsQuery, useSearchRoomsQuery } from '../../../../lib/roomApi';
@@ -37,14 +31,15 @@ import { useSocketEvents } from '../../../../hooks/useSocketEvents';
 
 const RoomsData = () => {
   const dispatch = useAppDispatch();
-  const {currentRoomId, rooms, userInfo, isChat, ownerId, isAuth, chosenOwnerId} = useAppSelector(
-    (state) => state.auth
-  );
+  const {userInfo, isAuth} = useAppSelector(state => state.auth);
+  const {currentRoom, rooms, ownerId, chosenRoom} = useAppSelector(state => state.rooms);
+  const {isChat} = useAppSelector(state => state.ui);
   const {data} = useGetAllRoomsQuery(undefined, {skip: !isAuth, refetchOnMountOrArgChange: true});
   const {openModal} = useModal();
   const [text, setText] = useState('');
   const {data: searchResults} = useSearchRoomsQuery(text, {skip: text.length < 1});
   const {logout} = useLogout();
+  const containerRef = useRef<HTMLDivElement>(null);
   
   const {contextMenu, handleContextMenu, closeContextMenu} = useContextMenu();
   
@@ -52,21 +47,19 @@ const RoomsData = () => {
     event: React.MouseEvent<HTMLDivElement>,
     roomId: number,
     name: string,
-    roomOwnerId: number
+    roomOwnerId: number,
+    avatar?: string,
   ) => {
     handleContextMenu(event, name, {dynamicPosition: true, isSettings: false});
-    dispatch(setChosenRoomId(String(roomId)));
-    dispatch(setChosenOwnerId(roomOwnerId));
-    dispatch(setChosenRoom(name));
+    dispatch(setChosenRoom({id: roomId, name, ownerId: roomOwnerId, avatar}));
   };
   
-  const openRoom = (id: number, name: string, roomOwnerId: number, event: React.MouseEvent<HTMLDivElement>) => {
+  const openRoom = (id: number, name: string, roomOwnerId: number, avatar: string,
+    event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     if (event.button !== 0) return;
     
-    dispatch(setCurrentRoomId(String(id)));
-    dispatch(setCurrentRoom(name));
-    dispatch(setOwnerId(roomOwnerId));
+    dispatch(setCurrentRoom({id, name, ownerId: Number(ownerId), avatar}));
     dispatch(setIsEditMessage(false));
     dispatch(setIsUsersList(false));
     dispatch(setChatMessage(''));
@@ -75,7 +68,7 @@ const RoomsData = () => {
     dispatch(setIsChat(true));
   };
   
-  const isOwner = userInfo?.userId === ownerId || userInfo?.userId === chosenOwnerId;
+  const isOwner = userInfo?.userId === ownerId || userInfo?.userId === chosenRoom?.ownerId;
   
   const roomButtons: ContextMenuButton[] = isOwner && !contextMenu.isSettings
     ? [
@@ -103,14 +96,15 @@ const RoomsData = () => {
     ? [
       {
         label: 'Logout',
-        icon: <Logout className={'w-[30px] h-[30px] fill-white mr-2 mb-0.5'} />,
+        icon: <Logout className={'w-[25px] h-[25px] fill-white mr-2 mb-0.5'} />,
         onClick: () => logout(),
       },
       {
         label: 'Create room',
-        icon: <Create className={'w-[30px] h-[30px] mr-2 mb-0.5'} />,
+        icon: <Create className={'w-[25px] h-[25px] mr-2 mb-0.5'} />,
         onClick: () => {
           dispatch(setIsEditRoom(false));
+          dispatch(setChosenRoom(null));
           openModal(<CreateAndEditRoomModal />);
         },
       },
@@ -154,7 +148,7 @@ const RoomsData = () => {
               className={'cursor-pointer'}
               onClick={(e) => {
                 e.stopPropagation();
-                handleContextMenu(e, '', {x: 5, y: 20, dynamicPosition: false, isSettings: true});
+                handleContextMenu(e, '', {dynamicPosition: false, isSettings: true});
               }}
             >
               <Settings />
@@ -162,7 +156,7 @@ const RoomsData = () => {
             <ContextMenu contextMenu={contextMenu} buttons={settingsButtons} closeContextMenu={closeContextMenu} />
           </div>
         </div>
-        <div className={roomsStyles.chat__scrollContainer}>
+        <div className={roomsStyles.chat__scrollContainer} ref={containerRef}>
           {roomsToDisplay?.length === 0 ? (
             <div className={'h-full flex items-center justify-center flex-1'}>
               <p className={'text-center text-[16px] text-white mt-5 font-medium text-xl'}>
@@ -174,13 +168,13 @@ const RoomsData = () => {
               <RoomItem
                 key={room.id}
                 room={room}
-                isActive={currentRoomId === String(room.id)}
+                isActive={currentRoom?.id === room.id}
                 onContextMenu={onRoomContextMenu}
-                onMouseDown={(event) => openRoom(room.id, room.name, room.ownerId, event)}
+                onMouseDown={(event) => openRoom(room.id, room.name, room.ownerId, String(room.avatar), event)}
               />
             ))
           )}
-          <ContextMenu contextMenu={contextMenu} buttons={roomButtons} closeContextMenu={closeContextMenu} />
+          <ContextMenu containerRef={containerRef} contextMenu={contextMenu} buttons={roomButtons} closeContextMenu={closeContextMenu} />
         </div>
       </div>
       {isChat ? (
