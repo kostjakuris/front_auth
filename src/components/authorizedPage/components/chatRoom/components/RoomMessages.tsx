@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from 'react';
 import styles from './roomMessages.module.scss';
 import { messageConfig, MessageProps } from '../messageConfig/MessageConfig';
 import { useContextMenu } from '../../../../../hooks/useContextMenu';
-import { useSocketEvents } from '../../../../../hooks/useSocketEvents';
 import dayjs from 'dayjs';
 import { useGetAllMessagesQuery } from '../../../../../lib/roomApi';
 import { useAppDispatch, useAppSelector } from '../../../../../lib/hooks';
@@ -64,6 +63,7 @@ const RoomMessages = () => {
     return messageConfig[messageProps.type]({
       id: messageProps.id,
       messages,
+      roomType: currentRoom?.type,
       createdAt: messageProps.createdAt,
       fullPath: messageProps.fullPath,
       isUpdated: messageProps.isUpdated,
@@ -92,8 +92,6 @@ const RoomMessages = () => {
       dispatch(setMessages(modifiedData));
     }
   }, [messageData]);
-  
-  useSocketEvents();
   
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   

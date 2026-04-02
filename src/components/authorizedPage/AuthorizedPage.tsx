@@ -7,11 +7,12 @@ import { Chat } from './index';
 import { setIsAuthLoading } from '../../lib/authSlice';
 import { useGetAllRoomsQuery } from '../../lib/roomApi';
 import { useGetUserInfo } from '../../hooks/useGetUserInfo';
+import { getSocket } from '../../api/socket';
 
 const AuthorizedPage = () => {
   const dispatch = useAppDispatch();
   
-  const {isAuthLoading, isAuth} = useAppSelector((state) => state.auth);
+  const {isAuthLoading, isAuth, userInfo} = useAppSelector((state) => state.auth);
   const {data: roomData} = useGetAllRoomsQuery(undefined, {skip: !isAuth, refetchOnMountOrArgChange: true});
   
   useGetUserInfo();
@@ -21,6 +22,13 @@ const AuthorizedPage = () => {
       dispatch(setIsAuthLoading(false));
     }
   }, [roomData]);
+  
+  useEffect(() => {
+    if (userInfo) {
+      const socket = getSocket();
+      socket.emit('joinUserRoom', {userId: String(userInfo.userId)});
+    }
+  }, [userInfo]);
   
   
   if (isAuthLoading) {

@@ -7,7 +7,6 @@ interface RoomsState {
   chosenRoom: Room | null;
   roomName: string | null;
   isEditRoom: boolean;
-  ownerId: number | null;
 }
 
 const initialState: RoomsState = {
@@ -16,7 +15,6 @@ const initialState: RoomsState = {
   chosenRoom: null,
   roomName: null,
   isEditRoom: false,
-  ownerId: null,
 };
 
 const roomsSlice = createSlice({
@@ -38,14 +36,14 @@ const roomsSlice = createSlice({
     setIsEditRoom: (state, action: PayloadAction<boolean>) => {
       state.isEditRoom = action.payload;
     },
-    setOwnerId: (state, action: PayloadAction<number | null>) => {
-      state.ownerId = action.payload;
-    },
     updateRoomLastMessage: (state, action: PayloadAction<{ roomId: number; lastMessage: LastMessage | null }>) => {
       const room = state.rooms.find(r => r.id === action.payload.roomId);
       if (room) {
         room.lastMessage = action.payload.lastMessage;
       }
+    },
+    updateRoomList: (state, action) => {
+      state.rooms = state.rooms.filter(r => r.id !== action.payload);
     },
   },
 });
@@ -56,7 +54,7 @@ export const {
   setChosenRoom,
   setRoomName,
   setIsEditRoom,
-  setOwnerId,
   updateRoomLastMessage,
+  updateRoomList,
 } = roomsSlice.actions;
 export default roomsSlice.reducer;

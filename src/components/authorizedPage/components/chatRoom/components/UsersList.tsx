@@ -10,7 +10,7 @@ import { useSocketEvents } from '../../../../../hooks/useSocketEvents';
 
 const UsersList = () => {
   const {userInfo} = useAppSelector(state => state.auth);
-  const {currentRoom, ownerId} = useAppSelector(state => state.rooms);
+  const {currentRoom} = useAppSelector(state => state.rooms);
   const {data: roomData, refetch} = useGetCurrentRoomInfoQuery(currentRoom?.id ? String(currentRoom.id) : '', {
     skip: !currentRoom?.id,
     refetchOnMountOrArgChange: true,
@@ -26,9 +26,9 @@ const UsersList = () => {
         roomData?.users?.map((user: any) => (
           <div key={user.id} className={'flex items-center justify-between h-[60px]'}>
             <p className={`${styles.authorized__chats_title} ml-5`}>{userInfo?.userId !== user.id ? user.username :
-              `Me(${user.username})`} {user.id === ownerId ? '(Admin)' : ''}</p>
+              `Me(${user.username})`} {user.id === currentRoom?.ownerId ? '(Admin)' : ''}</p>
             {
-              userInfo?.userId === ownerId && userInfo?.userId !== user.id ?
+              userInfo?.userId === currentRoom?.ownerId && userInfo?.userId !== user.id ?
                 <button className={'cursor-pointer'}
                   onClick={() => {
                     socket.emit('kickUserFromRoom',

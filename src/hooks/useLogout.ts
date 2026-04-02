@@ -1,7 +1,7 @@
 import { useAppDispatch } from '../lib/hooks';
 import { setIsAuth, setIsAuthLoading, setUserInfo } from '../lib/authSlice';
 import { setChatMessage, setIsEditMessage } from '../lib/messagesSlice';
-import { setCurrentRoom, setOwnerId, setRooms } from '../lib/roomsSlice';
+import { setCurrentRoom, setRooms } from '../lib/roomsSlice';
 import { setIsChat, setIsUsersList } from '../lib/uiSlice';
 import { roomApi } from '../lib/roomApi';
 import { userApi } from '../lib/userApi';
@@ -21,7 +21,6 @@ export const useLogout = () => {
     dispatch(setUserInfo(null));
     dispatch(setRooms([]));
     dispatch(setCurrentRoom(null));
-    dispatch(setOwnerId(null));
     dispatch(setIsEditMessage(false));
     dispatch(setIsUsersList(false));
     dispatch(setChatMessage(''));

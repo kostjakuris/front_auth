@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import File from '../../../../../../public/images/File';
 import { showToast } from 'nextjs-toast-notify';
+import { getRoomData } from '../../../../../utils/getRoomData';
 
 
 interface SendImageModalProps {
@@ -25,6 +26,7 @@ const SendModal: FC<SendImageModalProps> = ({selectedFile}) => {
   const [chosenFile, setChosenFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const {resolveRoomData} = getRoomData();
   
   const handleFile = () => {
     if (selectedFile.files && selectedFile.files[0]) {
@@ -83,6 +85,7 @@ const SendModal: FC<SendImageModalProps> = ({selectedFile}) => {
   };
   
   const submitFile = async() => {
+    const {roomName, roomId} = await resolveRoomData();
     if (chosenFile) {
       const fileRef = createFileRef();
       if (!fileRef) return;
@@ -93,8 +96,8 @@ const SendModal: FC<SendImageModalProps> = ({selectedFile}) => {
         getDownloadURL(fileRef).then((url) => {
           socket.emit('sendMessage', {
             userId: userInfo?.userId,
-            roomName: currentRoom?.name,
-            roomId: Number(currentRoom?.id),
+            roomName,
+            roomId,
             content: url,
             fileName: chosenFile.name,
             fileSize: formatFileSize(chosenFile.size),

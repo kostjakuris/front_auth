@@ -1,7 +1,3 @@
-export interface ListFormFields {
-  listName: string;
-}
-
 export interface LoginFormFields {
   email: string;
   password: string;
@@ -26,26 +22,6 @@ export interface ResetPasswordParams {
   password: string;
 }
 
-export interface CreateTaskFields {
-  name: string;
-  description: string;
-  todoId: number;
-  position: number;
-  parentId?: number;
-}
-
-export interface EditTodoFields {
-  name: string;
-  id: number;
-}
-
-export interface EditTaskFields {
-  name?: string;
-  description?: string;
-  status?: string;
-  position: number;
-  id: number;
-}
 
 export interface LastMessage {
   type: 'text' | 'image' | 'video' | 'voice' | 'file';
@@ -59,6 +35,12 @@ export interface Room {
   name: string;
   ownerId: number;
   avatar?: string;
+  username?: string;
+  type: 'direct' | 'public';
+  users?: {
+    id: number;
+    username: string;
+  }[];
   lastMessage?: LastMessage | null;
 }
 
@@ -66,6 +48,10 @@ export interface CreateRoomFields {
   name: string;
   ownerId: number;
   avatar?: string;
+}
+
+export interface CreateDirectRoomFields {
+  targetUserId: number;
 }
 
 export interface EditRoomFields extends CreateRoomFields {

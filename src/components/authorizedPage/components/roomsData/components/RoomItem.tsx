@@ -4,20 +4,25 @@ import styles from '../../../authorized.module.scss';
 import roomsStyles from '../roomsData.module.scss';
 import { Room } from '../../../../../interfaces/form.interface';
 import LastMessagePreview from './LastMessagePreview';
+import { useAppSelector } from '../../../../../lib/hooks';
 
 interface RoomItemProps {
   room: Room;
   isActive: boolean;
-  onContextMenu: (event: React.MouseEvent<HTMLDivElement>, id: number, name: string, ownerId: number,
-    avatar?: string) => void;
+  onContextMenu: (event: React.MouseEvent<HTMLDivElement>, room: Room) => void;
   onMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const RoomItem = ({room, isActive, onContextMenu, onMouseDown}: RoomItemProps) => {
   const [loaded, setLoaded] = useState(false);
+  const {userInfo} = useAppSelector(state => state.auth);
+  const roomFirstLetter = room.name ? room.name.slice(0, 1).toUpperCase() : room.username?.slice(0, 1).toUpperCase();
+  const roomLastLetter = room.name ? room.name.slice(room.name.length - 1, room.name.length).toUpperCase() : '';
+  const roomName = room.type === 'public' ? room.name :
+    room?.users?.find(user => user.id !== userInfo?.userId)?.username;
   return (
     <div
-      onContextMenu={(e) => onContextMenu(e, room.id, room.name, room.ownerId, room.avatar)}
+      onContextMenu={(e) => onContextMenu(e, room)}
       className={`${roomsStyles.chats_room} ${isActive ? roomsStyles.chat__active : ''}`}
       onMouseDown={onMouseDown}
     >
@@ -27,7 +32,7 @@ const RoomItem = ({room, isActive, onContextMenu, onMouseDown}: RoomItemProps) =
             <>
               {!loaded && (
                 <div
-                  className="h-[50px] w-[50px] rounded-full animate-pulse"
+                  className='h-[50px] w-[50px] rounded-full animate-pulse'
                   style={{
                     background:
                       'linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 75%)',
@@ -44,16 +49,16 @@ const RoomItem = ({room, isActive, onContextMenu, onMouseDown}: RoomItemProps) =
               />
             </> :
             <span className={'rounded-full bg-[#343144] flex justify-center items-center h-[50px] w-[50px]'}>
-            {room.name.slice(0, 1).toUpperCase()}{room.name.slice(room.name.length - 1, room.name.length).toUpperCase()}
+            {roomFirstLetter}{roomLastLetter}
           </span>
         }
       </div>
       <div>
-        <p className={styles.authorized__chats_title}>{room.name}</p>
+        <p className={styles.authorized__chats_title}>{roomName ?? room?.username}</p>
         <div className={'text-white/50 text-[15px] mt-[6px] flex gap-[4px]'}>
           {room.lastMessage ? (
             <>
-              <span>{room.lastMessage.username}:</span>
+              <span className={room.type === 'direct' ? 'hidden' : ''}>{room.lastMessage.username}:</span>
               <LastMessagePreview lastMessage={room.lastMessage} />
             </>
           ) : (

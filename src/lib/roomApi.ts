@@ -1,5 +1,11 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { CreateRoomFields, DeleteRoomFields, EditRoomFields, Room } from '../interfaces/form.interface';
+import {
+  CreateDirectRoomFields,
+  CreateRoomFields,
+  DeleteRoomFields,
+  EditRoomFields,
+  Room
+} from '../interfaces/form.interface';
 import { baseQueryWithReauth } from './baseQueryWithReauth';
 
 export const roomApi = createApi({
@@ -29,6 +35,14 @@ export const roomApi = createApi({
         url: '/room/create',
         method: 'POST',
         body: {name, ownerId, avatar},
+      }),
+      invalidatesTags: ['Room']
+    }),
+    createNewDirectRoom: build.mutation({
+      query: ({targetUserId}: CreateDirectRoomFields) => ({
+        url: '/room/direct',
+        method: 'POST',
+        body: {targetUserId},
       }),
       invalidatesTags: ['Room']
     }),
@@ -72,5 +86,6 @@ export const {
   useDeleteRoomMutation,
   useEditRoomMutation,
   useGetCurrentRoomInfoQuery,
-  useSearchRoomsQuery
+  useSearchRoomsQuery,
+  useCreateNewDirectRoomMutation
 } = roomApi;

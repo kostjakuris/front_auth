@@ -5,12 +5,7 @@ import { ContextMenu, ContextMenuButton } from '../../../ui/contextMenu';
 import { ChatRoom, DeleteMessageModal } from '../../index';
 import { useAppDispatch, useAppSelector } from '../../../../lib/hooks';
 import { setChatMessage, setIsEditMessage } from '../../../../lib/messagesSlice';
-import {
-  setChosenRoom,
-  setCurrentRoom,
-  setIsEditRoom,
-  setRooms,
-} from '../../../../lib/roomsSlice';
+import { setChosenRoom, setCurrentRoom, setIsEditRoom, setRooms, } from '../../../../lib/roomsSlice';
 import { setIsChat, setIsUsersList } from '../../../../lib/uiSlice';
 import { useContextMenu } from '../../../../hooks/useContextMenu';
 import { getSocket } from '../../../../api/socket';
@@ -28,11 +23,12 @@ import CreateAndEditRoomModal from '../chat/modals/CreateAndEditRoomModal';
 import RoomItem from './components/RoomItem';
 import { useLogout } from '../../../../hooks/useLogout';
 import { useSocketEvents } from '../../../../hooks/useSocketEvents';
+import { Room } from '../../../../interfaces/form.interface';
 
 const RoomsData = () => {
   const dispatch = useAppDispatch();
   const {userInfo, isAuth} = useAppSelector(state => state.auth);
-  const {currentRoom, rooms, ownerId, chosenRoom} = useAppSelector(state => state.rooms);
+  const {currentRoom, rooms, chosenRoom} = useAppSelector(state => state.rooms);
   const {isChat} = useAppSelector(state => state.ui);
   const {data} = useGetAllRoomsQuery(undefined, {skip: !isAuth, refetchOnMountOrArgChange: true});
   const {openModal} = useModal();
@@ -40,39 +36,36 @@ const RoomsData = () => {
   const {data: searchResults} = useSearchRoomsQuery(text, {skip: text.length < 1});
   const {logout} = useLogout();
   const containerRef = useRef<HTMLDivElement>(null);
-  
   const {contextMenu, handleContextMenu, closeContextMenu} = useContextMenu();
   
   const onRoomContextMenu = (
     event: React.MouseEvent<HTMLDivElement>,
-    roomId: number,
-    name: string,
-    roomOwnerId: number,
-    avatar?: string,
+    room: Room
   ) => {
-    handleContextMenu(event, name, {dynamicPosition: true, isSettings: false});
-    dispatch(setChosenRoom({id: roomId, name, ownerId: roomOwnerId, avatar}));
+    handleContextMenu(event, room.name, {dynamicPosition: true, isSettings: false});
+    dispatch(setChosenRoom({...room}));
   };
   
-  const openRoom = (id: number, name: string, roomOwnerId: number, avatar: string,
-    event: React.MouseEvent<HTMLDivElement>) => {
+  const openRoom = (room: Room, event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     if (event.button !== 0) return;
-    
-    dispatch(setCurrentRoom({id, name, ownerId: Number(ownerId), avatar}));
+    setText('');
+    dispatch(setCurrentRoom({...room}));
     dispatch(setIsEditMessage(false));
     dispatch(setIsUsersList(false));
     dispatch(setChatMessage(''));
     const socket = getSocket();
-    socket.emit('joinRoom', {roomName: name, roomId: id, userId: userInfo?.userId});
+    if (!room.username) {
+      socket.emit('joinRoom', {roomName: room.name});
+    }
     dispatch(setIsChat(true));
   };
   
-  const isOwner = userInfo?.userId === ownerId || userInfo?.userId === chosenRoom?.ownerId;
+  const isOwner = userInfo?.userId === currentRoom?.ownerId || userInfo?.userId === chosenRoom?.ownerId;
   
-  const roomButtons: ContextMenuButton[] = isOwner && !contextMenu.isSettings
+  const roomButtons: ContextMenuButton[] = (isOwner || chosenRoom?.type === 'direct') && !contextMenu.isSettings
     ? [
-      {
+      ...(chosenRoom?.type === 'public' ? [{
         label: 'Edit',
         icon: <Edit className={'w-[20px] h-[20px] mr-2 mb-0.5'} />,
         onClick: () => {
@@ -80,7 +73,7 @@ const RoomsData = () => {
           openModal(<CreateAndEditRoomModal />);
           closeContextMenu();
         },
-      },
+      }] : []),
       {
         label: 'Delete',
         icon: <Delete className={'w-[20px] h-[20px] mr-2 mb-0.5'} />,
@@ -170,11 +163,14 @@ const RoomsData = () => {
                 room={room}
                 isActive={currentRoom?.id === room.id}
                 onContextMenu={onRoomContextMenu}
-                onMouseDown={(event) => openRoom(room.id, room.name, room.ownerId, String(room.avatar), event)}
+                onMouseDown={(event) => openRoom(room,
+                  event
+                )}
               />
             ))
           )}
-          <ContextMenu containerRef={containerRef} contextMenu={contextMenu} buttons={roomButtons} closeContextMenu={closeContextMenu} />
+          <ContextMenu containerRef={containerRef} contextMenu={contextMenu} buttons={roomButtons}
+            closeContextMenu={closeContextMenu} />
         </div>
       </div>
       {isChat ? (

@@ -20,7 +20,9 @@ const ChatRoom = () => {
     skip: !currentRoom?.id,
     refetchOnMountOrArgChange: true
   });
-  const {data: isUserJoin} = useIsUserJoinedQuery(currentRoom?.id ? String(currentRoom?.id) : '');
+  const {data: isUserJoin} = useIsUserJoinedQuery(currentRoom?.id ? String(currentRoom?.id) : '', {
+    skip: !!currentRoom?.username,
+  });
   const socket = getSocket();
   
   if (isLoading) {
@@ -45,7 +47,7 @@ const ChatRoom = () => {
           <RoomMessages />
       }
       {
-        (!isUsersList && isUserJoin === 'true') ?
+        (!isUsersList && isUserJoin === 'true' || currentRoom?.username || currentRoom?.type === 'direct') ?
           <>
             <SendComponent />
           </>
@@ -54,7 +56,7 @@ const ChatRoom = () => {
             <button className={styles.authorized__button}
               style={{background: '#9890e3', padding: '10px 20px'}}
               onClick={() => socket.emit('joinRoom',
-                {roomName: currentRoom, roomId: currentRoom?.id, userId: userInfo?.userId},
+                {roomName: currentRoom?.name, roomId: currentRoom?.id, userId: userInfo?.userId},
               )}>
               Join a room
             </button>

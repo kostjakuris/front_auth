@@ -16,6 +16,7 @@ export interface MessageProps {
   roomId?: number;
   updatedAt: string;
   messageUserId: string;
+  roomType?: string;
   fileName: string;
   fileSize: string;
   type: MessageType;
@@ -40,29 +41,31 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     isTheSameUser,
     createdAt,
     contextMenuFn,
+    roomType,
     type
   }: MessageProps) => {
-    const showNickname = !isTheSameUser && userId !== Number(messageUserId);
+    const showNickname = !isTheSameUser && userId !== Number(messageUserId) && roomType === 'public';
     return (
-    <div
-      onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath))}
-      className={`${userId === Number(messageUserId) ? msgStyles.my_message : msgStyles.message} ${!showNickname ? 'pt-[13px]!' : ''}`}
-    >
-      {
-        showNickname &&
-        <p className={`${msgStyles.nickname} text-green-400`}>
-          {username}
-        </p>
-      }
-      <p className={`${styles.authorized__text} whitespace-pre-line break-all`}>{message}</p>
-      {
-        updatedAt && isUpdated ?
-          <p className={'mt-2 text-gray-300! leading-[100%] font-normal text-[12px] px-[10px]'}>updated
-            at: {updatedAt}</p>
-          : <p className={'mt-2 ml-auto text-gray-300! leading-[100%] font-normal text-[12px] px-[10px]'}>{dayjs(
-            createdAt).format('HH:MM')}</p>
-      }
-    </div>
+      <div
+        onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath))}
+        className={`${userId === Number(messageUserId) ? msgStyles.my_message : msgStyles.message} ${!showNickname ?
+          'pt-[13px]!' : ''}`}
+      >
+        {
+          showNickname &&
+          <p className={`${msgStyles.nickname} text-green-400`}>
+            {username}
+          </p>
+        }
+        <p className={`${styles.authorized__text} whitespace-pre-line break-all`}>{message}</p>
+        {
+          updatedAt && isUpdated ?
+            <p className={'mt-2 text-gray-300! leading-[100%] font-normal text-[12px] px-[10px]'}>updated
+              at: {updatedAt}</p>
+            : <p className={'mt-2 ml-auto text-gray-300! leading-[100%] font-normal text-[12px] px-[10px]'}>{dayjs(
+              createdAt).format('HH:MM')}</p>
+        }
+      </div>
     );
   },
   image: ({
@@ -76,30 +79,31 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     type,
     username,
     createdAt,
+    roomType,
     isTheSameUser
   }: MessageProps) => {
-    const showNickname = !isTheSameUser && userId !== Number(messageUserId);
+    const showNickname = !isTheSameUser && userId !== Number(messageUserId) && roomType === 'public';
     return (
-    <div
-      className={`p-0! bg-none! bg-transparent! ${userId === Number(messageUserId) ? msgStyles.my_message :
-        msgStyles.message}`}
-      onContextMenu={(event) => contextMenuFn(event, message,
-        id, String(messageUserId), type, String(fullPath)
-      )}
-    >
-      {
-        showNickname &&
-        <p className={`${msgStyles.nickname} text-green-400`}>
-          {username}
-        </p>
-      }
-      <div className={`relative ${!showNickname ? 'pt-[13px]!' : ''}`}>
-        <img onLoad={scrollFn} className={'w-fit h-fit rounded-[10px]'} src={message}
-          alt={message} />
-        <p className={'absolute bottom-[13px] bg-[#343144] px-[8px] py-[3px] rounded-[10px] right-[10px]' +
-          ' text-gray-300! leading-[100%] font-normal text-[12px]'}>{dayjs(createdAt).format('HH:MM')}</p>
+      <div
+        className={`p-0! bg-none! bg-transparent! ${userId === Number(messageUserId) ? msgStyles.my_message :
+          msgStyles.message}`}
+        onContextMenu={(event) => contextMenuFn(event, message,
+          id, String(messageUserId), type, String(fullPath)
+        )}
+      >
+        {
+          showNickname &&
+          <p className={`${msgStyles.nickname} text-green-400`}>
+            {username}
+          </p>
+        }
+        <div className={`relative ${!showNickname ? 'pt-[13px]!' : ''}`}>
+          <img onLoad={scrollFn} className={'w-fit h-fit rounded-[10px]'} src={message}
+            alt={message} />
+          <p className={'absolute bottom-[13px] bg-[#343144] px-[8px] py-[3px] rounded-[10px] right-[10px]' +
+            ' text-gray-300! leading-[100%] font-normal text-[12px]'}>{dayjs(createdAt).format('HH:MM')}</p>
+        </div>
       </div>
-    </div>
     );
   },
   video: ({
@@ -113,31 +117,32 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     username,
     type,
     createdAt,
+    roomType,
     isTheSameUser
   }: MessageProps) => {
-    const showNickname = !isTheSameUser && userId !== Number(messageUserId);
+    const showNickname = !isTheSameUser && userId !== Number(messageUserId) && roomType === 'public';
     return (
-    <div
-      className={`p-0! bg-none! bg-transparent! ${userId === Number(messageUserId) ? msgStyles.my_message :
-        msgStyles.message} `}
-      onContextMenu={(event) => contextMenuFn(event, message,
-        id, String(messageUserId), type, String(fullPath)
-      )}
-    >
-      {
-        showNickname &&
-        <p className={`${msgStyles.nickname} text-green-400`}>
-          {username}
-        </p>
-      }
-      <div className={`relative ${!showNickname ? 'pt-[13px]!' : ''}`}>
-        <video onLoadedData={scrollFn} controls className={'w-fit h-fit rounded-[10px]'}>
-          <source src={message} />
-        </video>
-        <p className={'absolute bottom-[70px] bg-[#343144] px-[8px] py-[3px] rounded-[10px] right-[10px]' +
-          ' text-gray-300! leading-[100%] font-normal text-[12px]'}>{dayjs(createdAt).format('HH:MM')}</p>
+      <div
+        className={`p-0! bg-none! bg-transparent! ${userId === Number(messageUserId) ? msgStyles.my_message :
+          msgStyles.message} `}
+        onContextMenu={(event) => contextMenuFn(event, message,
+          id, String(messageUserId), type, String(fullPath)
+        )}
+      >
+        {
+          showNickname &&
+          <p className={`${msgStyles.nickname} text-green-400`}>
+            {username}
+          </p>
+        }
+        <div className={`relative ${!showNickname ? 'pt-[13px]!' : ''}`}>
+          <video onLoadedData={scrollFn} controls className={'w-fit h-fit rounded-[10px]'}>
+            <source src={message} />
+          </video>
+          <p className={'absolute bottom-[70px] bg-[#343144] px-[8px] py-[3px] rounded-[10px] right-[10px]' +
+            ' text-gray-300! leading-[100%] font-normal text-[12px]'}>{dayjs(createdAt).format('HH:MM')}</p>
+        </div>
       </div>
-    </div>
     );
   },
   voice: ({
@@ -151,29 +156,30 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     username,
     type,
     createdAt,
+    roomType,
     isTheSameUser
   }: MessageProps) => {
-    const showNickname = !isTheSameUser && userId !== Number(messageUserId);
+    const showNickname = !isTheSameUser && userId !== Number(messageUserId) && roomType === 'public';
     return (
-    <div
-      className={`px-[13px]! min-w-[340px] ${!showNickname ? 'pt-[13px]!' : ''} ${userId === Number(messageUserId) ?
-        msgStyles.my_message : msgStyles.message} `}
-      onContextMenu={(event) => contextMenuFn(event, message,
-        id, String(messageUserId), type, String(fullPath)
-      )}
-    >
-      {
-        showNickname &&
-        <p className={`${msgStyles.nickname} pl-0! text-green-400`}>
-          {username}
-        </p>
-      }
+      <div
+        className={`px-[13px]! min-w-[340px] ${!showNickname ? 'pt-[13px]!' : ''} ${userId === Number(messageUserId) ?
+          msgStyles.my_message : msgStyles.message} `}
+        onContextMenu={(event) => contextMenuFn(event, message,
+          id, String(messageUserId), type, String(fullPath)
+        )}
+      >
+        {
+          showNickname &&
+          <p className={`${msgStyles.nickname} pl-0! text-green-400`}>
+            {username}
+          </p>
+        }
         <audio onLoadedData={scrollFn} controls className={'w-full rounded-b-[20px]'}>
           <source src={message} />
         </audio>
         <p className={'mt-2 ml-auto text-gray-300! leading-[100%] font-normal text-[12px] pl-[10px]'}>{dayjs(
           createdAt).format('HH:MM')}</p>
-    </div>
+      </div>
     );
   },
   file: ({
@@ -188,35 +194,37 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     fileName,
     createdAt,
     fileSize,
+    roomType,
     isTheSameUser,
   }: MessageProps) => {
     const showNickname = !isTheSameUser && userId !== Number(messageUserId);
     return (
-    <div
-      onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath))}
-      className={`${userId === Number(messageUserId) ? msgStyles.my_message : msgStyles.message} ${!showNickname ? 'pt-[13px]!' : ''}`}
-    >
-      {
-        showNickname &&
-        <p className={`${msgStyles.nickname} text-green-400`}>
-          {username}
-        </p>
-      }
-      <a href={message} download={message}
-        className={'flex h-full items-stretch gap-[10px] px-[10px]'}>
+      <div
+        onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath))}
+        className={`${userId === Number(messageUserId) ? msgStyles.my_message : msgStyles.message} ${!showNickname ?
+          'pt-[13px]!' : ''}`}
+      >
+        {
+          showNickname && roomType === 'public' &&
+          <p className={`${msgStyles.nickname} text-green-400`}>
+            {username}
+          </p>
+        }
+        <a href={message} download={message}
+          className={'flex h-full items-stretch gap-[10px] px-[10px]'}>
         <span className={`${userId === Number(messageUserId) ? 'bg-[#0C36B6FF]' :
           'bg-[#222030FF]'} h-full rounded-full p-[10px] w-fit`}><File /></span>
-        <div className={'flex-1 flex flex-col justify-between gap-[5px] h-full'}>
-          <p
-            className={`${styles.authorized__text} font-medium! px-0! pt-[5px]! mt-0! whitespace-pre-line`}>{fileName}</p>
-          <div className={'flex items-center'}>
-            <p className={'leading-[100%] text-white/70 text-[15px]'}>{fileSize}</p>
-            <p className={'mt-[10px] ml-auto text-gray-300! leading-[100%] font-normal text-[12px] pl-[10px]'}>{dayjs(
-              createdAt).format('HH:MM')}</p>
+          <div className={'flex-1 flex flex-col justify-between gap-[5px] h-full'}>
+            <p
+              className={`${styles.authorized__text} font-medium! px-0! pt-[5px]! mt-0! whitespace-pre-line`}>{fileName}</p>
+            <div className={'flex items-center'}>
+              <p className={'leading-[100%] text-white/70 text-[15px]'}>{fileSize}</p>
+              <p className={'mt-[10px] ml-auto text-gray-300! leading-[100%] font-normal text-[12px] pl-[10px]'}>{dayjs(
+                createdAt).format('HH:MM')}</p>
+            </div>
           </div>
-        </div>
-      </a>
-    </div>
+        </a>
+      </div>
     );
   },
 };

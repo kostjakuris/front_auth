@@ -19,7 +19,7 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   const {closeModal} = useModal();
   const [deleteRoom] = useDeleteRoomMutation();
   const {userInfo} = useAppSelector(state => state.auth);
-  const {currentRoom, chosenRoom, ownerId} = useAppSelector(state => state.rooms);
+  const {currentRoom, chosenRoom} = useAppSelector(state => state.rooms);
   const {currentMessageId, messageUserId} = useAppSelector(state => state.messages);
   const socket = getSocket();
   const {closeRoom} = useCloseRoom();
@@ -29,7 +29,7 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
       deleteObject(imageRef).then(() => {
         socket.emit('deleteMessage', {
           messageUserId,
-          ownerId,
+          ownerId: currentRoom?.ownerId,
           userId: userInfo?.userId,
           messageId: currentMessageId,
           roomName: currentRoom?.name,
@@ -39,7 +39,7 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
     } else {
       socket.emit('deleteMessage', {
         messageUserId,
-        ownerId,
+        ownerId: currentRoom?.ownerId,
         userId: userInfo?.userId,
         messageId: currentMessageId,
         roomName: currentRoom?.name,
@@ -62,6 +62,12 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   
   const deleteOneRoom = async() => {
     await deleteRoom({id: Number(chosenRoom?.id), ownerId: Number(chosenRoom?.ownerId)});
+    socket.emit('getDirectRoom',
+      {
+        userId: String(chosenRoom?.users?.find((user: any) => user.id !== userInfo?.userId)?.id),
+        roomId: Number(chosenRoom?.id)
+      }
+    );
     deleteRoomFolder(String(chosenRoom?.name));
     closeModal();
     if (chosenRoom?.id === currentRoom?.id) {

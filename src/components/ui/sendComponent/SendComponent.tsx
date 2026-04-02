@@ -14,30 +14,33 @@ import { SendImageModal } from '../../authorizedPage';
 import Microphone from '../../../../public/images/Microphone';
 import { useVoiceRecording } from '../../../hooks/useVoiceRecording';
 import Attach from '../../../../public/images/Attach';
+import { getRoomData } from '../../../utils/getRoomData';
 
 
 const SendComponent = () => {
   const dispatch = useAppDispatch();
   const {isEditMessage, currentMessageId, messageUserId, chatMessage} = useAppSelector(state => state.messages);
   const {userInfo} = useAppSelector(state => state.auth);
-  const {currentRoom, ownerId} = useAppSelector(state => state.rooms);
+  const {currentRoom} = useAppSelector(state => state.rooms);
   const socket = getSocket();
   const {openModal} = useModal();
   const {isRecording, startRecording, stopRecording} = useVoiceRecording();
-
+  const {resolveRoomData} = getRoomData();
+  
   const closeEditBlock = () => {
     dispatch(setChatMessage(''));
     dispatch(setIsEditMessage(false));
   };
-
-  const submitMessage = (event: any) => {
+  
+  const submitMessage = async(event: any) => {
     event.preventDefault();
+    const {roomName, roomId} = await resolveRoomData();
     if (chatMessage) {
       if (!isEditMessage) {
         socket.emit('sendMessage', {
           userId: userInfo?.userId,
-          roomName: currentRoom?.name,
-          roomId: Number(currentRoom?.id),
+          roomName,
+          roomId,
           content: chatMessage,
           username: userInfo?.username,
           type: 'text'
@@ -45,9 +48,10 @@ const SendComponent = () => {
       } else {
         socket.emit('editMessage', {
           messageUserId,
-          ownerId,
+          ownerId: currentRoom?.ownerId,
           currentMessageId,
           userId: userInfo?.userId,
+          roomId: Number(currentRoom?.id),
           roomName: currentRoom?.name,
           content: chatMessage,
           username: userInfo?.username,
@@ -57,8 +61,7 @@ const SendComponent = () => {
     dispatch(setChatMessage(''));
     dispatch(setIsEditMessage(false));
   };
-
-
+  
   return (
     <>
       <div className={!isEditMessage ? 'hidden' : sendStyles.edit}>
@@ -80,9 +83,15 @@ const SendComponent = () => {
             class_name={sendStyles.input}
           />
           <div className={'flex items-center gap-[30px] justify-between'}>
-            <button className={`${isRecording ? 'bg-[#3a5bbf] scale-116' :
+            <button type={'button'} className={`${isRecording ? 'bg-[#3a5bbf] scale-116' :
               ''} transition-all cursor-pointer rounded-full flex-1 px-[6px] h-full`}
-              onMouseDown={startRecording} onMouseUp={stopRecording} onMouseLeave={stopRecording}>
+              onMouseDown={startRecording} onMouseUp={(event) => {
+              event.preventDefault();
+              stopRecording();
+            }} onMouseLeave={(event) => {
+              event.preventDefault();
+              stopRecording();
+            }}>
               <Microphone className={'drop-shadow-[0_0_3px_#2242b4]'} stroke={isRecording ? '#fff' : '#2242b4'} />
             </button>
             <InputFile
