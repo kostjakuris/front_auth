@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { getSocket } from '../api/socket';
 import dayjs from 'dayjs';
-import { useGetAllRoomsQuery, useGetCurrentRoomInfoQuery, useIsUserJoinedQuery } from '../lib/roomApi';
+import { roomApi, useGetAllRoomsQuery, useGetCurrentRoomInfoQuery, useIsUserJoinedQuery } from '../lib/roomApi';
 import { useAppDispatch, useAppSelector } from '../lib/hooks';
 import { deleteMessageById, setNewMessage, updateMessage } from '../lib/messagesSlice';
 import { setRooms, updateRoomLastMessage, updateRoomList } from '../lib/roomsSlice';
@@ -10,7 +10,6 @@ import { LastMessage } from '../interfaces/form.interface';
 import { useCloseRoom } from './useCloseRoom';
 
 export const useSocketEvents = () => {
-  const socket = getSocket();
   const {currentRoom} = useAppSelector(state => state.rooms);
   const {userInfo, isAuth} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
@@ -34,18 +33,25 @@ export const useSocketEvents = () => {
   currentRoomRef.current = currentRoom;
   
   useEffect(() => {
+    const socket = getSocket();
     socket.on('getMessage', (data) => {
       dispatch(setNewMessage({
         ...data,
         createdAt: dayjs(data.createdAt).format('MMM D, YYYY HH:mm'),
       }));
     });
+    // add 4 fields: fileName, fileSize, fullPath, type
     socket.on('getUpdatedMessage', (data) => {
+      dispatch(roomApi.util.invalidateTags([{type: 'MessageVersions', id: data._id}]));
       dispatch(updateMessage({
         _id: data._id,
         message: data.message,
         updatedAt: dayjs(data.updatedAt).format('MMM D, YYYY HH:mm'),
         isUpdated: data.isUpdated,
+        ...(data.type !== undefined ? {type: data.type} : {}),
+        ...(data.fileName !== undefined ? {fileName: data.fileName} : {}),
+        ...(data.fileSize !== undefined ? {fileSize: data.fileSize} : {}),
+        ...(data.fullPath !== undefined ? {fullPath: data.fullPath} : {}),
       }));
     });
     socket.on('getDeletedId', (data) => {

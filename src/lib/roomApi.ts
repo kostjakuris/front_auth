@@ -11,7 +11,7 @@ import { baseQueryWithReauth } from './baseQueryWithReauth';
 export const roomApi = createApi({
   reducerPath: 'roomApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['Room'],
+  tagTypes: ['Room', 'MessageVersions'],
   endpoints: (build) => ({
     getAllRooms: build.query<Room[], void>({
       query: () => ({
@@ -24,6 +24,12 @@ export const roomApi = createApi({
       query: (id: string) => ({
         url: `/message/all?id=${id}`,
       }),
+    }),
+    getAllMessageVersions: build.query({
+      query: (id: string) => ({
+        url: `/message/all-versions?messageId=${id}`,
+      }),
+      providesTags: (result, error, id) => [{type: 'MessageVersions', id}],
     }),
     getCurrentRoomInfo: build.query({
       query: (id: string) => ({
@@ -87,5 +93,6 @@ export const {
   useEditRoomMutation,
   useGetCurrentRoomInfoQuery,
   useSearchRoomsQuery,
-  useCreateNewDirectRoomMutation
+  useCreateNewDirectRoomMutation,
+  useGetAllMessageVersionsQuery,
 } = roomApi;

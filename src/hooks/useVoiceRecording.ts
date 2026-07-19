@@ -1,15 +1,17 @@
 import { useRef, useState } from 'react';
-import { useAppSelector } from '../lib/hooks';
+import { useAppDispatch, useAppSelector } from '../lib/hooks';
 import { getSocket } from '../api/socket';
-import { getDownloadURL, ref, uploadBytesResumable } from '@firebase/storage';
-import { storage } from '../firebase';
 import { v4 } from 'uuid';
 import { getRoomData } from '../utils/getRoomData';
+import { uploadToStorage } from '../utils/uploadToStorage';
+import { setIsReplaceMessage } from '../lib/messagesSlice';
 
 export const useVoiceRecording = () => {
   const {userInfo} = useAppSelector(state => state.auth);
   const {currentRoom} = useAppSelector(state => state.rooms);
+  const {isReplaceMessage, currentMessageId, messageUserId} = useAppSelector(state => state.messages);
   const socket = getSocket();
+  const dispatch = useAppDispatch();
   const {resolveRoomData} = getRoomData();
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -39,23 +41,34 @@ export const useVoiceRecording = () => {
   const submitFile = async(voiceFile: Blob, fileName: string, fileType: string) => {
     const {roomName, roomId} = await resolveRoomData();
     if (voiceFile) {
-      const fileRef = ref(storage, `${currentRoom}/voices/${fileName}`);
-      if (!fileRef) return;
-      uploadBytesResumable(fileRef, voiceFile, {
+      const {url, fullPath} = await uploadToStorage(roomName ?? '', 'voices', fileName, voiceFile, {
         contentType: fileType,
-      }).then((response) => {
-        getDownloadURL(fileRef).then((url) => {
-          socket.emit('sendMessage', {
-            userId: userInfo?.userId,
-            roomName,
-            roomId,
-            content: url,
-            fullPath: response.metadata.fullPath,
-            username: userInfo?.username,
-            type: 'voice'
-          });
-        });
       });
+      if (isReplaceMessage) {
+        socket.emit('editMessage', {
+          messageUserId,
+          ownerId: currentRoom?.ownerId,
+          currentMessageId,
+          userId: userInfo?.userId,
+          roomName,
+          roomId,
+          content: url,
+          fullPath,
+          username: userInfo?.username,
+          type: 'voice'
+        });
+        dispatch(setIsReplaceMessage(false));
+      } else {
+        socket.emit('sendMessage', {
+          userId: userInfo?.userId,
+          roomName,
+          roomId,
+          content: url,
+          fullPath,
+          username: userInfo?.username,
+          type: 'voice'
+        });
+      }
     }
   };
   

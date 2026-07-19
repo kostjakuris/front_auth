@@ -23,9 +23,12 @@ export interface MessageProps {
   userId: number;
   username: string;
   isTheSameUser?: boolean;
-  scrollFn?: () => void;
+  timeOutRef: React.RefObject<NodeJS.Timeout | null>;
+  elementRef: React.RefObject<HTMLDivElement | null>;
+  scrollFn?: (timeoutRef: React.RefObject<NodeJS.Timeout | null>,
+    elementRef: React.RefObject<HTMLDivElement | null>) => void;
   contextMenuFn: (event: any, message: string, messageId: string, userId: string, type: string,
-    fullPath: string) => void;
+    fullPath: string, fileName: string, fileSize: string, isUpdated: boolean) => void;
 }
 
 export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Element> = {
@@ -42,12 +45,17 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     createdAt,
     contextMenuFn,
     roomType,
+    fileName,
+    fileSize,
     type
   }: MessageProps) => {
-    const showNickname = !isTheSameUser && userId !== Number(messageUserId) && roomType === 'public';
+    console.log({id});
+    const showNickname = !isTheSameUser && Number(userId) !== Number(messageUserId) && roomType === 'public';
     return (
       <div
-        onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath))}
+        onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath),
+          fileName, fileSize, isUpdated
+        )}
         className={`${userId === Number(messageUserId) ? msgStyles.my_message : msgStyles.message} ${!showNickname ?
           'pt-[13px]!' : ''}`}
       >
@@ -79,7 +87,13 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     type,
     username,
     createdAt,
+    updatedAt,
+    isUpdated,
     roomType,
+    elementRef,
+    timeOutRef,
+    fileName,
+    fileSize,
     isTheSameUser
   }: MessageProps) => {
     const showNickname = !isTheSameUser && userId !== Number(messageUserId) && roomType === 'public';
@@ -88,7 +102,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
         className={`p-0! bg-none! bg-transparent! ${userId === Number(messageUserId) ? msgStyles.my_message :
           msgStyles.message}`}
         onContextMenu={(event) => contextMenuFn(event, message,
-          id, String(messageUserId), type, String(fullPath)
+          id, String(messageUserId), type, String(fullPath), fileName, fileSize, isUpdated
         )}
       >
         {
@@ -98,10 +112,13 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
           </p>
         }
         <div className={`relative ${!showNickname ? 'pt-[13px]!' : ''}`}>
-          <img onLoad={scrollFn} className={'w-fit h-fit rounded-[10px]'} src={message}
+          <img onLoad={() => scrollFn?.(timeOutRef, elementRef)} className={'w-fit h-fit' +
+            ' rounded-[10px]'} src={message}
             alt={message} />
           <p className={'absolute bottom-[13px] bg-[#343144] px-[8px] py-[3px] rounded-[10px] right-[10px]' +
-            ' text-gray-300! leading-[100%] font-normal text-[12px]'}>{dayjs(createdAt).format('HH:MM')}</p>
+            ' text-gray-300! leading-[100%] font-normal text-[12px]'}>{
+            updatedAt && isUpdated ? `replaced at: ${updatedAt}` : dayjs(createdAt).format('HH:MM')
+          }</p>
         </div>
       </div>
     );
@@ -117,7 +134,13 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     username,
     type,
     createdAt,
+    updatedAt,
+    isUpdated,
     roomType,
+    elementRef,
+    timeOutRef,
+    fileName,
+    fileSize,
     isTheSameUser
   }: MessageProps) => {
     const showNickname = !isTheSameUser && userId !== Number(messageUserId) && roomType === 'public';
@@ -126,7 +149,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
         className={`p-0! bg-none! bg-transparent! ${userId === Number(messageUserId) ? msgStyles.my_message :
           msgStyles.message} `}
         onContextMenu={(event) => contextMenuFn(event, message,
-          id, String(messageUserId), type, String(fullPath)
+          id, String(messageUserId), type, String(fullPath), fileName, fileSize, isUpdated
         )}
       >
         {
@@ -136,11 +159,14 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
           </p>
         }
         <div className={`relative ${!showNickname ? 'pt-[13px]!' : ''}`}>
-          <video onLoadedData={scrollFn} controls className={'w-fit h-fit rounded-[10px]'}>
+          <video onLoadedData={() => scrollFn?.(timeOutRef, elementRef)} controls className={'w-fit h-fit' +
+            ' rounded-[10px]'}>
             <source src={message} />
           </video>
           <p className={'absolute bottom-[70px] bg-[#343144] px-[8px] py-[3px] rounded-[10px] right-[10px]' +
-            ' text-gray-300! leading-[100%] font-normal text-[12px]'}>{dayjs(createdAt).format('HH:MM')}</p>
+            ' text-gray-300! leading-[100%] font-normal text-[12px]'}>{
+            updatedAt && isUpdated ? `replaced at: ${updatedAt}` : dayjs(createdAt).format('HH:MM')
+          }</p>
         </div>
       </div>
     );
@@ -151,12 +177,18 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     userId,
     scrollFn,
     fullPath,
+    elementRef,
+    timeOutRef,
     contextMenuFn,
     messageUserId,
     username,
     type,
     createdAt,
+    updatedAt,
+    isUpdated,
     roomType,
+    fileName,
+    fileSize,
     isTheSameUser
   }: MessageProps) => {
     const showNickname = !isTheSameUser && userId !== Number(messageUserId) && roomType === 'public';
@@ -165,7 +197,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
         className={`px-[13px]! min-w-[340px] ${!showNickname ? 'pt-[13px]!' : ''} ${userId === Number(messageUserId) ?
           msgStyles.my_message : msgStyles.message} `}
         onContextMenu={(event) => contextMenuFn(event, message,
-          id, String(messageUserId), type, String(fullPath)
+          id, String(messageUserId), type, String(fullPath), fileName, fileSize, isUpdated
         )}
       >
         {
@@ -174,11 +206,12 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
             {username}
           </p>
         }
-        <audio onLoadedData={scrollFn} controls className={'w-full rounded-b-[20px]'}>
+        <audio onLoadedData={() => scrollFn?.(timeOutRef, elementRef)} controls className={'w-full rounded-b-[20px]'}>
           <source src={message} />
         </audio>
-        <p className={'mt-2 ml-auto text-gray-300! leading-[100%] font-normal text-[12px] pl-[10px]'}>{dayjs(
-          createdAt).format('HH:MM')}</p>
+        <p className={'mt-2 ml-auto text-gray-300! leading-[100%] font-normal text-[12px] pl-[10px]'}>{
+          updatedAt && isUpdated ? `replaced at: ${updatedAt}` : dayjs(createdAt).format('HH:MM')
+        }</p>
       </div>
     );
   },
@@ -193,6 +226,8 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     type,
     fileName,
     createdAt,
+    updatedAt,
+    isUpdated,
     fileSize,
     roomType,
     isTheSameUser,
@@ -200,7 +235,9 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     const showNickname = !isTheSameUser && userId !== Number(messageUserId);
     return (
       <div
-        onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath))}
+        onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath),
+          fileName, fileSize, isUpdated
+        )}
         className={`${userId === Number(messageUserId) ? msgStyles.my_message : msgStyles.message} ${!showNickname ?
           'pt-[13px]!' : ''}`}
       >
@@ -219,8 +256,9 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
               className={`${styles.authorized__text} font-medium! px-0! pt-[5px]! mt-0! whitespace-pre-line`}>{fileName}</p>
             <div className={'flex items-center'}>
               <p className={'leading-[100%] text-white/70 text-[15px]'}>{fileSize}</p>
-              <p className={'mt-[10px] ml-auto text-gray-300! leading-[100%] font-normal text-[12px] pl-[10px]'}>{dayjs(
-                createdAt).format('HH:MM')}</p>
+              <p className={'mt-[10px] ml-auto text-gray-300! leading-[100%] font-normal text-[12px] pl-[10px]'}>{
+                updatedAt && isUpdated ? `replaced at: ${updatedAt}` : dayjs(createdAt).format('HH:MM')
+              }</p>
             </div>
           </div>
         </a>

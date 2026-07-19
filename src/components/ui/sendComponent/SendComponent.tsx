@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import Send from '../../../../public/images/Send';
 import { Input } from '../input';
 import Close from '../../../../public/images/Close';
-import { setChatMessage, setIsEditMessage } from '../../../lib/messagesSlice';
+import { setChatMessage, setIsEditMessage, setIsReplaceMessage } from '../../../lib/messagesSlice';
 import { getSocket } from '../../../api/socket';
 import { InputFile } from '../inputFile';
 import { useModal } from '../../../providers/ModalProvider/ModalProvider.hooks';
@@ -19,7 +19,8 @@ import { getRoomData } from '../../../utils/getRoomData';
 
 const SendComponent = () => {
   const dispatch = useAppDispatch();
-  const {isEditMessage, currentMessageId, messageUserId, chatMessage} = useAppSelector(state => state.messages);
+  const {isEditMessage, isReplaceMessage, currentMessageId, messageUserId, chatMessage} = useAppSelector(
+    state => state.messages);
   const {userInfo} = useAppSelector(state => state.auth);
   const {currentRoom} = useAppSelector(state => state.rooms);
   const socket = getSocket();
@@ -55,6 +56,7 @@ const SendComponent = () => {
           roomName: currentRoom?.name,
           content: chatMessage,
           username: userInfo?.username,
+          type: 'text',
         });
       }
     }
@@ -67,6 +69,10 @@ const SendComponent = () => {
       <div className={!isEditMessage ? 'hidden' : sendStyles.edit}>
         <p className={styles.authorized__text}>{chatMessage}</p>
         <button className={'cursor-pointer'} onClick={closeEditBlock}><Close /></button>
+      </div>
+      <div className={!isReplaceMessage ? 'hidden' : sendStyles.edit}>
+        <p className={styles.authorized__text}>Pick a new attachment or hold the mic to replace this message</p>
+        <button className={'cursor-pointer'} onClick={() => dispatch(setIsReplaceMessage(false))}><Close /></button>
       </div>
       <div className={'w-full h-[8px] bg-[#292634] border-t-[2px] border-b-[2px] border-[#221f2d]'} />
       <form onSubmit={submitMessage}

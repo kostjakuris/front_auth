@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
 import styles from './roomMessages.module.scss';
-import { messageConfig, MessageProps } from '../messageConfig/MessageConfig';
+import { messageConfig } from '../messageConfig/MessageConfig';
 import { useContextMenu } from '../../../../../hooks/useContextMenu';
 import dayjs from 'dayjs';
 import { useGetAllMessagesQuery } from '../../../../../lib/roomApi';
@@ -10,6 +10,7 @@ import {
   setChatMessage,
   setCurrentMessageId,
   setIsEditMessage,
+  setIsReplaceMessage,
   setMessages,
   setMessageUserId
 } from '../../../../../lib/messagesSlice';
@@ -19,12 +20,14 @@ import { DeleteMessageModal } from '../../../index';
 import { Edit } from '../../../../../../public/images/Edit';
 import { Delete } from '../../../../../../public/images/Delete';
 import Copy from '../../../../../../public/images/Copy';
+import Git from '../../../../../../public/images/Git';
+import { scrollToBottom } from '../../../../../utils/scrollToBottom';
+import MessageVersionsModal from '../../chat/modals/MessageVersionsModal';
 
 const RoomMessages = () => {
   const {userInfo} = useAppSelector(state => state.auth);
   const {currentRoom} = useAppSelector(state => state.rooms);
   const {messages, messageUserId} = useAppSelector(state => state.messages);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const {data: messageData} = useGetAllMessagesQuery(currentRoom?.id ? String(currentRoom?.id) : '', {
     skip: !currentRoom?.id,
@@ -38,6 +41,9 @@ const RoomMessages = () => {
     fullPath: string;
     messageId: string;
     userId: string;
+    isUpdated: boolean;
+    fileName: string;
+    fileSize: string;
   }>();
   
   const onContextMenu = (
@@ -46,40 +52,23 @@ const RoomMessages = () => {
     messageId: string,
     userId: string,
     type: string,
-    fullPath: string
+    fullPath: string,
+    fileName: string,
+    fileSize: string,
+    isUpdated: boolean
   ) => {
     handleContextMenu(event, message, {
       type,
       fullPath,
       messageId,
       userId,
+      isUpdated,
+      fileName,
+      fileSize,
     });
     
     dispatch(setCurrentMessageId(messageId));
     dispatch(setMessageUserId(userId));
-  };
-  
-  const renderMessage = (messageProps: MessageProps) => {
-    return messageConfig[messageProps.type]({
-      id: messageProps.id,
-      messages,
-      roomType: currentRoom?.type,
-      createdAt: messageProps.createdAt,
-      fullPath: messageProps.fullPath,
-      isUpdated: messageProps.isUpdated,
-      message: messageProps.message,
-      fileName: messageProps.fileName,
-      fileSize: messageProps.fileSize,
-      roomId: Number(currentRoom?.id),
-      updatedAt: messageProps.updatedAt,
-      messageUserId: messageProps.messageUserId,
-      type: messageProps.type,
-      userId: Number(userInfo?.userId),
-      username: messageProps.username,
-      scrollFn: messageProps.scrollFn,
-      contextMenuFn: onContextMenu,
-      isTheSameUser: messageProps.isTheSameUser,
-    });
   };
   
   useEffect(() => {
@@ -95,18 +84,9 @@ const RoomMessages = () => {
   
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  const scrollToBottom = () => {
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-    scrollTimeoutRef.current = setTimeout(() => {
-      bottomRef.current?.scrollIntoView({behavior: 'instant'});
-    }, 100);
-  };
-  
   useEffect(() => {
     if (messages.length === 0) return;
-    scrollToBottom();
+    scrollToBottom(scrollTimeoutRef, bottomRef);
   }, [messages]);
   
   const isOwner = userInfo?.userId === Number(messageUserId);
@@ -118,6 +98,14 @@ const RoomMessages = () => {
       onClick: () => {
         dispatch(setChatMessage(contextMenu.messageText));
         dispatch(setIsEditMessage(true));
+        closeContextMenu();
+      },
+    }] : []),
+    ...(isOwner && contextMenu.type !== 'text' ? [{
+      label: 'Replace',
+      icon: <Edit className={'w-[20px] h-[20px] mr-2 mb-0.5'} />,
+      onClick: () => {
+        dispatch(setIsReplaceMessage(true));
         closeContextMenu();
       },
     }] : []),
@@ -137,10 +125,19 @@ const RoomMessages = () => {
         closeContextMenu();
       },
     }] : []),
+    ...(contextMenu.isUpdated ? [{
+      label: 'Previous versions',
+      icon: <Git className={'mr-2 mb-0.5'} />,
+      onClick: () => {
+        openModal(<MessageVersionsModal />);
+        closeContextMenu();
+      },
+    }] : []),
   ];
+  console.log({messages});
   
   return (
-    <div className={styles.message_container} ref={messagesEndRef}>
+    <div className={styles.message_container}>
       {
         messages.length > 0 ?
           messages.map((element: any, index: number) => {
@@ -151,28 +148,34 @@ const RoomMessages = () => {
             return (
               <div key={element._id}>
                 {!isSameDay &&
-                  <p className={'text-[#67667a] py-[50px] font-normal text-center text-[14px]'}>{dayjs(element.createdAt).format(
+                  <p className={'text-[#67667a] py-[50px] font-normal text-center text-[14px]'}>{dayjs(
+                    element.createdAt).format(
                     'dddd, MM.DD.YYYY')}</p>}
                 <div
-                  className={`${isMyMessage ? styles.my_message_wrapper : styles.message_wrapper} ${isMyMessage && !isTheSameUser ? 'mt-[45px]!' : 'my-0!'}`}>
+                  className={`${isMyMessage ? styles.my_message_wrapper : styles.message_wrapper} ${isMyMessage &&
+                  !isTheSameUser ? 'mt-[45px]!' : 'my-0!'}`}>
                   {
-                    renderMessage({
+                    messageConfig[element.type as keyof typeof messageConfig]({
                       id: element._id,
-                      createdAt: element.createdAt,
                       messages,
+                      roomType: currentRoom?.type,
+                      createdAt: element.createdAt,
                       fullPath: element.fullPath,
                       isUpdated: element.isUpdated,
                       message: element.message,
-                      updatedAt: element.updatedAt,
                       fileName: element.fileName,
                       fileSize: element.fileSize,
+                      roomId: Number(currentRoom?.id),
+                      updatedAt: element.updatedAt,
                       messageUserId: element.userId,
+                      timeOutRef: scrollTimeoutRef,
+                      elementRef: bottomRef,
                       type: element.type,
-                      userId: Number(element.userId),
+                      userId: Number(userInfo?.userId),
                       username: element.username,
-                      isTheSameUser,
                       scrollFn: scrollToBottom,
-                      contextMenuFn: onContextMenu
+                      contextMenuFn: onContextMenu,
+                      isTheSameUser,
                     })
                   }
                 </div>
@@ -181,7 +184,8 @@ const RoomMessages = () => {
           })
           :
           <div className={'h-full flex items-center justify-center flex-1'}>
-            <p className={'text-center text-[16px] text-white mt-5 font-medium text-xl'}>This chat doesn't have any messages
+            <p className={'text-center text-[16px] text-white mt-5 font-medium text-xl'}>This chat doesn't have any
+              messages
               yet!</p>
           </div>
       }

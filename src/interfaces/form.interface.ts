@@ -50,6 +50,12 @@ export interface CreateRoomFields {
   avatar?: string;
 }
 
+export interface ChangeCurrentMessageVersionFields {
+  messageId: string;
+  message: string;
+  userId: number;
+}
+
 export interface CreateDirectRoomFields {
   targetUserId: number;
 }

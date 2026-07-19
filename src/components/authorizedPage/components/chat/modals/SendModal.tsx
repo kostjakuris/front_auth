@@ -2,16 +2,15 @@
 import React, { FC, useEffect, useState } from 'react';
 import styles from './modals.module.scss';
 import { useModal } from '../../../../../providers/ModalProvider/ModalProvider.hooks';
-import { useAppSelector } from '../../../../../lib/hooks';
-import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
-import { storage } from '../../../../../firebase';
-import { v4 } from 'uuid';
+import { useAppDispatch, useAppSelector } from '../../../../../lib/hooks';
 import { getSocket } from '../../../../../api/socket';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import File from '../../../../../../public/images/File';
 import { showToast } from 'nextjs-toast-notify';
 import { getRoomData } from '../../../../../utils/getRoomData';
+import { formatFileSize, resolveMessageType, uploadToStorage } from '../../../../../utils/uploadToStorage';
+import { setIsReplaceMessage } from '../../../../../lib/messagesSlice';
 
 
 interface SendImageModalProps {
@@ -22,7 +21,9 @@ const SendModal: FC<SendImageModalProps> = ({selectedFile}) => {
   const {closeModal} = useModal();
   const {userInfo} = useAppSelector(state => state.auth);
   const {currentRoom} = useAppSelector(state => state.rooms);
+  const {isReplaceMessage, currentMessageId, messageUserId} = useAppSelector(state => state.messages);
   const socket = getSocket();
+  const dispatch = useAppDispatch();
   const [chosenFile, setChosenFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
@@ -66,49 +67,44 @@ const SendModal: FC<SendImageModalProps> = ({selectedFile}) => {
     selectedFile.value = '';
   };
   
-  const createFileRef = () => {
-    if (!chosenFile) return;
-    if (chosenFile.type.startsWith('image/')) {
-      return ref(storage, `${currentRoom}/images/${chosenFile.name + v4()}`);
-    } else if (chosenFile.type.startsWith('video/')) {
-      return ref(storage, `${currentRoom}/videos/${chosenFile.name + v4()}`);
-    } else {
-      return ref(storage, `${currentRoom}/files/${chosenFile.name + v4()}`);
-    }
-  };
-  
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes}B`;
-    if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)}KB`;
-    if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)}MB`;
-    return `${(bytes / 1024 ** 3).toFixed(1)}GB`;
-  };
-  
   const submitFile = async() => {
     const {roomName, roomId} = await resolveRoomData();
     if (chosenFile) {
-      const fileRef = createFileRef();
-      if (!fileRef) return;
-      uploadBytes(fileRef, chosenFile, {
+      const type = resolveMessageType(chosenFile.type);
+      const folder = type === 'image' ? 'images' : type === 'video' ? 'videos' : 'files';
+      const {url, fullPath} = await uploadToStorage(roomName ?? '', folder, chosenFile.name, chosenFile, {
         contentType: chosenFile.type,
         contentDisposition: chosenFile.name,
-      }).then((response) => {
-        getDownloadURL(fileRef).then((url) => {
-          socket.emit('sendMessage', {
-            userId: userInfo?.userId,
-            roomName,
-            roomId,
-            content: url,
-            fileName: chosenFile.name,
-            fileSize: formatFileSize(chosenFile.size),
-            fullPath: response.metadata.fullPath,
-            username: userInfo?.username,
-            type: !chosenFile.type.startsWith('image/')
-            && !chosenFile.type.startsWith('video/') ? 'file'
-              : chosenFile.type.substring(0, chosenFile.type.indexOf('/'))
-          });
-        });
       });
+      if (isReplaceMessage) {
+        socket.emit('editMessage', {
+          messageUserId,
+          ownerId: currentRoom?.ownerId,
+          currentMessageId,
+          userId: userInfo?.userId,
+          roomId,
+          roomName,
+          content: url,
+          fileName: chosenFile.name,
+          fileSize: formatFileSize(chosenFile.size),
+          fullPath,
+          username: userInfo?.username,
+          type,
+        });
+        dispatch(setIsReplaceMessage(false));
+      } else {
+        socket.emit('sendMessage', {
+          userId: userInfo?.userId,
+          roomName,
+          roomId,
+          content: url,
+          fileName: chosenFile.name,
+          fileSize: formatFileSize(chosenFile.size),
+          fullPath,
+          username: userInfo?.username,
+          type,
+        });
+      }
       setChosenFile(null);
       closeModal();
     }
@@ -153,10 +149,11 @@ const SendModal: FC<SendImageModalProps> = ({selectedFile}) => {
         <button className={styles.send__cancelButton} onClick={() => {
           closeModal();
           setChosenFile(null);
+          if (isReplaceMessage) dispatch(setIsReplaceMessage(false));
         }}>Cancel
         </button>
         <button className={styles.send__deleteButton} onClick={submitFile}>
-          Send
+          {isReplaceMessage ? 'Replace' : 'Send'}
         </button>
       </div>
     </motion.div>

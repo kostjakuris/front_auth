@@ -1,4 +1,4 @@
-.delete, .send, .createModal {
+.delete, .send, .createModal, .messagesModal {
   background: #333131;
   border-radius: 15px;
   padding: 20px;
@@ -63,6 +63,7 @@
     border-radius: 25px;
     padding: 10px 16px;
   }
+
   &__submit {
     width: 100%;
     background: linear-gradient(90deg, #9890e3 0%, #b1f4cf 100%);

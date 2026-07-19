@@ -6,7 +6,7 @@ import { User } from './authSlice';
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['User', 'Todo', 'Task'],
+  tagTypes: ['User'],
   endpoints: (build) => ({
     register: build.mutation({
       query: ({username, email, password}: RegisterFormFields) => ({
@@ -44,5 +44,4 @@ export const {
   useGetUserInfoQuery,
   useLoginMutation,
   useRegisterMutation,
-  useRegenerateTokenMutation,
 } = userApi;

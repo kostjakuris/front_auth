@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface MessagesState {
   messages: any[];
   isEditMessage: boolean;
+  isReplaceMessage: boolean;
   currentMessageId: string | null;
   messageUserId: string | null;
   chatMessage: string | null;
@@ -11,6 +12,7 @@ interface MessagesState {
 const initialState: MessagesState = {
   messages: [],
   isEditMessage: false,
+  isReplaceMessage: false,
   currentMessageId: null,
   messageUserId: null,
   chatMessage: null,
@@ -38,6 +40,9 @@ const messagesSlice = createSlice({
     setIsEditMessage: (state, action: PayloadAction<boolean>) => {
       state.isEditMessage = action.payload;
     },
+    setIsReplaceMessage: (state, action: PayloadAction<boolean>) => {
+      state.isReplaceMessage = action.payload;
+    },
     setCurrentMessageId: (state, action: PayloadAction<string | null>) => {
       state.currentMessageId = action.payload;
     },
@@ -56,6 +61,7 @@ export const {
   updateMessage,
   deleteMessageById,
   setIsEditMessage,
+  setIsReplaceMessage,
   setCurrentMessageId,
   setMessageUserId,
   setChatMessage,

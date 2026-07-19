@@ -2,7 +2,7 @@
   position: fixed;
   display: block;
   background: #343144;
-  width: 200px;
+  min-width: 200px;
   z-index: 15;
   border-radius: 15px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.45);
@@ -16,7 +16,7 @@
   align-items: center;
   border-bottom: 1px solid gray;
   color: white;
-  padding: 7px 0 7px 10px;
+  padding: 7px 10px;
   text-align: left;
   font-size: 18px;
   font-weight: 500;
