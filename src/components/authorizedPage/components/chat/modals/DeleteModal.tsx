@@ -4,7 +4,7 @@ import styles from './modals.module.scss';
 import { useModal } from '../../../../../providers/ModalProvider/ModalProvider.hooks';
 import { deleteObject, listAll, ref } from '@firebase/storage';
 import { storage } from '../../../../../firebase';
-import { useDeleteRoomMutation } from '../../../../../lib/roomApi';
+import { useDeleteRoomMutation, useGetAllMessageVersionsQuery } from '../../../../../lib/roomApi';
 import { getSocket } from '../../../../../api/socket';
 import { useAppSelector } from '../../../../../lib/hooks';
 import { useCloseRoom } from '../../../../../hooks/useCloseRoom';
@@ -12,7 +12,7 @@ import { motion } from 'framer-motion';
 
 interface DeleteModalProps {
   location: 'room' | 'message';
-  contextMenu: {messageText: string; type?: string; fullPath?: string};
+  contextMenu: {messageText: string; type?: string; fullPath?: string; isUpdated?: boolean};
 }
 
 const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
@@ -21,22 +21,24 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   const {userInfo} = useAppSelector(state => state.auth);
   const {currentRoom, chosenRoom} = useAppSelector(state => state.rooms);
   const {currentMessageId, messageUserId} = useAppSelector(state => state.messages);
+  const {data: versions} = useGetAllMessageVersionsQuery(currentMessageId ?? '', {
+    skip: !contextMenu.isUpdated,
+  });
   const socket = getSocket();
   const {closeRoom} = useCloseRoom();
   const deleteOneMessage = () => {
-    if (contextMenu.type !== 'text') {
-      const imageRef = ref(storage, contextMenu.fullPath);
-      deleteObject(imageRef).then(() => {
-        socket.emit('deleteMessage', {
-          messageUserId,
-          ownerId: currentRoom?.ownerId,
-          userId: userInfo?.userId,
-          messageId: currentMessageId,
-          roomName: currentRoom?.name,
-          roomId: Number(currentRoom?.id),
-        });
-      });
-    } else {
+    const pathsToDelete = new Set<string>();
+    
+    if (contextMenu.type !== 'text' && contextMenu.fullPath) {
+      pathsToDelete.add(contextMenu.fullPath);
+    }
+    
+    if (contextMenu.isUpdated && versions) {
+      versions.filter((version: any) => version.type !== 'text' && version.fullPath).forEach(
+        (version: any) => pathsToDelete.add(version.fullPath));
+    }
+    
+    const emitDelete = () => {
       socket.emit('deleteMessage', {
         messageUserId,
         ownerId: currentRoom?.ownerId,
@@ -45,8 +47,17 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
         roomName: currentRoom?.name,
         roomId: Number(currentRoom?.id),
       });
+      closeModal();
+    };
+    
+    if (pathsToDelete.size === 0) {
+      emitDelete();
+      return;
     }
-    closeModal();
+    
+    Promise.allSettled(
+      Array.from(pathsToDelete).map((path) => deleteObject(ref(storage, path)))
+    ).then(emitDelete);
   };
   const deleteRoomFolder = (folderPath: string) => {
     const folderRef = ref(storage, folderPath);
@@ -61,13 +72,7 @@ const DeleteModal: FC<DeleteModalProps> = ({contextMenu, location}) => {
   };
   
   const deleteOneRoom = async() => {
-    await deleteRoom({id: Number(chosenRoom?.id), ownerId: Number(chosenRoom?.ownerId)});
-    socket.emit('getDirectRoom',
-      {
-        userId: String(chosenRoom?.users?.find((user: any) => user.id !== userInfo?.userId)?.id),
-        roomId: Number(chosenRoom?.id)
-      }
-    );
+    await deleteRoom({id: Number(chosenRoom?.id), ownerId: Number(chosenRoom?.ownerId), roomType: chosenRoom?.type});
     deleteRoomFolder(String(chosenRoom?.name));
     closeModal();
     if (chosenRoom?.id === currentRoom?.id) {

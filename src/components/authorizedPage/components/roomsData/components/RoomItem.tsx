@@ -16,10 +16,16 @@ interface RoomItemProps {
 const RoomItem = ({room, isActive, onContextMenu, onMouseDown}: RoomItemProps) => {
   const [loaded, setLoaded] = useState(false);
   const {userInfo} = useAppSelector(state => state.auth);
-  const roomFirstLetter = room.name ? room.name.slice(0, 1).toUpperCase() : room.username?.slice(0, 1).toUpperCase();
-  const roomLastLetter = room.name ? room.name.slice(room.name.length - 1, room.name.length).toUpperCase() : '';
+  const roomFirstLetter = room.name && room.type === 'public' ? room.name.slice(0, 1).toUpperCase() : '';
+  const roomLastLetter = room.name && room.type === 'public' ?
+    room.name.slice(room.name.length - 1, room.name.length).toUpperCase() : '';
   const roomName = room.type === 'public' ? room.name :
     room?.users?.find(user => user.id !== userInfo?.userId)?.username;
+  const directRoomFirstLetter = roomName ? roomName.slice(0, 1).toUpperCase() : room.username ?
+    room.username?.slice(0, 1).toUpperCase() : '';
+  const directRoomLastLetter = roomName ? roomName.slice(roomName.length - 1, roomName.length).toUpperCase() :
+    room.username ?
+      room.username?.slice(room.username.length - 1, room.username.length).toUpperCase() : '';
   return (
     <div
       onContextMenu={(e) => onContextMenu(e, room)}
@@ -49,7 +55,7 @@ const RoomItem = ({room, isActive, onContextMenu, onMouseDown}: RoomItemProps) =
               />
             </> :
             <span className={'rounded-full bg-[#343144] flex justify-center items-center h-[50px] w-[50px]'}>
-            {roomFirstLetter}{roomLastLetter}
+            {directRoomFirstLetter ?? roomFirstLetter}{directRoomLastLetter ?? roomLastLetter}
           </span>
         }
       </div>

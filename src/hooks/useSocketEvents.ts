@@ -40,7 +40,6 @@ export const useSocketEvents = () => {
         createdAt: dayjs(data.createdAt).format('MMM D, YYYY HH:mm'),
       }));
     });
-    // add 4 fields: fileName, fileSize, fullPath, type
     socket.on('getUpdatedMessage', (data) => {
       dispatch(roomApi.util.invalidateTags([{type: 'MessageVersions', id: data._id}]));
       dispatch(updateMessage({
@@ -99,6 +98,12 @@ export const useSocketEvents = () => {
     socket.on('getKickedFromRoom', (data) => {
       dispatch(updateRoomList(data.roomId));
     });
+    socket.on('getDeletedRoom', (data) => {
+      dispatch(updateRoomList(data.roomId));
+      if (data.roomId === currentRoomRef.current?.id) {
+        closeRoom();
+      }
+    });
     return (() => {
       socket.off('getMessage');
       socket.off('getUpdatedMessage');
@@ -108,6 +113,7 @@ export const useSocketEvents = () => {
       socket.off('getLastMessage');
       socket.off('getAllRooms');
       socket.off('getKickedFromRoom');
+      socket.off('getDeletedRoom');
     });
   }, []);
 };

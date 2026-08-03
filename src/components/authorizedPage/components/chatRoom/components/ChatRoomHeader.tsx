@@ -15,10 +15,17 @@ const ChatRoomHeader = () => {
   const {currentRoom} = useAppSelector(state => state.rooms);
   const {userInfo} = useAppSelector(state => state.auth);
   
-  const roomFirstLetter = currentRoom?.name ? currentRoom.name.slice(0, 1).toUpperCase() :
-    currentRoom?.username?.slice(0, 1).toUpperCase();
-  const roomLastLetter = currentRoom?.name ?
+  const roomFirstLetter = currentRoom?.name && currentRoom.type === 'public' ?
+    currentRoom.name.slice(0, 1).toUpperCase() : '';
+  const roomLastLetter = currentRoom?.name && currentRoom.type === 'public' ?
     currentRoom.name.slice(currentRoom.name.length - 1, currentRoom.name.length).toUpperCase() : '';
+  const roomName = currentRoom?.type === 'public' ? currentRoom.name :
+    currentRoom?.users?.find(user => user.id !== userInfo?.userId)?.username;
+  const directRoomFirstLetter = roomName ? roomName.slice(0, 1).toUpperCase() : currentRoom?.username ?
+    currentRoom.username?.slice(0, 1).toUpperCase() : '';
+  const directRoomLastLetter = roomName ? roomName.slice(roomName.length - 1, roomName.length).toUpperCase() :
+    currentRoom?.username ?
+      currentRoom.username?.slice(currentRoom.username.length - 1, currentRoom.username.length).toUpperCase() : '';
   
   const {contextMenu, handleContextMenu, closeContextMenu} = useContextMenu();
   
@@ -32,8 +39,6 @@ const ChatRoomHeader = () => {
     },
   ];
   
-  const roomName = currentRoom?.type === 'public' ? currentRoom.name :
-    currentRoom?.users?.find(user => user.id !== userInfo?.userId)?.username;
   
   return (
     <div className={'flex justify-between items-center pb-[18px] pt-[20px] px-[30px]'}>
@@ -44,7 +49,7 @@ const ChatRoomHeader = () => {
             <img className={'rounded-full object-cover h-[50px] w-[50px]'} src={currentRoom.avatar}
               alt={currentRoom.avatar} /> :
             <span className={'rounded-full bg-[#343144] flex justify-center items-center h-[50px] w-[50px]'}>
-            {roomFirstLetter}{roomLastLetter}
+            {directRoomFirstLetter ?? roomFirstLetter}{directRoomLastLetter ?? roomLastLetter}
           </span>
         }
         <p className={`${styles.authorized__chats_title} text-center w-fit`}>{roomName ?? currentRoom?.username}</p>

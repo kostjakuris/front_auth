@@ -17,7 +17,12 @@ export const roomApi = createApi({
       query: () => ({
         url: '/room/all',
       }),
-      providesTags: ['Room']
+      providesTags: (result) =>
+        result
+          ? [
+            ...result.map(({id}) => ({type: 'Room' as const, id})),
+          ]
+          : [{type: 'Room'}],
       
     }),
     getAllMessages: build.query({
@@ -61,10 +66,10 @@ export const roomApi = createApi({
       invalidatesTags: ['Room']
     }),
     deleteRoom: build.mutation({
-      query: ({id, ownerId}: DeleteRoomFields) => ({
+      query: ({id, ownerId, roomType}: DeleteRoomFields) => ({
         url: '/room/delete',
         method: 'DELETE',
-        body: {id, ownerId},
+        body: {id, ownerId, roomType},
       }),
       invalidatesTags: ['Room']
     }),

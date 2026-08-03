@@ -49,7 +49,6 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     fileSize,
     type
   }: MessageProps) => {
-    console.log({id});
     const showNickname = !isTheSameUser && Number(userId) !== Number(messageUserId) && roomType === 'public';
     return (
       <div
@@ -232,7 +231,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
     roomType,
     isTheSameUser,
   }: MessageProps) => {
-    const showNickname = !isTheSameUser && userId !== Number(messageUserId);
+    const showNickname = !isTheSameUser && userId !== Number(messageUserId) && roomType === 'public';
     return (
       <div
         onContextMenu={(event) => contextMenuFn(event, message, id, String(messageUserId), type, String(fullPath),
@@ -242,7 +241,7 @@ export const messageConfig: Record<MessageType, (props: MessageProps) => JSX.Ele
           'pt-[13px]!' : ''}`}
       >
         {
-          showNickname && roomType === 'public' &&
+          showNickname &&
           <p className={`${msgStyles.nickname} text-green-400`}>
             {username}
           </p>

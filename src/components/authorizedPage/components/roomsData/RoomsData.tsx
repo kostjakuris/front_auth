@@ -34,6 +34,7 @@ const RoomsData = () => {
   const {openModal} = useModal();
   const [text, setText] = useState('');
   const {data: searchResults} = useSearchRoomsQuery(text, {skip: text.length < 1});
+  console.log({searchResults});
   const {logout} = useLogout();
   const containerRef = useRef<HTMLDivElement>(null);
   const {contextMenu, handleContextMenu, closeContextMenu} = useContextMenu();

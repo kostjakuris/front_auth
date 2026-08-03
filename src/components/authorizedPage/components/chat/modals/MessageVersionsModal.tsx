@@ -43,7 +43,7 @@ const MessageVersionsModal = () => {
     fileName: string;
     fileSize: string;
   }>();
-
+  
   const onContextMenu = (
     event: any,
     message: string,
@@ -64,11 +64,11 @@ const MessageVersionsModal = () => {
       fileName,
       fileSize,
     });
-
+    
     dispatch(setCurrentMessageId(messageId));
     dispatch(setMessageUserId(userId));
   };
-
+  
   const messageButtons: ContextMenuButton[] = [
     ...(isOwner ? [{
       label: 'Make this version current',

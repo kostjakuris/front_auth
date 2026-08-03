@@ -90,6 +90,7 @@ const RoomMessages = () => {
   }, [messages]);
   
   const isOwner = userInfo?.userId === Number(messageUserId);
+  const isAdmin = userInfo?.userId === currentRoom?.ownerId;
   
   const messageButtons: ContextMenuButton[] = [
     ...(isOwner && contextMenu.type === 'text' ? [{
@@ -101,7 +102,7 @@ const RoomMessages = () => {
         closeContextMenu();
       },
     }] : []),
-    ...(isOwner && contextMenu.type !== 'text' ? [{
+    ...(isOwner ? [{
       label: 'Replace',
       icon: <Edit className={'w-[20px] h-[20px] mr-2 mb-0.5'} />,
       onClick: () => {
@@ -109,7 +110,7 @@ const RoomMessages = () => {
         closeContextMenu();
       },
     }] : []),
-    ...(isOwner ? [{
+    ...(isOwner || isAdmin && currentRoom?.type !== 'direct' ? [{
       label: 'Delete',
       icon: <Delete className={'w-[20px] h-[20px] mr-2 mb-0.5'} />,
       onClick: () => {
@@ -134,7 +135,6 @@ const RoomMessages = () => {
       },
     }] : []),
   ];
-  console.log({messages});
   
   return (
     <div className={styles.message_container}>

@@ -67,5 +67,6 @@ export interface EditRoomFields extends CreateRoomFields {
 export interface DeleteRoomFields {
   id: number;
   ownerId: number;
+  roomType?: 'public' |'direct';
 }
 

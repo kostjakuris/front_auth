@@ -4,6 +4,7 @@
   padding: 20px;
   transform: translate(-50%, -50%);
 
+
   &__text {
     width: 100%;
     text-align: center;
@@ -52,6 +53,16 @@
 .send {
   &__image {
     margin: 0 auto;
+  }
+}
+
+.messagesModal {
+  img {
+    max-width: 350px;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
   }
 }
 

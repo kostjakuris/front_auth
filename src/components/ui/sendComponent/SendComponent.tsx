@@ -37,7 +37,7 @@ const SendComponent = () => {
     event.preventDefault();
     const {roomName, roomId} = await resolveRoomData();
     if (chatMessage) {
-      if (!isEditMessage) {
+      if (!isEditMessage && !isReplaceMessage) {
         socket.emit('sendMessage', {
           userId: userInfo?.userId,
           roomName,
@@ -62,6 +62,7 @@ const SendComponent = () => {
     }
     dispatch(setChatMessage(''));
     dispatch(setIsEditMessage(false));
+    dispatch(setIsReplaceMessage(false));
   };
   
   return (
@@ -71,7 +72,8 @@ const SendComponent = () => {
         <button className={'cursor-pointer'} onClick={closeEditBlock}><Close /></button>
       </div>
       <div className={!isReplaceMessage ? 'hidden' : sendStyles.edit}>
-        <p className={styles.authorized__text}>Pick a new attachment or hold the mic to replace this message</p>
+        <p className={styles.authorized__text}>Pick a new attachment, write some text or hold the mic to replace this
+          message</p>
         <button className={'cursor-pointer'} onClick={() => dispatch(setIsReplaceMessage(false))}><Close /></button>
       </div>
       <div className={'w-full h-[8px] bg-[#292634] border-t-[2px] border-b-[2px] border-[#221f2d]'} />
